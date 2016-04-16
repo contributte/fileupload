@@ -6,6 +6,8 @@
 
 jQuery-FileUpload je komponenta, fungující jako rozšíření UploadControl v Nette formuláři, která pro nahrávání souborů využívá [blueimp/jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload).
 
+Komponenta nabízí bootstrap uživatelské rozhraní a [vlastní možnost zpracování nahrávaných souborů](https://github.com/JZechy/jQuery-FileUpload/wiki/Upload-model).
+
 ## Composer
 ```
 composer require jzechy/jquery-fileupload
