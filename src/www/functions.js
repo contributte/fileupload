@@ -18,6 +18,12 @@ var FileUploadController = function (id, productionMode) {
 	this.productionMode = productionMode;
 
 	/**
+	 * Odkaz pro vymazání souboru.
+	 * @type {string}
+	 */
+	this.deleteLink = "#";
+
+	/**
 	 * Tabulka se seznamem souborů.
 	 * @type {Element}
 	 */
@@ -68,10 +74,17 @@ var FileUploadController = function (id, productionMode) {
 		td.classList.add("buttons");
 
 		var deleteButton = document.createElement("a");
-		deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete");
+		deleteButton.setAttribute("data-file-id", this.idCounter.toString());
+		var self = this;
+		deleteButton.onclick = function() {
+			self.deleteFile(this);
+		};
+
 		var deleteIcon = document.createElement("i");
 		deleteIcon.classList.add("glyphicon", "glyphicon-remove");
 		deleteButton.appendChild(deleteIcon);
+
 		td.appendChild(deleteButton);
 
 		return td;
@@ -80,28 +93,27 @@ var FileUploadController = function (id, productionMode) {
 	/**
 	 * Vygeneruje progress pro soubor.
 	 */
-	this.generateFileProgress = function() {
+	this.generateFileProgress = function () {
 		var td = document.createElement("td");
 		td.classList.add("file-progress");
 
 		var progress = document.createElement("div");
 		progress.classList.add("progress");
-		progress.setAttribute("id", "file-"+ this.idCounter +"-progress");
+		progress.setAttribute("id", "file-" + this.idCounter + "-progress");
 
 		var progressBar = document.createElement("div");
 		progressBar.classList.add(
 			"progress-bar", "progress-bar-success", "progress-bar-striped", "active", "zet-file-progress"
 		);
 		progressBar.style.width = "0%";
-		progressBar.setAttribute("id", "file-"+ this.idCounter +"-progressbar");
+		progressBar.setAttribute("id", "file-" + this.idCounter + "-progressbar");
 
 		var span = document.createElement("span");
-		span.setAttribute("id", "file-"+ (this.idCounter) +"-progressbar-value");
+		span.setAttribute("id", "file-" + (this.idCounter) + "-progressbar-value");
 		span.textContent = "0%";
 		progressBar.appendChild(span);
 		progress.appendChild(progressBar);
 		td.appendChild(progress);
-		this.idCounter++;
 
 		return td;
 	};
@@ -111,9 +123,9 @@ var FileUploadController = function (id, productionMode) {
 	 * @param id
 	 * @param msg
 	 */
-	this.writeError = function(id, msg) {
-		if(!this.productionMode) console.error("File ID: "+id+", Err msg: "+ msg);
-		var fileTr = document.getElementById("file-"+ id);
+	this.writeError = function (id, msg) {
+		if (!this.productionMode) console.error("File ID: " + id + ", Err msg: " + msg);
+		var fileTr = document.getElementById("file-" + id);
 		var nameTd = fileTr.querySelector(".name");
 		nameTd.textContent = "Při nahrávání souboru došlo k chybě.";
 	}
@@ -122,13 +134,21 @@ var FileUploadController = function (id, productionMode) {
 FileUploadController.prototype = {
 
 	/**
+	 * Nastaví odkaz pro smazání.
+	 * @param {String} link
+	 */
+	setDeleteLink: function (link) {
+		this.deleteLink = link;
+	},
+
+	/**
 	 * Vygeneruje nový řádek s přidaným souborem.
 	 * @param {Object} file
 	 */
 	addRow: function (file) {
 		var tr = document.createElement("tr");
 		tr.appendChild(this.generatePreview(file));
-		tr.setAttribute("id", "file-"+ this.idCounter);
+		tr.setAttribute("id", "file-" + this.idCounter);
 
 		var fileName = document.createElement("td");
 		fileName.classList.add("name");
@@ -136,6 +156,7 @@ FileUploadController.prototype = {
 		tr.appendChild(fileName);
 		tr.appendChild(this.generateFileProgress());
 		tr.appendChild(this.generateActionButtons());
+		this.idCounter++;
 
 		this.table.appendChild(tr);
 	},
@@ -144,12 +165,12 @@ FileUploadController.prototype = {
 	 * Nastaví progress celé fronty souborů.
 	 * @param {Object} data
 	 */
-	setProgressAll: function(data) {
+	setProgressAll: function (data) {
 		var percents = parseInt(data.loaded / data.total * 100, 10);
-		var progressBar = this.progress.querySelector("#"+ this.id +"-progressbar");
-		var progressBarValue = this.progress.querySelector("#"+ this.id +"-progressbar-value");
+		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
+		var progressBarValue = this.progress.querySelector("#" + this.id + "-progressbar-value");
 
-		progressBar.style.width = percents+"%";
+		progressBar.style.width = percents + "%";
 		progressBarValue.textContent = percents;
 	},
 
@@ -157,25 +178,25 @@ FileUploadController.prototype = {
 	 * Nastaví progress jednoho souboru.
 	 * @param {Object} data
 	 */
-	setFileProgress: function(data) {
+	setFileProgress: function (data) {
 		var id = data.formData[0].value;
-		var fileProgress = document.getElementById("file-"+ id +"-progressbar");
-		var fileProgressValue = document.getElementById("file-"+ id +"-progressbar-value");
+		var fileProgress = document.getElementById("file-" + id + "-progressbar");
+		var fileProgressValue = document.getElementById("file-" + id + "-progressbar-value");
 		var percents = parseInt(data.loaded / data.total * 100, 10);
 
-		fileProgress.style.width = percents +"%";
+		fileProgress.style.width = percents + "%";
 		fileProgressValue.textContent = percents + "%";
 	},
 
 	/**
 	 * Po dokončení uploadu ...
 	 */
-	stop: function() {
-		var progressBar = this.progress.querySelector("#"+ this.id +"-progressbar");
+	stop: function () {
+		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		progressBar.classList.remove("active");
 
 		var fileProgresses = document.querySelectorAll(".zet-file-progress");
-		for(var i = 0; i < fileProgresses.length; i++) {
+		for (var i = 0; i < fileProgresses.length; i++) {
 			fileProgresses[i].classList.remove("active");
 		}
 	},
@@ -183,10 +204,10 @@ FileUploadController.prototype = {
 	/**
 	 * Při zahájení uploadu ...
 	 */
-	start: function() {
-		var progressBar = this.progress.querySelector("#"+ this.id +"-progressbar");
+	start: function () {
+		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		progressBar.classList.add("active");
-		var progressBarValue = this.progress.querySelector("#"+ this.id +"-progressbar-value");
+		var progressBarValue = this.progress.querySelector("#" + this.id + "-progressbar-value");
 
 		progressBar.style.width = "0%";
 		progressBarValue.textContent = 0;
@@ -196,14 +217,14 @@ FileUploadController.prototype = {
 	 * Po dokončení jednotlových uploadů.
 	 * @param {Object} data
 	 */
-	uploadDone: function(data) {
+	uploadDone: function (data) {
 		var result = data.result;
 		var id = result.id;
 		var error = result.error;
 
-		if(error != 0) {
+		if (error != 0) {
 			var msg = "";
-			switch(error) {
+			switch (error) {
 				case 1:
 				case 2:
 					msg = "Soubor je příliš veliký.";
@@ -223,8 +244,26 @@ FileUploadController.prototype = {
 				case 8:
 					msg = "Nahrávání souboru bylo přerušeno.";
 					break;
+				case 99:
+					msg = result.errorMessage;
+					break;
 			}
 			this.writeError(id, msg);
 		}
+	},
+
+	/**
+	 * Vymazání souboru.
+	 * @param {Element} element
+	 */
+	deleteFile: function(element) {
+		$.ajax({
+			url: this.deleteLink,
+			data: {
+				id: element.getAttribute("data-file-id")
+			}
+		}).done(function() {
+			$(element).parents("tr").fadeOut();
+		});
 	}
 };

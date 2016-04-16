@@ -20,9 +20,9 @@ class BaseUploadModel extends \Nette\Object implements IUploadModel {
 
 	/**
 	 * Zpracování požadavku o smazání souboru.
-	 * @param \Nette\Http\FileUpload $file
+	 * @param $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove(\Nette\Http\FileUpload $file) {
-		// TODO: Implement remove() method.
+	public function remove($uploaded) {
+		# By Pass...
 	}
 }

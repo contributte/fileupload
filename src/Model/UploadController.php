@@ -42,9 +42,11 @@ class UploadController extends \Nette\Application\UI\Control {
 		$template = $this->template;
 		$template->setFile(__DIR__ . "/../Template/javascript.latte");
 		$template->uploadUrl = $this->link("upload");
+		$template->deleteLink = $this->link("remove");
 		$template->inputId = $this->uploadControl->getHtmlId();
 		$template->maxFiles = $this->uploadControl->getMaxFiles();
 		$template->maxFileSize = $this->uploadControl->getMaxFileSize();
+		$template->fileSizeString = $this->uploadControl->getFileSizeString();
 		$template->productionMode = \Tracy\Debugger::$productionMode;
 
 		return (string) $template;
@@ -72,22 +74,45 @@ class UploadController extends \Nette\Application\UI\Control {
 		$model = $this->uploadControl->getUploadModel();
 		$cache = $this->uploadControl->getCache();
 
-		if($file->isOk()) {
-			$returnData = $model->save($file);
+		try {
+			if($file->isOk()) {
+				$returnData = $model->save($file);
 
-			$cacheFiles = $cache->load($this->uploadControl->getHtmlName());
-			if(empty($cacheFiles)) {
-				$cacheFiles = array($this->request->getPost("id") => $returnData);
-			} else {
-				$cacheFiles[$this->request->getPost("id")] = $returnData;
+				$cacheFiles = $cache->load($this->uploadControl->getHtmlId());
+				if(empty($cacheFiles)) {
+					$cacheFiles = array($this->request->getPost("id") => $returnData);
+				} else {
+					$cacheFiles[ $this->request->getPost("id") ] = $returnData;
+				}
+				$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
 			}
-			$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
+		} catch(\Exception $e) {
+			$this->presenter->sendResponse(new \Nette\Application\Responses\JsonResponse(array(
+				"id" => $this->request->getPost("id"),
+				"error" => 99,
+				"errorMessage" => $e->getMessage()
+			)));
 		}
 
 		$this->presenter->sendResponse(new \Nette\Application\Responses\JsonResponse(array(
 			"id" => $this->request->getPost("id"),
 			"error" => $file->getError()
 		)));
+	}
+
+	/**
+	 * Odstraní nahraný soubor.
+	 */
+	public function handleRemove() {
+		$id = $this->request->getQuery("id");
+
+		$cache = $this->uploadControl->getCache();
+		$cacheFiles = $cache->load($this->uploadControl->getHtmlId());
+		if(isset($cacheFiles[$id])) {
+			$this->uploadControl->getUploadModel()->remove($cacheFiles[$id]);
+			unset($cacheFiles[$id]);
+			$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
+		}
 	}
 
 }

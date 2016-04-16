@@ -18,7 +18,8 @@ interface IUploadModel {
 
 	/**
 	 * Zpracování požadavku o smazání souboru.
-	 * @param \Nette\Http\FileUpload $file
+	 * @param $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove(\Nette\Http\FileUpload $file);
+	public function remove($uploaded);
+
 }

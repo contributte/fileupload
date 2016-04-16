@@ -20,9 +20,9 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public static function register($systemContainer, $uploadModel = NULL) {
 		$class = __CLASS__;
 		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
-			\Nette\Forms\Container $container, $name, $maxFiles = 25
+			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = null
 		) use ($class, $systemContainer, $uploadModel) {
-			$component = new $class($name, $maxFiles);
+			$component = new $class($name, $maxFiles, $maxFileSize);
 			$component->setContainer($systemContainer);
 			$component->setUploadModel($uploadModel);
 			$container->addComponent($component, $name);
@@ -82,6 +82,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	private $maxFileSize;
 
 	/**
+	 * @var string
+	 */
+	private $fileSizeString;
+
+	/**
 	 * @var \Zet\FileUpload\Model\UploadController
 	 */
 	private $controller;
@@ -95,11 +100,18 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * FileUploadControl constructor.
 	 * @param string $name Název inputu.
 	 * @param int $maxFiles Maximální počet souborů.
+	 * @param string $maxFileSize Maximální velikosti souboru.
 	 */
-	public function __construct($name, $maxFiles) {
+	public function __construct($name, $maxFiles, $maxFileSize = null) {
 		parent::__construct($name);
 		$this->maxFiles = $maxFiles;
-		$this->maxFileSize = $this->parseIniSize(ini_get("upload_max_filesize"));
+		if(is_null($maxFileSize)) {
+			$this->maxFileSize = $this->parseIniSize(ini_get("upload_max_filesize"));
+			$this->fileSizeString = ini_get("upload_max_filesize") ."B";
+		} else {
+			$this->maxFileSize = $this->parseIniSize($maxFileSize);
+			$this->fileSizeString = $maxFileSize ."B";
+		}
 		$this->controller = new Model\UploadController($this);
 	}
 
@@ -180,7 +192,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @param int $maxFileSize
 	 */
 	public function setMaxFileSize($maxFileSize) {
-		$this->maxFileSize = $maxFileSize;
+		$this->maxFileSize = $this->parseIniSize($maxFileSize);
 	}
 
 	/**
@@ -188,6 +200,13 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function getCache() {
 		return $this->cache;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFileSizeString() {
+		return $this->fileSizeString;
 	}
 
 	# --------------------------------------------------------------------
@@ -205,6 +224,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$container->add($this->controller->getControlTemplate());
 
 		return $container;
+	}
+
+	/**
+	 * Vrátí nacachované hodnoty z controlleru.
+	 * @return mixed|NULL
+	 */
+	public function getValue() {
+		$files = $this->cache->load($this->getHtmlId());
+		$this->cache->remove($this->getHtmlId());
+
+		return $files;
 	}
 
 	/**
