@@ -22,7 +22,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
 			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = null
 		) use ($class, $systemContainer, $uploadModel) {
-			$component = new $class($name, $maxFiles, $maxFileSize);
+			$component = new $class($name, $maxFiles, $maxFileSize); /** @var FileUploadControl $component */
 			$component->setContainer($systemContainer);
 			$component->setUploadModel($uploadModel);
 			$container->addComponent($component, $name);
@@ -131,7 +131,9 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setContainer($container) {
 		$this->container = $container;
+		/** @noinspection PhpParamsInspection */
 		$this->cache = new \Nette\Caching\Cache($this->container->getByType('Nette\Caching\IStorage'));
+		/** @noinspection PhpParamsInspection */
 		$this->controller->setRequest($container->getByType('\Nette\Http\Request'));
 	}
 

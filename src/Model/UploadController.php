@@ -115,4 +115,7 @@ class UploadController extends \Nette\Application\UI\Control {
 		}
 	}
 
+	public function validate() {
+		// Nette 2.3.10 by pass
+	}
 }
