@@ -22,11 +22,18 @@ $(function() {
 	var productionMode = {$productionMode|escapeJS|noescape};
 
 	/**
+	 * Identifikační token.
+	 * @type string
+	 */
+	var token = {$token|escapeJS|noescape};
+
+	/**
 	 * Třída pro práci s fileuploaderem.
 	 * @type FileUploadController
 	 */
-	var controller = new FileUploadController(input, productionMode);
+	var controller = new FileUploadController(input, productionMode, token);
 	controller.setDeleteLink({$deleteLink|escapeJS|noescape});
+	controller.setRenameLink({$renameLink|escapeJS|noescape});
 
 	// -----------------------------------------------------------------------
 	// Control variables
@@ -95,6 +102,9 @@ $(function() {
 			data.formData = [{
 				name: "id",
 				value: fileId++
+			}, {
+				name: "token",
+				value: token
 			}];
 		},
 

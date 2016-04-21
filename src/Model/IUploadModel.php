@@ -17,6 +17,14 @@ interface IUploadModel {
 	public function save(\Nette\Http\FileUpload $file);
 
 	/**
+	 * Zpracování přejmenování souboru.
+	 * @param $upload Hodnota navrácená funkcí save.
+	 * @param $newName Nové jméno souboru.
+	 * @return mixed Vlastní návratová hodnota.
+	 */
+	public function rename($upload, $newName);
+
+	/**
 	 * Zpracování požadavku o smazání souboru.
 	 * @param $uploaded Hodnota navrácená funkcí save.
 	 */

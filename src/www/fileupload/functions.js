@@ -1,9 +1,11 @@
 /**
  * @author Zechy <email@zechy.cz>
  * @param string id
+ * @param boolean productionMode
+ * @param string token
  * @constructor
  */
-var FileUploadController = function (id, productionMode) {
+var FileUploadController = function (id, productionMode, token) {
 
 	/**
 	 * HTML ID vygenerované nette.
@@ -18,10 +20,22 @@ var FileUploadController = function (id, productionMode) {
 	this.productionMode = productionMode;
 
 	/**
+	 * Identifikační token.
+	 * @type {string}
+	 */
+	this.token = token;
+
+	/**
 	 * Odkaz pro vymazání souboru.
 	 * @type {string}
 	 */
 	this.deleteLink = "#";
+
+	/**
+	 * Odkaz pro přejmenování souboru.
+	 * @type {string}
+	 */
+	this.renameLink = "#";
 
 	/**
 	 * Tabulka se seznamem souborů.
@@ -50,6 +64,34 @@ var FileUploadController = function (id, productionMode) {
 	];
 
 	/**
+	 * Proměnná pro uložení timeoutu.
+	 */
+	this.timeout = [];
+
+	/**
+	 * Vybere text v elementu.
+	 * @param {string} element
+	 */
+	this.selectText = function(element) {
+		var doc = document
+			, text = doc.getElementById(element)
+			, range, selection
+			;
+		if (doc.body.createTextRange) {
+			range = document.body.createTextRange();
+			range.moveToElementText(text);
+			range.select();
+		} else if (window.getSelection) {
+			selection = window.getSelection();
+			range = document.createRange();
+			range.selectNodeContents(text);
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+	};
+
+
+	/**
 	 * Vrátí koncovku souboru.
 	 * @param {String} filename
 	 * @returns {String}
@@ -65,7 +107,7 @@ var FileUploadController = function (id, productionMode) {
 	 * @returns {Boolean}
 	 */
 	this.isImage = function (filename) {
-		return this.imageExtension.indexOf(this.getFileExtension(filename)) !== -1;
+		return this.imageExtension.indexOf(this.getFileExtension(filename).toLowerCase()) !== -1;
 	};
 
 	/**
@@ -89,9 +131,22 @@ var FileUploadController = function (id, productionMode) {
 			img.setAttribute("src", preview);
 			img.classList.add("img-responsive");
 			td.appendChild(img);
+		} else {
+			td.appendChild(this.generateExtInfo(file.name));
 		}
 
 		return td;
+	};
+
+	/**
+	 * Vygeneruje popisek s typem souboru
+	 * @param {string} filename
+	 */
+	this.generateExtInfo = function (filename) {
+		var span = document.createElement("span");
+		span.classList.add("label", "label-info");
+		span.textContent = "." + this.getFileExtension(filename);
+		return span;
 	};
 
 	/**
@@ -118,6 +173,39 @@ var FileUploadController = function (id, productionMode) {
 
 		return td;
 	};
+
+	/**
+	 * Vygeneruje název souboru.
+	 * @param filename
+	 */
+	this.generateFileName = function (filename) {
+		var div = document.createElement("div");
+		div.setAttribute("contenteditable", "true");
+		div.setAttribute("data-file-id", this.idCounter.toString());
+		div.setAttribute("id", "file-rename-"+ this.idCounter.toString());
+		div.textContent = filename;
+		/*div.onclick = function () {
+			document.execCommand("selectAll", false, null);
+		};*/
+		var self = this;
+
+		div.onfocus = function () {
+			self.selectText(div.getAttribute("id"));
+		};
+		div.onkeyup = function (event) {
+			div.style.fontStyle = "italic";
+
+			if (event.code != "Tab") {
+				clearTimeout(self.timeout[this.getAttribute("data-file-id")]);
+
+				self.timeout[this.getAttribute("data-file-id")] = setTimeout(function () {
+					self.renameFile(div);
+				}, 750);
+			}
+		};
+
+		return div;
+	}
 
 	/**
 	 * Vygeneruje progress pro soubor.
@@ -153,10 +241,10 @@ var FileUploadController = function (id, productionMode) {
 	 * @param msg
 	 */
 	this.writeError = function (id, msg) {
-		if (!this.productionMode) console.error("File ID: " + id + ", Err msg: " + msg);
 		var fileTr = document.getElementById("file-" + id);
+		fileTr.classList.add("bg-warning");
 		var nameTd = fileTr.querySelector(".name");
-		nameTd.textContent = "Při nahrávání souboru došlo k chybě.";
+		nameTd.innerHTML += "<br>" + msg;
 	}
 };
 
@@ -171,6 +259,14 @@ FileUploadController.prototype = {
 	},
 
 	/**
+	 * Přejmenuje nahraný soubor.
+	 * @param {String} link
+	 */
+	setRenameLink: function (link) {
+		this.renameLink = link;
+	},
+
+	/**
 	 * Vygeneruje nový řádek s přidaným souborem.
 	 * @param {Object} file
 	 */
@@ -181,7 +277,8 @@ FileUploadController.prototype = {
 
 		var fileName = document.createElement("td");
 		fileName.classList.add("name");
-		fileName.textContent = file.name;
+		fileName.appendChild(this.generateFileName(file.name));
+
 		tr.appendChild(fileName);
 		tr.appendChild(this.generateFileProgress());
 		tr.appendChild(this.generateActionButtons());
@@ -274,7 +371,10 @@ FileUploadController.prototype = {
 					msg = "Nahrávání souboru bylo přerušeno.";
 					break;
 				case 99:
-					msg = result.errorMessage;
+					msg = result.errorMessage + ".";
+					break;
+				case 100:
+					msg = "Povolené typy souborů jsou " + result.errorMessage + ".";
 					break;
 			}
 			this.writeError(id, msg);
@@ -289,10 +389,32 @@ FileUploadController.prototype = {
 		$.ajax({
 			url: this.deleteLink,
 			data: {
-				id: element.getAttribute("data-file-id")
+				id: element.getAttribute("data-file-id"),
+				token: this.token
 			}
 		}).done(function () {
 			$(element).parents("tr").fadeOut();
+		});
+	},
+
+	/**
+	 * Přejmenuje soubor.
+	 * @param element
+	 */
+	renameFile: function (element) {
+		$.ajax({
+			url: this.renameLink,
+			data: {
+				id: element.getAttribute("data-file-id"),
+				newName: element.textContent,
+				token: this.token
+			}
+		}).done(function () {
+			element.style.fontStyle = "normal";
+			$(element).fadeOut("400", function () {
+				$(element).fadeIn();
+				element.blur();
+			});
 		});
 	}
 };

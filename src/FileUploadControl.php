@@ -20,9 +20,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public static function register($systemContainer, $uploadModel = NULL) {
 		$class = __CLASS__;
 		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
-			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = null
+			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = NULL
 		) use ($class, $systemContainer, $uploadModel) {
-			$component = new $class($name, $maxFiles, $maxFileSize); /** @var FileUploadControl $component */
+			$component = new $class($name, $maxFiles, $maxFileSize);
+			/** @var FileUploadControl $component */
 			$component->setContainer($systemContainer);
 			$component->setUploadModel($uploadModel);
 			$container->addComponent($component, $name);
@@ -127,22 +128,28 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	private $fileFilter;
 
 	/**
+	 * @var string
+	 */
+	private $token;
+
+	/**
 	 * FileUploadControl constructor.
 	 * @param string $name Název inputu.
 	 * @param int $maxFiles Maximální počet souborů.
 	 * @param string $maxFileSize Maximální velikosti souboru.
 	 */
-	public function __construct($name, $maxFiles, $maxFileSize = null) {
+	public function __construct($name, $maxFiles, $maxFileSize = NULL) {
 		parent::__construct($name);
 		$this->maxFiles = $maxFiles;
 		if(is_null($maxFileSize)) {
 			$this->maxFileSize = $this->parseIniSize(ini_get("upload_max_filesize"));
-			$this->fileSizeString = ini_get("upload_max_filesize") ."B";
+			$this->fileSizeString = ini_get("upload_max_filesize") . "B";
 		} else {
 			$this->maxFileSize = $this->parseIniSize($maxFileSize);
-			$this->fileSizeString = $maxFileSize ."B";
+			$this->fileSizeString = $maxFileSize . "B";
 		}
 		$this->controller = new Model\UploadController($this);
+		$this->token = uniqid();
 	}
 
 	/**
@@ -158,6 +165,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	# --------------------------------------------------------------------
 	/**
 	 * @param \Nette\DI\Container $container
+	 * @internal
 	 */
 	public function setContainer($container) {
 		$this->container = $container;
@@ -169,6 +177,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return \Nette\DI\Container
+	 * @internal
 	 */
 	public function getContainer() {
 		return $this->container;
@@ -176,6 +185,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return int
+	 * @internal
 	 */
 	public function getMaxFiles() {
 		return $this->maxFiles;
@@ -190,6 +200,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return Model\IUploadModel
+	 * @internal
 	 */
 	public function getUploadModel() {
 		if(is_null($this->uploadModel)) {
@@ -215,6 +226,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return int
+	 * @internal
 	 */
 	public function getMaxFileSize() {
 		return $this->maxFileSize;
@@ -236,6 +248,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return string
+	 * @internal
 	 */
 	public function getFileSizeString() {
 		return $this->fileSizeString;
@@ -243,6 +256,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 	/**
 	 * @return string
+	 * @internal
 	 */
 	public function getFileFilter() {
 		return $this->fileFilter;
@@ -256,10 +270,36 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$this->fileFilter = $fileFilter;
 	}
 
+	/**
+	 * Vrátí název pro frontu s tokenem.
+	 * @return string
+	 * @internal
+	 */
+	public function getTokenizedCacheName($token) {
+		return $this->getHtmlId() . "-" . $token;
+	}
+
+	/**
+	 * Vrátí identifikační token.
+	 * @return string
+	 * @internal
+	 */
+	public function getToken() {
+		return $this->token;
+	}
 
 	# --------------------------------------------------------------------
 	# Methods
 	# --------------------------------------------------------------------
+	/**
+	 * Získání identifikačního tokenu.
+	 */
+	public function loadHttpData() {
+		parent::loadHttpData();
+		$request = $this->getContainer()->getByType('\Nette\Http\Request'); /** @var \Nette\Http\Request $request */
+		$this->token = $request->getPost($this->getHtmlName() ."-token");
+	}
+
 	/**
 	 * @return \Nette\Utils\Html
 	 */
@@ -268,6 +308,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 		$container = \Nette\Utils\Html::el("div class='zet-fileupload-container'");
 		$container->id = $this->getHtmlId() . "-container";
+
+		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
+		$token->name = $this->getHtmlName() ."-token";
+		$container->add($token);
+
 		$container->add($this->controller->getJavaScriptTemplate());
 		$container->add($this->controller->getControlTemplate());
 
@@ -279,8 +324,8 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @return mixed|NULL
 	 */
 	public function getValue() {
-		$files = $this->cache->load($this->getHtmlId());
-		$this->cache->remove($this->getHtmlId());
+		$files = $this->cache->load($this->getTokenizedCacheName($this->token));
+		$this->cache->remove($this->getTokenizedCacheName($this->token));
 
 		return $files;
 	}

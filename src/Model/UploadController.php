@@ -65,13 +65,16 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function getJavaScriptTemplate() {
 		$template = $this->template;
 		$template->setFile(__DIR__ . "/../Template/javascript.latte");
+
 		$template->uploadUrl = $this->link("upload");
 		$template->deleteLink = $this->link("remove");
+		$template->renameLink = $this->link("rename");
 		$template->inputId = $this->uploadControl->getHtmlId();
 		$template->maxFiles = $this->uploadControl->getMaxFiles();
 		$template->maxFileSize = $this->uploadControl->getMaxFileSize();
 		$template->fileSizeString = $this->uploadControl->getFileSizeString();
 		$template->productionMode = \Tracy\Debugger::$productionMode;
+		$template->token = $this->uploadControl->getToken();
 
 		return (string) $template;
 	}
@@ -94,6 +97,8 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function handleUpload() {
 		$files = $this->request->getFiles();
+		$token = $this->request->getPost("token");
+
 		$file = $files[ $this->uploadControl->getHtmlName() ];
 		$model = $this->uploadControl->getUploadModel();
 		$cache = $this->uploadControl->getCache();
@@ -106,13 +111,13 @@ class UploadController extends \Nette\Application\UI\Control {
 			if($file->isOk()) {
 				$returnData = $model->save($file);
 
-				$cacheFiles = $cache->load($this->uploadControl->getHtmlId());
+				$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
 				if(empty($cacheFiles)) {
 					$cacheFiles = array($this->request->getPost("id") => $returnData);
 				} else {
 					$cacheFiles[ $this->request->getPost("id") ] = $returnData;
 				}
-				$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
+				$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 			}
 
 		} catch(\Zet\FileUpload\InvalidFileException $e) {
@@ -141,13 +146,30 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function handleRemove() {
 		$id = $this->request->getQuery("id");
+		$token = $this->request->getQuery("token");
 
 		$cache = $this->uploadControl->getCache();
-		$cacheFiles = $cache->load($this->uploadControl->getHtmlId());
+		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
 		if(isset($cacheFiles[$id])) {
 			$this->uploadControl->getUploadModel()->remove($cacheFiles[$id]);
 			unset($cacheFiles[$id]);
-			$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
+			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
+		}
+	}
+
+	/**
+	 * Přejmenuje nahraný soubor.
+	 */
+	public function handleRename() {
+		$id = $this->request->getQuery("id");
+		$newName = $this->request->getQuery("newName");
+		$token = $this->request->getQuery("token");
+
+		$cache = $this->uploadControl->getCache();
+		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
+		if(isset($cacheFiles[$id])) {
+			$cacheFiles[$id] = $this->uploadControl->getUploadModel()->rename($cacheFiles[$id], $newName);
+			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 		}
 	}
 
