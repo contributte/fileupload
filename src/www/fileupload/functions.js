@@ -244,7 +244,7 @@ var FileUploadController = function (id, productionMode, token) {
 		var fileTr = document.getElementById("file-" + id);
 		fileTr.classList.add("bg-warning");
 		var nameTd = fileTr.querySelector(".name");
-		nameTd.innerHTML += "<br>" + msg;
+		nameTd.innerHTML += msg;
 	}
 };
 
