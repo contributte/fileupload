@@ -79,8 +79,6 @@ $(function() {
 
 		// Přidání nového souboru.
 		add: function(e, data) {
-			console.log(uploaded);
-			console.log(filesCount);
 			if(uploaded >= maxFiles || filesCount >= maxFiles) {
 				alert("Maximální počet souborů je "+ maxFiles);
 			} else if(data.files[0]["size"] > maxFileSize) {

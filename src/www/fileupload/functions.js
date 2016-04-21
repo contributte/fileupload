@@ -42,6 +42,33 @@ var FileUploadController = function (id, productionMode) {
 	this.idCounter = 0;
 
 	/**
+	 * Základní koncovky obrázků.
+	 * @type {string[]}
+	 */
+	this.imageExtension = [
+		"jpg", "png", "jpeg", "gif"
+	];
+
+	/**
+	 * Vrátí koncovku souboru.
+	 * @param {String} filename
+	 * @returns {String}
+	 */
+	this.getFileExtension = function (filename) {
+		var filename = filename.split(".");
+		return filename[filename.length - 1];
+	};
+
+	/**
+	 * Zjistí, zda je soubor obrázek.
+	 * @param filename
+	 * @returns {Boolean}
+	 */
+	this.isImage = function (filename) {
+		return this.imageExtension.indexOf(this.getFileExtension(filename)) !== -1;
+	};
+
+	/**
 	 * Vygeneruje náhled obrázku.
 	 * @param {Object} file
 	 * @returns {Element}
@@ -49,18 +76,20 @@ var FileUploadController = function (id, productionMode) {
 	this.generatePreview = function (file) {
 		var td = document.createElement("td");
 		td.classList.add("preview");
-		var preview = "";
+		if (this.isImage(file.name)) {
+			var preview = "";
 
-		if (file.preview) {
-			preview = file.preview;
-		} else {
-			preview = URL.createObjectURL(file);
+			if (file.preview) {
+				preview = file.preview;
+			} else {
+				preview = URL.createObjectURL(file);
+			}
+
+			var img = document.createElement("img");
+			img.setAttribute("src", preview);
+			img.classList.add("img-responsive");
+			td.appendChild(img);
 		}
-
-		var img = document.createElement("img");
-		img.setAttribute("src", preview);
-		img.classList.add("img-responsive");
-		td.appendChild(img);
 
 		return td;
 	};
@@ -77,7 +106,7 @@ var FileUploadController = function (id, productionMode) {
 		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete");
 		deleteButton.setAttribute("data-file-id", this.idCounter.toString());
 		var self = this;
-		deleteButton.onclick = function() {
+		deleteButton.onclick = function () {
 			self.deleteFile(this);
 		};
 
@@ -256,13 +285,13 @@ FileUploadController.prototype = {
 	 * Vymazání souboru.
 	 * @param {Element} element
 	 */
-	deleteFile: function(element) {
+	deleteFile: function (element) {
 		$.ajax({
 			url: this.deleteLink,
 			data: {
 				id: element.getAttribute("data-file-id")
 			}
-		}).done(function() {
+		}).done(function () {
 			$(element).parents("tr").fadeOut();
 		});
 	}
