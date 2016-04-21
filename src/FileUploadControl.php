@@ -62,6 +62,30 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	# Control definition
 	# --------------------------------------------------------------------
 	/**
+	 * Povolí nahrávat pouze obrázky png, jpeg, jpg, gif.
+	 * @var string
+	 */
+	const FILTER_IMAGES = 'Zet\FileUpload\Filter\ImageFilter';
+
+	/**
+	 * Povolí nahrávat pouze dokumenty typu doc, docx, xls, xlsx, ppt, pptx, pdf.
+	 * @var string
+	 */
+	const FILTER_DOCUMENTS = 'Zet\FileUpload\Filter\DocumentFilter';
+
+	/**
+	 * Povolí nahrávat soubory zip, tar, rar, 7z.
+	 * @var string
+	 */
+	const FILTER_ARCHIVE = 'Zet\FileUpload\Filter\ArchiveFilter';
+
+	/**
+	 * Povolí nahrávat pouze soubory mp3, ogg, aiff.
+	 * @var string
+	 */
+	const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
+
+	/**
 	 * @var \Nette\DI\Container
 	 */
 	private $container;
@@ -95,6 +119,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $uploadModel;
+
+	/**
+	 * Třída pro filtrování nahrávaných souborů.
+	 * @var string
+	 */
+	private $fileFilter;
 
 	/**
 	 * FileUploadControl constructor.
@@ -210,6 +240,22 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getFileSizeString() {
 		return $this->fileSizeString;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getFileFilter() {
+		return $this->fileFilter;
+	}
+
+	/**
+	 * Nastaví třídu pro filtrování nahrávaných souborů.
+	 * @param string $fileFilter
+	 */
+	public function setFileFilter($fileFilter) {
+		$this->fileFilter = $fileFilter;
+	}
+
 
 	# --------------------------------------------------------------------
 	# Methods

@@ -20,6 +20,11 @@ class UploadController extends \Nette\Application\UI\Control {
 	private $request;
 
 	/**
+	 * @var \Zet\FileUpload\Filter\IMimeTypeFilter
+	 */
+	private $filter;
+
+	/**
 	 * UploadController constructor.
 	 * @param \Zet\FileUpload\FileUploadControl $uploadControl
 	 */
@@ -32,6 +37,25 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function setRequest($request) {
 		$this->request = $request;
+	}
+
+	/**
+	 * @return \Zet\FileUpload\Filter\IMimeTypeFilter
+	 */
+	public function getFilter() {
+		if(is_null($this->filter)) {
+			$className = $this->uploadControl->getFileFilter();
+			$filterClass = new $className;
+			if($filterClass instanceof \Zet\FileUpload\Filter\IMimeTypeFilter) {
+				$this->filter = $filterClass;
+			} else {
+				throw new \Nette\UnexpectedValueException(
+					"Třída pro filtrování souborů neimplementuje rozhraní \\Zet\\FileUpload\\Filter\\IMimeTypeFilter."
+				);
+			}
+		}
+
+		return $this->filter;
 	}
 
 	/**
@@ -75,6 +99,10 @@ class UploadController extends \Nette\Application\UI\Control {
 		$cache = $this->uploadControl->getCache();
 
 		try {
+			if(!$this->getFilter()->checkType($file)) {
+				throw new \Zet\FileUpload\InvalidFileException($this->getFilter()->getAllowedTypes());
+			}
+
 			if($file->isOk()) {
 				$returnData = $model->save($file);
 
@@ -86,6 +114,14 @@ class UploadController extends \Nette\Application\UI\Control {
 				}
 				$cache->save($this->uploadControl->getHtmlId(), $cacheFiles);
 			}
+
+		} catch(\Zet\FileUpload\InvalidFileException $e) {
+			$this->presenter->sendResponse(new \Nette\Application\Responses\JsonResponse(array(
+				"id" => $this->request->getPost("id"),
+				"error" => 100,
+				"errorMessage" => $e->getMessage()
+			)));
+
 		} catch(\Exception $e) {
 			$this->presenter->sendResponse(new \Nette\Application\Responses\JsonResponse(array(
 				"id" => $this->request->getPost("id"),
@@ -116,6 +152,6 @@ class UploadController extends \Nette\Application\UI\Control {
 	}
 
 	public function validate() {
-		// Nette 2.3.10 by pass
+		// Nette 2.3.10 bypass
 	}
 }
