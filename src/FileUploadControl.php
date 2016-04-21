@@ -69,7 +69,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	const FILTER_IMAGES = 'Zet\FileUpload\Filter\ImageFilter';
 
 	/**
-	 * Povolí nahrávat pouze dokumenty typu doc, docx, xls, xlsx, ppt, pptx, pdf.
+	 * Povolí nahrávat pouze dokumenty typu txt, doc, docx, xls, xlsx, ppt, pptx, pdf.
 	 * @var string
 	 */
 	const FILTER_DOCUMENTS = 'Zet\FileUpload\Filter\DocumentFilter';

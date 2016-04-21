@@ -26,7 +26,7 @@ abstract class BaseFilter extends \Nette\Object implements IMimeTypeFilter {
 			return TRUE;
 		} else {
 			// Pokud se nepodaří ověřit mimetype, ověříme alespoň koncovku.
-			if( array_search($this->getExtension($file->getName(), array_unique($this->getMimeTypes())) ) !== FALSE) {
+			if( array_search($this->getExtension($file->getName()), array_unique($this->getMimeTypes()) ) !== FALSE) {
 				return TRUE;
 			} else {
 				return FALSE;
