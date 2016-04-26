@@ -145,7 +145,11 @@ var FileUploadController = function (id, productionMode, token) {
 	this.generateExtInfo = function (filename) {
 		var span = document.createElement("span");
 		span.classList.add("label", "label-info");
-		span.textContent = "." + this.getFileExtension(filename);
+		if(filename.indexOf(".") != -1) {
+			span.textContent = "." + this.getFileExtension(filename);
+		} else {
+			span.textContent = "file";
+		}
 		return span;
 	};
 
@@ -158,11 +162,15 @@ var FileUploadController = function (id, productionMode, token) {
 		td.classList.add("buttons");
 
 		var deleteButton = document.createElement("a");
-		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete");
+		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete", "disabled");
 		deleteButton.setAttribute("data-file-id", this.idCounter.toString());
+		deleteButton.setAttribute("id", "file-delete-"+this.idCounter.toString());
+
 		var self = this;
 		deleteButton.onclick = function () {
-			self.deleteFile(this);
+			if(!this.classList.contains("disabled")) {
+				self.deleteFile(this);
+			}
 		};
 
 		var deleteIcon = document.createElement("i");
@@ -180,9 +188,10 @@ var FileUploadController = function (id, productionMode, token) {
 	 */
 	this.generateFileName = function (filename) {
 		var div = document.createElement("div");
-		div.setAttribute("contenteditable", "true");
+		//div.setAttribute("contenteditable", "true");
 		div.setAttribute("data-file-id", this.idCounter.toString());
 		div.setAttribute("id", "file-rename-"+ this.idCounter.toString());
+		div.classList.add("filename");
 		div.textContent = filename;
 		/*div.onclick = function () {
 			document.execCommand("selectAll", false, null);
@@ -378,6 +387,12 @@ FileUploadController.prototype = {
 					break;
 			}
 			this.writeError(id, msg);
+		} else {
+			var divName = document.getElementById("file-rename-"+id);
+			divName.setAttribute("contenteditable", "true");
+
+			var deleteButton = document.getElementById("file-delete-"+id);
+			deleteButton.classList.remove("disabled");
 		}
 	},
 
