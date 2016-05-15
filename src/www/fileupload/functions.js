@@ -251,6 +251,7 @@ var FileUploadController = function (id, productionMode, token) {
 	 */
 	this.writeError = function (id, msg) {
 		var fileTr = document.getElementById("file-" + id);
+		console.log(id);
 		fileTr.classList.add("bg-warning");
 		var nameTd = fileTr.querySelector(".name");
 		nameTd.innerHTML += msg;
@@ -330,10 +331,10 @@ FileUploadController.prototype = {
 		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		progressBar.classList.remove("active");
 
-		var fileProgresses = document.querySelectorAll(".zet-file-progress");
+		/*var fileProgresses = document.querySelectorAll(".zet-file-progress");
 		for (var i = 0; i < fileProgresses.length; i++) {
 			fileProgresses[i].classList.remove("active");
-		}
+		}*/
 	},
 
 	/**
@@ -394,6 +395,9 @@ FileUploadController.prototype = {
 			var deleteButton = document.getElementById("file-delete-"+id);
 			deleteButton.classList.remove("disabled");
 		}
+
+		var progressBar = document.getElementById("file-"+ id +"-progressbar");
+		progressBar.classList.remove("active");
 	},
 
 	/**
@@ -440,6 +444,6 @@ FileUploadController.prototype = {
 	 */
 	addRowError: function(file, msg) {
 		this.addRow(file);
-		this.writeError(this.idCounter, msg);
+		this.writeError(this.idCounter - 1, msg);
 	}
 };
