@@ -431,5 +431,15 @@ FileUploadController.prototype = {
 				element.blur();
 			});
 		});
+	},
+
+	/**
+	 * Přidá řádek s chybovou hláškou.
+	 * @param {object} file
+	 * @param {string} msg
+	 */
+	addRowError: function(file, msg) {
+		this.addRow(file);
+		this.writeError(this.idCounter, msg);
 	}
 };
