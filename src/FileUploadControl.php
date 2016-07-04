@@ -266,7 +266,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 * @param string $fileFilter
 	 */
-	public function setFileFilter($fileFilter) {
+	public static function setFileFilter($fileFilter) {
 		self::$fileFilter = $fileFilter;
 	}
 
