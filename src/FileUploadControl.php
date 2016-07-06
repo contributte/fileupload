@@ -125,7 +125,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Třída pro filtrování nahrávaných souborů.
 	 * @var string
 	 */
-	private $fileFilter;
+	private static $fileFilter;
 
 	/**
 	 * @var string
@@ -259,15 +259,15 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @internal
 	 */
 	public function getFileFilter() {
-		return $this->fileFilter;
+		return self::$fileFilter;
 	}
 
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 * @param string $fileFilter
 	 */
-	public function setFileFilter($fileFilter) {
-		$this->fileFilter = $fileFilter;
+	public static function setFileFilter($fileFilter) {
+		self::$fileFilter = $fileFilter;
 	}
 
 	/**
