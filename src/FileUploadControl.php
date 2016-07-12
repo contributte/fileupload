@@ -311,10 +311,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 
 		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
 		$token->name = $this->getHtmlName() ."-token";
-		$container->add($token);
+		$container->addHtml($token);
 
-		$container->add($this->controller->getJavaScriptTemplate());
-		$container->add($this->controller->getControlTemplate());
+		$container->addHtml($this->controller->getJavaScriptTemplate());
+		$container->addHtml($this->controller->getControlTemplate());
 
 		return $container;
 	}
