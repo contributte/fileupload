@@ -1,5 +1,5 @@
 <script>
-document.addEventListener("DOMContentLoaded", function(event) {
+docReady(function() {
 	// -----------------------------------------------------------------------
 	// Control sys variables
 	// -----------------------------------------------------------------------
@@ -132,8 +132,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 		// Po dokončení jednotlivých uploadů.
 		done: function(e, data) {
-			uploaded++;
-			controller.uploadDone(data);
+			var uploadResult = controller.uploadDone(data);
+			if(uploadResult) {
+				uploaded++;
+			} else {
+				filesCount -= filesCount;
+			}
 		}
 	});
 });

@@ -1,7 +1,7 @@
 <?php
 
 namespace Zet\FileUpload\Model;
-
+	
 /**
  * Class UploadController
  * @author Zechy <email@zechy.cz>
@@ -29,6 +29,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	 * @param \Zet\FileUpload\FileUploadControl $uploadControl
 	 */
 	public function __construct(\Zet\FileUpload\FileUploadControl $uploadControl) {
+		parent::__construct();
 		$this->uploadControl = $uploadControl;
 	}
 
@@ -40,18 +41,20 @@ class UploadController extends \Nette\Application\UI\Control {
 	}
 
 	/**
-	 * @return \Zet\FileUpload\Filter\IMimeTypeFilter
+	 * @return \Zet\FileUpload\Filter\IMimeTypeFilter|NULL
 	 */
 	public function getFilter() {
 		if(is_null($this->filter)) {
 			$className = $this->uploadControl->getFileFilter();
-			$filterClass = new $className;
-			if($filterClass instanceof \Zet\FileUpload\Filter\IMimeTypeFilter) {
-				$this->filter = $filterClass;
-			} else {
-				throw new \Nette\UnexpectedValueException(
-					"Třída pro filtrování souborů neimplementuje rozhraní \\Zet\\FileUpload\\Filter\\IMimeTypeFilter."
-				);
+			if(!is_null($className)) {
+				$filterClass = new $className;
+				if($filterClass instanceof \Zet\FileUpload\Filter\IMimeTypeFilter) {
+					$this->filter = $filterClass;
+				} else {
+					throw new \Nette\UnexpectedValueException(
+						"Třída pro filtrování souborů neimplementuje rozhraní \\Zet\\FileUpload\\Filter\\IMimeTypeFilter."
+					);
+				}
 			}
 		}
 
@@ -98,13 +101,15 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function handleUpload() {
 		$files = $this->request->getFiles();
 		$token = $this->request->getPost("token");
-
+		
+		/** @var \Nette\Http\FileUpload $file */
 		$file = $files[ $this->uploadControl->getHtmlName() ];
 		$model = $this->uploadControl->getUploadModel();
 		$cache = $this->uploadControl->getCache();
+		$filter = $this->getFilter();
 
 		try {
-			if(!$this->getFilter()->checkType($file)) {
+			if(!is_null($filter) && !$filter->checkType($file)) {
 				throw new \Zet\FileUpload\InvalidFileException($this->getFilter()->getAllowedTypes());
 			}
 

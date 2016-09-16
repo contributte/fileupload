@@ -20,7 +20,7 @@ class BaseUploadModel extends \Nette\Object implements IUploadModel {
 
 	/**
 	 * Zpracování požadavku o smazání souboru.
-	 * @param $uploaded Hodnota navrácená funkcí save.
+	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
 	public function remove($uploaded) {
 		# By Pass...
@@ -28,8 +28,8 @@ class BaseUploadModel extends \Nette\Object implements IUploadModel {
 
 	/**
 	 * Zpracování přejmenování souboru.
-	 * @param $upload Hodnota navrácená funkcí save.
-	 * @param $newName Nové jméno souboru.
+	 * @param mixed $upload Hodnota navrácená funkcí save.
+	 * @param string $newName Nové jméno souboru.
 	 * @return mixed Vlastní návratová hodnota.
 	 */
 	public function rename($upload, $newName) {

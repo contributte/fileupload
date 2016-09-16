@@ -190,12 +190,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getMaxFiles() {
 		return $this->maxFiles;
 	}
-
+	
 	/**
 	 * @param int $maxFiles
+	 * @return $this
 	 */
 	public function setMaxFiles($maxFiles) {
 		$this->maxFiles = $maxFiles;
+		return $this;
 	}
 
 	/**
@@ -216,12 +218,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			}
 		}
 	}
-
+	
 	/**
 	 * @param string $uploadModel
+	 * @return $this
 	 */
 	public function setUploadModel($uploadModel) {
 		$this->uploadModel = $uploadModel;
+		return $this;
 	}
 
 	/**
@@ -231,12 +235,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getMaxFileSize() {
 		return $this->maxFileSize;
 	}
-
+	
 	/**
 	 * @param int $maxFileSize
+	 * @return $this
 	 */
 	public function setMaxFileSize($maxFileSize) {
 		$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		return $this;
 	}
 
 	/**
@@ -266,12 +272,13 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 * @param string $fileFilter
 	 */
-	public static function setFileFilter($fileFilter) {
+	public function setFileFilter($fileFilter) {
 		self::$fileFilter = $fileFilter;
 	}
-
+	
 	/**
 	 * Vrátí název pro frontu s tokenem.
+	 * @param string $token
 	 * @return string
 	 * @internal
 	 */
@@ -310,7 +317,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$container->id = $this->getHtmlId() . "-container";
 
 		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
-		$token->name = $this->getHtmlName() ."-token";
+		$token->setAttribute("name", $this->getHtmlName() ."-token");
 		$container->addHtml($token);
 
 		$container->addHtml($this->controller->getJavaScriptTemplate());

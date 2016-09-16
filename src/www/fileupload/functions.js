@@ -1,3 +1,73 @@
+(function(funcName, baseObj) {
+	// The public function name defaults to window.docReady
+	// but you can pass in your own object and own function name and those will be used
+	// if you want to put them in a different namespace
+	funcName = funcName || "docReady";
+	baseObj = baseObj || window;
+	var readyList = [];
+	var readyFired = false;
+	var readyEventHandlersInstalled = false;
+	
+	// call this when the document is ready
+	// this function protects itself against being called more than once
+	function ready() {
+		if (!readyFired) {
+			// this must be set to true before we start calling callbacks
+			readyFired = true;
+			for (var i = 0; i < readyList.length; i++) {
+				// if a callback here happens to add new ready handlers,
+				// the docReady() function will see that it already fired
+				// and will schedule the callback to run right after
+				// this event loop finishes so all handlers will still execute
+				// in order and no new ones will be added to the readyList
+				// while we are processing the list
+				readyList[i].fn.call(window, readyList[i].ctx);
+			}
+			// allow any closures held by these functions to free
+			readyList = [];
+		}
+	}
+	
+	function readyStateChange() {
+		if ( document.readyState === "complete" ) {
+			ready();
+		}
+	}
+	
+	// This is the one public interface
+	// docReady(fn, context);
+	// the context argument is optional - if present, it will be passed
+	// as an argument to the callback
+	baseObj[funcName] = function(callback, context) {
+		// if ready has already fired, then just schedule the callback
+		// to fire asynchronously, but right away
+		if (readyFired) {
+			setTimeout(function() {callback(context);}, 1);
+			return;
+		} else {
+			// add the function and context to the list
+			readyList.push({fn: callback, ctx: context});
+		}
+		// if document already ready to go, schedule the ready function to run
+		if (document.readyState === "complete") {
+			setTimeout(ready, 1);
+		} else if (!readyEventHandlersInstalled) {
+			// otherwise if we don't have event handlers installed, install them
+			if (document.addEventListener) {
+				// first choice is DOMContentLoaded event
+				document.addEventListener("DOMContentLoaded", ready, false);
+				// backup is window load event
+				window.addEventListener("load", ready, false);
+			} else {
+				// must be IE
+				document.attachEvent("onreadystatechange", readyStateChange);
+				window.attachEvent("onload", ready);
+			}
+			readyEventHandlersInstalled = true;
+		}
+	}
+})("docReady", window);
+
 /**
  * @author Zechy <email@zechy.cz>
  * @param string id
@@ -6,55 +76,55 @@
  * @constructor
  */
 var FileUploadController = function (id, productionMode, token) {
-
+	
 	/**
 	 * HTML ID vygenerované nette.
 	 * @type {String}
 	 */
 	this.id = id;
-
+	
 	/**
 	 * Je prostředí provozní nebo vývojové?
 	 * @type {bool}
 	 */
 	this.productionMode = productionMode;
-
+	
 	/**
 	 * Identifikační token.
 	 * @type {string}
 	 */
 	this.token = token;
-
+	
 	/**
 	 * Odkaz pro vymazání souboru.
 	 * @type {string}
 	 */
 	this.deleteLink = "#";
-
+	
 	/**
 	 * Odkaz pro přejmenování souboru.
 	 * @type {string}
 	 */
 	this.renameLink = "#";
-
+	
 	/**
 	 * Tabulka se seznamem souborů.
 	 * @type {Element}
 	 */
 	this.table = document.getElementById(id + "-table-tbody");
-
+	
 	/**
 	 * Progress bar.
 	 * @type {Element}
 	 */
 	this.progress = document.getElementById(id + "-progress");
-
+	
 	/**
 	 * Čítač přidaných souborů.
 	 * @type {number}
 	 */
 	this.idCounter = 0;
-
+	
 	/**
 	 * Základní koncovky obrázků.
 	 * @type {string[]}
@@ -62,12 +132,12 @@ var FileUploadController = function (id, productionMode, token) {
 	this.imageExtension = [
 		"jpg", "png", "jpeg", "gif"
 	];
-
+	
 	/**
 	 * Proměnná pro uložení timeoutu.
 	 */
 	this.timeout = [];
-
+	
 	/**
 	 * Vybere text v elementu.
 	 * @param {string} element
@@ -89,8 +159,8 @@ var FileUploadController = function (id, productionMode, token) {
 			selection.addRange(range);
 		}
 	};
-
-
+	
+	
 	/**
 	 * Vrátí koncovku souboru.
 	 * @param {String} filename
@@ -100,7 +170,7 @@ var FileUploadController = function (id, productionMode, token) {
 		var filename = filename.split(".");
 		return filename[filename.length - 1];
 	};
-
+	
 	/**
 	 * Zjistí, zda je soubor obrázek.
 	 * @param filename
@@ -109,7 +179,7 @@ var FileUploadController = function (id, productionMode, token) {
 	this.isImage = function (filename) {
 		return this.imageExtension.indexOf(this.getFileExtension(filename).toLowerCase()) !== -1;
 	};
-
+	
 	/**
 	 * Vygeneruje náhled obrázku.
 	 * @param {Object} file
@@ -120,13 +190,13 @@ var FileUploadController = function (id, productionMode, token) {
 		td.classList.add("preview");
 		if (this.isImage(file.name)) {
 			var preview = "";
-
+			
 			if (file.preview) {
 				preview = file.preview;
 			} else {
 				preview = URL.createObjectURL(file);
 			}
-
+			
 			var img = document.createElement("img");
 			img.setAttribute("src", preview);
 			img.classList.add("img-responsive");
@@ -134,10 +204,10 @@ var FileUploadController = function (id, productionMode, token) {
 		} else {
 			td.appendChild(this.generateExtInfo(file.name));
 		}
-
+		
 		return td;
 	};
-
+	
 	/**
 	 * Vygeneruje popisek s typem souboru
 	 * @param {string} filename
@@ -152,7 +222,7 @@ var FileUploadController = function (id, productionMode, token) {
 		}
 		return span;
 	};
-
+	
 	/**
 	 * Vygeneruje tlačíka pro akce se souborem.
 	 * @returns {Element}
@@ -160,28 +230,28 @@ var FileUploadController = function (id, productionMode, token) {
 	this.generateActionButtons = function () {
 		var td = document.createElement("td");
 		td.classList.add("buttons");
-
+		
 		var deleteButton = document.createElement("a");
 		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete", "disabled");
 		deleteButton.setAttribute("data-file-id", this.idCounter.toString());
 		deleteButton.setAttribute("id", "file-delete-"+this.idCounter.toString());
-
+		
 		var self = this;
 		deleteButton.onclick = function () {
 			if(!this.classList.contains("disabled")) {
 				self.deleteFile(this);
 			}
 		};
-
+		
 		var deleteIcon = document.createElement("i");
 		deleteIcon.classList.add("glyphicon", "glyphicon-remove");
 		deleteButton.appendChild(deleteIcon);
-
+		
 		td.appendChild(deleteButton);
-
+		
 		return td;
 	};
-
+	
 	/**
 	 * Vygeneruje název souboru.
 	 * @param filename
@@ -194,56 +264,56 @@ var FileUploadController = function (id, productionMode, token) {
 		div.classList.add("filename");
 		div.textContent = filename;
 		/*div.onclick = function () {
-			document.execCommand("selectAll", false, null);
-		};*/
+		 document.execCommand("selectAll", false, null);
+		 };*/
 		var self = this;
-
+		
 		div.onfocus = function () {
 			self.selectText(div.getAttribute("id"));
 		};
 		div.onkeyup = function (event) {
 			div.style.fontStyle = "italic";
-
+			
 			if (event.code != "Tab") {
 				clearTimeout(self.timeout[this.getAttribute("data-file-id")]);
-
+				
 				self.timeout[this.getAttribute("data-file-id")] = setTimeout(function () {
 					self.renameFile(div);
 				}, 750);
 			}
 		};
-
+		
 		return div;
 	}
-
+	
 	/**
 	 * Vygeneruje progress pro soubor.
 	 */
 	this.generateFileProgress = function () {
 		var td = document.createElement("td");
 		td.classList.add("file-progress");
-
+		
 		var progress = document.createElement("div");
 		progress.classList.add("progress");
 		progress.setAttribute("id", "file-" + this.idCounter + "-progress");
-
+		
 		var progressBar = document.createElement("div");
 		progressBar.classList.add(
 			"progress-bar", "progress-bar-success", "progress-bar-striped", "active", "zet-file-progress"
 		);
 		progressBar.style.width = "0%";
 		progressBar.setAttribute("id", "file-" + this.idCounter + "-progressbar");
-
+		
 		var span = document.createElement("span");
 		span.setAttribute("id", "file-" + (this.idCounter) + "-progressbar-value");
 		span.textContent = "0%";
 		progressBar.appendChild(span);
 		progress.appendChild(progressBar);
 		td.appendChild(progress);
-
+		
 		return td;
 	};
-
+	
 	/**
 	 * Zapíše error k souboru.
 	 * @param id
@@ -251,7 +321,7 @@ var FileUploadController = function (id, productionMode, token) {
 	 */
 	this.writeError = function (id, msg) {
 		var fileTr = document.getElementById("file-" + id);
-		console.log(id);
+		//console.log(id);
 		fileTr.classList.add("bg-warning");
 		var nameTd = fileTr.querySelector(".name");
 		nameTd.innerHTML += msg;
@@ -259,7 +329,7 @@ var FileUploadController = function (id, productionMode, token) {
 };
 
 FileUploadController.prototype = {
-
+	
 	/**
 	 * Nastaví odkaz pro smazání.
 	 * @param {String} link
@@ -267,7 +337,7 @@ FileUploadController.prototype = {
 	setDeleteLink: function (link) {
 		this.deleteLink = link;
 	},
-
+	
 	/**
 	 * Přejmenuje nahraný soubor.
 	 * @param {String} link
@@ -275,7 +345,7 @@ FileUploadController.prototype = {
 	setRenameLink: function (link) {
 		this.renameLink = link;
 	},
-
+	
 	/**
 	 * Vygeneruje nový řádek s přidaným souborem.
 	 * @param {Object} file
@@ -284,19 +354,19 @@ FileUploadController.prototype = {
 		var tr = document.createElement("tr");
 		tr.appendChild(this.generatePreview(file));
 		tr.setAttribute("id", "file-" + this.idCounter);
-
+		
 		var fileName = document.createElement("td");
 		fileName.classList.add("name");
 		fileName.appendChild(this.generateFileName(file.name));
-
+		
 		tr.appendChild(fileName);
 		tr.appendChild(this.generateFileProgress());
 		tr.appendChild(this.generateActionButtons());
 		this.idCounter++;
-
+		
 		this.table.appendChild(tr);
 	},
-
+	
 	/**
 	 * Nastaví progress celé fronty souborů.
 	 * @param {Object} data
@@ -305,11 +375,11 @@ FileUploadController.prototype = {
 		var percents = parseInt(data.loaded / data.total * 100, 10);
 		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		var progressBarValue = this.progress.querySelector("#" + this.id + "-progressbar-value");
-
+		
 		progressBar.style.width = percents + "%";
 		progressBarValue.textContent = percents;
 	},
-
+	
 	/**
 	 * Nastaví progress jednoho souboru.
 	 * @param {Object} data
@@ -319,24 +389,24 @@ FileUploadController.prototype = {
 		var fileProgress = document.getElementById("file-" + id + "-progressbar");
 		var fileProgressValue = document.getElementById("file-" + id + "-progressbar-value");
 		var percents = parseInt(data.loaded / data.total * 100, 10);
-
+		
 		fileProgress.style.width = percents + "%";
 		fileProgressValue.textContent = percents + "%";
 	},
-
+	
 	/**
 	 * Po dokončení uploadu ...
 	 */
 	stop: function () {
 		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		progressBar.classList.remove("active");
-
+		
 		/*var fileProgresses = document.querySelectorAll(".zet-file-progress");
-		for (var i = 0; i < fileProgresses.length; i++) {
-			fileProgresses[i].classList.remove("active");
-		}*/
+		 for (var i = 0; i < fileProgresses.length; i++) {
+		 fileProgresses[i].classList.remove("active");
+		 }*/
 	},
-
+	
 	/**
 	 * Při zahájení uploadu ...
 	 */
@@ -344,20 +414,22 @@ FileUploadController.prototype = {
 		var progressBar = this.progress.querySelector("#" + this.id + "-progressbar");
 		progressBar.classList.add("active");
 		var progressBarValue = this.progress.querySelector("#" + this.id + "-progressbar-value");
-
+		
 		progressBar.style.width = "0%";
 		progressBarValue.textContent = 0;
 	},
-
+	
 	/**
 	 * Po dokončení jednotlových uploadů.
 	 * @param {Object} data
 	 */
 	uploadDone: function (data) {
+		var returnResult = true;
+		
 		var result = data.result;
 		var id = result.id;
 		var error = result.error;
-
+		
 		if (error != 0) {
 			var msg = "";
 			switch (error) {
@@ -388,18 +460,21 @@ FileUploadController.prototype = {
 					break;
 			}
 			this.writeError(id, msg);
+			returnResult = false;
 		} else {
 			var divName = document.getElementById("file-rename-"+id);
 			divName.setAttribute("contenteditable", "true");
-
+			
 			var deleteButton = document.getElementById("file-delete-"+id);
 			deleteButton.classList.remove("disabled");
 		}
-
+		
 		var progressBar = document.getElementById("file-"+ id +"-progressbar");
 		progressBar.classList.remove("active");
+		
+		return returnResult;
 	},
-
+	
 	/**
 	 * Vymazání souboru.
 	 * @param {Element} element
@@ -415,7 +490,7 @@ FileUploadController.prototype = {
 			$(element).parents("tr").fadeOut();
 		});
 	},
-
+	
 	/**
 	 * Přejmenuje soubor.
 	 * @param element
@@ -436,7 +511,7 @@ FileUploadController.prototype = {
 			});
 		});
 	},
-
+	
 	/**
 	 * Přidá řádek s chybovou hláškou.
 	 * @param {object} file
