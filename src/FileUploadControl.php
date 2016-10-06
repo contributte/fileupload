@@ -71,6 +71,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/uiRenderer.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/full.js"></script>';
 	}
 

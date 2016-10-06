@@ -67,3 +67,16 @@
 		}
 	}
 })("docReady", window);
+
+/**
+ * Funkce pro vytváření dědičnosti
+ * @param  {Object} child
+ * @param  {Object} parent
+ */
+var extendsClass = function(child, parent) {
+	var F = function() {};
+	F.prototype = parent.prototype;
+	child.prototype = new F();
+	child._superClass = parent.prototype;
+	child.prototype.constructor = child;
+};
