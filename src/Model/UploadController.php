@@ -60,6 +60,16 @@ class UploadController extends \Nette\Application\UI\Control {
 
 		return $this->filter;
 	}
+	
+	/**
+	 * @return string
+	 */
+	private function getControlFile() {
+		switch($this->uploadControl->getUIMode()) {
+			case \Zet\FileUpload\FileUploadControl::UI_FULL:
+				return "full.latte";
+		}
+	}
 
 	/**
 	 * Vytvoření šablony s JavaScriptem pro FileUpload.
@@ -78,6 +88,7 @@ class UploadController extends \Nette\Application\UI\Control {
 		$template->fileSizeString = $this->uploadControl->getFileSizeString();
 		$template->productionMode = \Tracy\Debugger::$productionMode;
 		$template->token = $this->uploadControl->getToken();
+		$template->uiMode = $this->uploadControl->getUIMode();
 
 		return (string) $template;
 	}
@@ -88,7 +99,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function getControlTemplate() {
 		$template = $this->template;
-		$template->setFile(__DIR__ . "/../Template/control.latte");
+		$template->setFile(__DIR__ . "/../Template/" . $this->getControlFile());
 		$template->htmlId = $this->uploadControl->getHtmlId();
 		$template->htmlName = $this->uploadControl->getHtmlName();
 
@@ -172,6 +183,7 @@ class UploadController extends \Nette\Application\UI\Control {
 
 		$cache = $this->uploadControl->getCache();
 		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
+		
 		if(isset($cacheFiles[$id])) {
 			$cacheFiles[$id] = $this->uploadControl->getUploadModel()->rename($cacheFiles[$id], $newName);
 			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);

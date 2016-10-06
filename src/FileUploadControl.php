@@ -36,10 +36,24 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Vloží CSS do stránky.
 	 * @static
 	 * @param string $basePath
+	 * @throws \Nette\DeprecatedException Use FileUploadControl::getHead()
 	 */
 	public static function getStyleSheet($basePath) {
+		throw new \Nette\DeprecatedException("Use FileUploadControl::getHead() instead.");
+		
 		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
 		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
+	}
+	
+	/**
+	 * Vloží CSS do stránky.
+	 * @static
+	 * @param string $basePath
+	 */
+	public static function getHead($basePath) {
+		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
+		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
 	}
 
 	/**
@@ -56,7 +70,8 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-process.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/full.js"></script>';
 	}
 
 	# --------------------------------------------------------------------
@@ -85,6 +100,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
+	
+	/**
+	 * Plnohodntné a detailní rozhraní pro nahrávání souborů.
+	 * @var int
+	 */
+	const UI_FULL = 1;
 
 	/**
 	 * @var \Nette\DI\Container
@@ -120,6 +141,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $uploadModel;
+	
+	/**
+	 * @var int
+	 */
+	private $uiMode = self::UI_FULL;
 
 	/**
 	 * Třída pro filtrování nahrávaných souborů.
@@ -226,6 +252,22 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function setUploadModel($uploadModel) {
 		$this->uploadModel = $uploadModel;
 		return $this;
+	}
+	
+	/**
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setUIMode($mode) {
+		$this->uiMode = $mode;
+		return $this;
+	}
+	
+	/**
+	 * @return int
+	 */
+	public function getUIMode() {
+		return $this->uiMode;
 	}
 
 	/**
