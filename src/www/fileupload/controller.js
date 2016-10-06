@@ -87,7 +87,7 @@ FileUploadController.prototype = {
 		var file = files[0];
 		var message = "";
 		
-		if(this.uploaded >= this.config.maxFiles || this.addedFiles >= this.config.maxFileSize) {
+		if(this.uploaded >= this.config.maxFiles || this.addedFiles >= this.config.maxFiles) {
 			this.fileId++;
 			message = this.messages[0].replace("%maxFiles%", this.config.maxFiles.toString());
 			this.renderer.addRowError(file, this.fileId, message);
