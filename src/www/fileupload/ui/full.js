@@ -146,7 +146,7 @@ UIFullRenderer.prototype = {
 	 * @param {number} id
 	 */
 	stopFileProgress: function(id) {
-		var progressBar = document.getElementById("file-"+ id +"-progressbar");
+		var progressBar = document.getElementById("file-" + this.token + "-" + id +"-progressbar");
 		progressBar.classList.remove("active");
 	}
 };

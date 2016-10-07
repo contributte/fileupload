@@ -78,9 +78,7 @@ var FileUploadController = function(id, productionMode, token, config) {
 		this.renderer.onDelete = function() {
 			self.uploaded -= 1;
 			self.addedFiles -= 1;
-			console.log("Smazáno ...");
 		};
-		console.log(this.renderer);
 	};
 	
 	this.createInstance();

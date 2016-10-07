@@ -131,7 +131,7 @@ UIMininalRenderer.prototype = {
 	 * @param id
 	 */
 	fileDone: function(id) {
-		var deleteButton = document.getElementById("file-delete-"+id);
+		var deleteButton = document.getElementById("file-delete-"+this.token +"-"+id);
 		deleteButton.classList.remove("disabled");
 	},
 	
@@ -139,7 +139,7 @@ UIMininalRenderer.prototype = {
 	 * @param id
 	 */
 	stopFileProgress: function(id) {
-		var progressBar = document.getElementById("file-"+ id +"-progressbar");
+		var progressBar = document.getElementById("file-" + this.token + "-" + id +"-progressbar");
 		progressBar.classList.remove("active");
 	}
 };

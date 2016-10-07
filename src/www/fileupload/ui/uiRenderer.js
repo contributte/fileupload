@@ -199,7 +199,7 @@ var uiRenderer = function(id, deleteAction, renameAction, token) {
 		var deleteButton = document.createElement("a");
 		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete", "disabled");
 		deleteButton.setAttribute("data-file-id", id.toString());
-		deleteButton.setAttribute("id", "file-delete-"+id.toString());
+		deleteButton.setAttribute("id", "file-delete-"+this.token +"-"+id.toString());
 		deleteButton.setAttribute("title", "Smazat");
 		deleteButton.setAttribute("data-toggle", "tooltip");
 		
@@ -226,17 +226,17 @@ var uiRenderer = function(id, deleteAction, renameAction, token) {
 	this.generateFileProgress = function (id) {
 		var progress = document.createElement("div");
 		progress.classList.add("progress");
-		progress.setAttribute("id", "file-" + id + "-progress");
+		progress.setAttribute("id", "file-" +this.token +"-"+ id + "-progress");
 		
 		var progressBar = document.createElement("div");
 		progressBar.classList.add(
 			"progress-bar", "progress-bar-success", "progress-bar-striped", "active", "zet-file-progress"
 		);
 		progressBar.style.width = "0%";
-		progressBar.setAttribute("id", "file-" + id + "-progressbar");
+		progressBar.setAttribute("id", "file-" +this.token +"-"+ id + "-progressbar");
 		
 		var span = document.createElement("span");
-		span.setAttribute("id", "file-" + (id) + "-progressbar-value");
+		span.setAttribute("id", "file-" +this.token +"-"+ (id) + "-progressbar-value");
 		span.textContent = "0%";
 		progressBar.appendChild(span);
 		progress.appendChild(progressBar);
@@ -249,8 +249,8 @@ var uiRenderer = function(id, deleteAction, renameAction, token) {
 	 */
 	this.setFileProgress = function(data) {
 		var id = data.formData[0].value;
-		var fileProgress = document.getElementById("file-" + id + "-progressbar");
-		var fileProgressValue = document.getElementById("file-" + id + "-progressbar-value");
+		var fileProgress = document.getElementById("file-" +this.token +"-"+ id + "-progressbar");
+		var fileProgressValue = document.getElementById("file-" +this.token +"-"+ id + "-progressbar-value");
 		var percents = parseInt(data.loaded / data.total * 100, 10);
 		
 		fileProgress.style.width = percents + "%";
@@ -264,7 +264,7 @@ var uiRenderer = function(id, deleteAction, renameAction, token) {
 		var divName = document.getElementById("file-rename-"+id);
 		divName.setAttribute("contenteditable", "true");
 		
-		var deleteButton = document.getElementById("file-delete-"+id);
+		var deleteButton = document.getElementById("file-delete-"+this.token +"-"+id);
 		deleteButton.classList.remove("disabled");
 	}
 };
