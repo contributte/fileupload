@@ -97,13 +97,13 @@ FileUploadController.prototype = {
 		var message = "";
 		
 		if(this.uploaded >= this.config.maxFiles || this.addedFiles >= this.config.maxFiles) {
-			this.fileId++;
 			message = this.messages[0].replace("%maxFiles%", this.config.maxFiles.toString());
 			this.renderer.addRowError(file, this.fileId, message);
-		} else if(file["size"] > this.config.maxFileSize) {
 			this.fileId++;
+		} else if(file["size"] > this.config.maxFileSize) {
 			message = this.messages[1].replace("%maxFileSize%", this.config.fileSizeString);
 			this.renderer.addRowError(file, this.fileId, message);
+			this.fileId++;
 		} else {
 			this.addedFiles++;
 			this.renderer.addRow(file, this.fileId);
