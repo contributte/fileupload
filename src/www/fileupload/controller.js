@@ -69,7 +69,18 @@ var FileUploadController = function(id, productionMode, token, config) {
 			case 1:
 				this.renderer = new UIFullRenderer(this.id, this.config.deleteAction, this.config.renameAction, this.token);
 				break;
+			case 2:
+				this.renderer = new UIMininalRenderer(this.id, this.config.deleteAction, this.config.renameAction, this.token);
+				break;
 		}
+		
+		var self = this;
+		this.renderer.onDelete = function() {
+			self.uploaded -= 1;
+			self.addedFiles -= 1;
+			console.log("Smazáno ...");
+		};
+		console.log(this.renderer);
 	};
 	
 	this.createInstance();

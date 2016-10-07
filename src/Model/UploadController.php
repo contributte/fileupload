@@ -68,6 +68,10 @@ class UploadController extends \Nette\Application\UI\Control {
 		switch($this->uploadControl->getUIMode()) {
 			case \Zet\FileUpload\FileUploadControl::UI_FULL:
 				return "full.latte";
+			case \Zet\FileUpload\FileUploadControl::UI_MINIMAL:
+				return "minimal.latte";
+			default:
+				throw new \Nette\InvalidArgumentException();
 		}
 	}
 

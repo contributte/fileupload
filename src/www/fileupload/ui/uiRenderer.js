@@ -2,8 +2,9 @@
  * @param id
  * @param deleteAction
  * @param renameAction
+ * @param token
  */
-var uiRenderer = function(id, deleteAction, renameAction) {
+var uiRenderer = function(id, deleteAction, renameAction, token) {
 	
 	/**
 	 * Nette HTML ID.
@@ -20,6 +21,16 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 	 * @var {string}
 	 */
 	this.renameAction = renameAction;
+	
+	/**
+	 * @var {string}
+	 */
+	this.token = token;
+	
+	/**
+	 * @type {null}
+	 */
+	this.onDelete = null;
 	
 	/**
 	 * Základní koncovky obrázků.
@@ -78,7 +89,7 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 				token: this.token
 			}
 		}).done(function () {
-			$(element).parents("tr").fadeOut();
+			$(element).parents(".zet-fileupload-file").fadeOut();
 		});
 	};
 	
@@ -177,31 +188,27 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 			}
 		};
 		
-		var td = document.createElement("td");
-		td.classList.add("name");
-		td.appendChild(div);
-		
-		return td;
+		return div;
 	};
 	
 	/**
 	 * @param {Number} id
 	 * @returns {Element}
 	 */
-	this.generateActionButtons = function(id) {
-		var td = document.createElement("td");
-		td.classList.add("buttons");
-		
+	this.generateDeleteButton = function(id) {
 		var deleteButton = document.createElement("a");
 		deleteButton.classList.add("btn", "btn-danger", "btn-sm", "zet-fileupload-delete", "disabled");
 		deleteButton.setAttribute("data-file-id", id.toString());
 		deleteButton.setAttribute("id", "file-delete-"+id.toString());
+		deleteButton.setAttribute("title", "Smazat");
+		deleteButton.setAttribute("data-toggle", "tooltip");
 		
 		var self = this;
 		deleteButton.onclick = function () {
 			if(!this.classList.contains("disabled")) {
 				//noinspection JSCheckFunctionSignatures
 				self.deleteFile(this);
+				self.onDelete();
 			}
 		};
 		
@@ -209,9 +216,7 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 		deleteIcon.classList.add("glyphicon", "glyphicon-remove");
 		deleteButton.appendChild(deleteIcon);
 		
-		td.appendChild(deleteButton);
-		
-		return td;
+		return deleteButton;
 	};
 	
 	/**
@@ -219,9 +224,6 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 	 * @returns {Element}
 	 */
 	this.generateFileProgress = function (id) {
-		var td = document.createElement("td");
-		td.classList.add("file-progress");
-		
 		var progress = document.createElement("div");
 		progress.classList.add("progress");
 		progress.setAttribute("id", "file-" + id + "-progress");
@@ -238,8 +240,41 @@ var uiRenderer = function(id, deleteAction, renameAction) {
 		span.textContent = "0%";
 		progressBar.appendChild(span);
 		progress.appendChild(progressBar);
-		td.appendChild(progress);
 		
-		return td;
+		return progress;
 	};
+	
+	/**
+	 * @param data
+	 */
+	this.setFileProgress = function(data) {
+		var id = data.formData[0].value;
+		var fileProgress = document.getElementById("file-" + id + "-progressbar");
+		var fileProgressValue = document.getElementById("file-" + id + "-progressbar-value");
+		var percents = parseInt(data.loaded / data.total * 100, 10);
+		
+		fileProgress.style.width = percents + "%";
+		fileProgressValue.textContent = percents + "%";
+	};
+	
+	/**
+	 * @param id
+	 */
+	this.enableActions = function(id) {
+		var divName = document.getElementById("file-rename-"+id);
+		divName.setAttribute("contenteditable", "true");
+		
+		var deleteButton = document.getElementById("file-delete-"+id);
+		deleteButton.classList.remove("disabled");
+	}
+};
+
+uiRenderer.prototype = {
+	
+	/**
+	 * @param callback
+	 */
+	setOnDelete: function(callback) {
+		this.onDelete = callback;
+	}
 };

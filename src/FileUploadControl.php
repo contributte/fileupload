@@ -73,6 +73,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/uiRenderer.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/full.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/minimal.js"></script>';
 	}
 
 	# --------------------------------------------------------------------
@@ -107,6 +108,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var int
 	 */
 	const UI_FULL = 1;
+	
+	/**
+	 * Minimální rozhraní.
+	 * @var int
+	 */
+	const UI_MINIMAL = 2;
 
 	/**
 	 * @var \Nette\DI\Container
@@ -310,13 +317,15 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getFileFilter() {
 		return self::$fileFilter;
 	}
-
+	
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 * @param string $fileFilter
+	 * @return $this
 	 */
 	public function setFileFilter($fileFilter) {
 		self::$fileFilter = $fileFilter;
+		return $this;
 	}
 	
 	/**
@@ -360,11 +369,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$container->id = $this->getHtmlId() . "-container";
 
 		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
-		$token->setAttribute("name", $this->getHtmlName() ."-token");
-		$container->addHtml($token);
-
-		$container->addHtml($this->controller->getJavaScriptTemplate());
-		$container->addHtml($this->controller->getControlTemplate());
+		$token->addAttributes(["name" => $this->getHtmlName() ."-token"]);
+		
+		if(method_exists(\Nette\Utils\Html::class, "addHtml")) {
+			$container->addHtml($token);
+			$container->addHtml($this->controller->getJavaScriptTemplate());
+			$container->addHtml($this->controller->getControlTemplate());
+		} else { // pro starší nette
+			$container->add($token);
+			$container->add($this->controller->getJavaScriptTemplate());
+			$container->add($this->controller->getControlTemplate());
+		}
 
 		return $container;
 	}

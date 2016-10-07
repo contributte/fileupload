@@ -6,12 +6,7 @@
  * @constructor
  */
 var UIFullRenderer = function(id, deleteAction, renameAction, token) {
-	uiRenderer.call(this, id, deleteAction, renameAction);
-	
-	/**
-	 * @var {string}
-	 */
-	this.token = token;
+	uiRenderer.call(this, id, deleteAction, renameAction, token);
 	
 	/**
 	 * @type {Element}
@@ -22,6 +17,41 @@ var UIFullRenderer = function(id, deleteAction, renameAction, token) {
 	 * @type {Element}
 	 */
 	this.progress = document.getElementById(id + "-progress");
+	
+	/**
+	 * @param id
+	 */
+	this.generateFileProgressWrap = function(id) {
+		var progress = this.generateFileProgress(id);
+		
+		var td = document.createElement("td");
+		td.classList.add("file-progress");
+		td.appendChild(progress);
+		
+		return td;
+	};
+	
+	/**
+	 * @param file
+	 * @param id
+	 */
+	this.generateFileNameWrap = function(file, id) {
+		var filename = this.getFileName(file, id);
+		var td = document.createElement("td");
+		td.classList.add("name");
+		td.appendChild(filename);
+		
+		return td;
+	};
+	
+	this.generateDeleteButtonWrap = function(id) {
+		var button = this.generateDeleteButton(id);
+		var td = document.createElement("td");
+		td.classList.add("buttons");
+		td.appendChild(button);
+		
+		return td;
+	}
 };
 extendsClass(UIFullRenderer, uiRenderer);
 
@@ -43,12 +73,13 @@ UIFullRenderer.prototype = {
 	 */
 	addRow: function(file, id) {
 		var tr = document.createElement("tr");
+		tr.classList.add("zet-fileupload-file");
 		tr.setAttribute("id", "file-" + id);
 		
 		tr.appendChild(this.getFilePreview(file));
-		tr.appendChild(this.getFileName(file, id));
-		tr.appendChild(this.generateFileProgress(id));
-		tr.appendChild(this.generateActionButtons(id));
+		tr.appendChild(this.generateFileNameWrap(file, id));
+		tr.appendChild(this.generateFileProgressWrap(id));
+		tr.appendChild(this.generateDeleteButtonWrap(id));
 		
 		this.table.appendChild(tr);
 	},
@@ -81,13 +112,7 @@ UIFullRenderer.prototype = {
 	 * @param {Object} data
 	 */
 	updateFileProgress: function(data) {
-		var id = data.formData[0].value;
-		var fileProgress = document.getElementById("file-" + id + "-progressbar");
-		var fileProgressValue = document.getElementById("file-" + id + "-progressbar-value");
-		var percents = parseInt(data.loaded / data.total * 100, 10);
-		
-		fileProgress.style.width = percents + "%";
-		fileProgressValue.textContent = percents + "%";
+		this.setFileProgress(data);
 	},
 	
 	/**
@@ -114,11 +139,7 @@ UIFullRenderer.prototype = {
 	 * @param {number} id
 	 */
 	fileDone: function(id) {
-		var divName = document.getElementById("file-rename-"+id);
-		divName.setAttribute("contenteditable", "true");
-		
-		var deleteButton = document.getElementById("file-delete-"+id);
-		deleteButton.classList.remove("disabled");
+		this.enableActions(id);
 	},
 	
 	/**
