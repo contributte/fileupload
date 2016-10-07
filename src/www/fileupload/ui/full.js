@@ -74,7 +74,7 @@ UIFullRenderer.prototype = {
 	addRow: function(file, id) {
 		var tr = document.createElement("tr");
 		tr.classList.add("zet-fileupload-file");
-		tr.setAttribute("id", "file-" + id);
+		tr.setAttribute("id", "file-" +this.token +"-"+ id);
 		
 		tr.appendChild(this.getFilePreview(file));
 		tr.appendChild(this.generateFileNameWrap(file, id));
@@ -89,7 +89,7 @@ UIFullRenderer.prototype = {
 	 * @param {Number} id
 	 */
 	writeError: function(msg, id) {
-		var fileTr = document.getElementById("file-" + id);
+		var fileTr = document.getElementById("file-" +this.token +"-"+ id);
 		fileTr.classList.add("bg-warning");
 		
 		var nameTd = fileTr.querySelector(".name");

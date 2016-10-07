@@ -72,7 +72,7 @@ UIMininalRenderer.prototype = {
 	addRow: function(file, id) {
 		var div = document.createElement("div");
 		div.classList.add("well", "well-sm", "zet-fileupload-file");
-		div.setAttribute("id", "file-" + id);
+		div.setAttribute("id", "file-" +this.token +"-"+ id);
 		
 		var row = document.createElement("div");
 		row.classList.add("clearfix");
@@ -90,7 +90,7 @@ UIMininalRenderer.prototype = {
 	 * @param id
 	 */
 	writeError: function(msg, id) {
-		var fileContainer = document.getElementById("file-" + id);
+		var fileContainer = document.getElementById("file-" +this.token +"-"+ id);
 		var nameP = fileContainer.querySelector(".filename");
 		nameP.classList.add("alert", "alert-warning");
 		nameP.textContent = msg;
