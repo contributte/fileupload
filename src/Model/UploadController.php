@@ -65,14 +65,11 @@ class UploadController extends \Nette\Application\UI\Control {
 	 * @return string
 	 */
 	private function getControlFile() {
-		switch($this->uploadControl->getUIMode()) {
-			case \Zet\FileUpload\FileUploadControl::UI_FULL:
-				return "full.latte";
-			case \Zet\FileUpload\FileUploadControl::UI_MINIMAL:
-				return "minimal.latte";
-			default:
-				throw new \Nette\InvalidArgumentException();
+		$template = $this->uploadControl->getUiTemplate($this->uploadControl->getUIMode());
+		if(is_null($template)) {
+			throw new \Nette\InvalidArgumentException();
 		}
+		return $template;
 	}
 
 	/**
@@ -103,7 +100,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function getControlTemplate() {
 		$template = $this->template;
-		$template->setFile(__DIR__ . "/../Template/" . $this->getControlFile());
+		$template->setFile($this->getControlFile());
 		$template->htmlId = $this->uploadControl->getHtmlId();
 		$template->htmlName = $this->uploadControl->getHtmlName();
 

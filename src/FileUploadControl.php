@@ -171,6 +171,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $token;
+	
+	/**
+	 * @var array
+	 */
+	private $uiTemplates = [
+		self::UI_FULL => __DIR__ . "/Template/full.latte",
+		self::UI_MINIMAL => __DIR__ . "/Template/minimal.latte"
+	];
 
 	/**
 	 * FileUploadControl constructor.
@@ -191,7 +199,23 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$this->controller = new Model\UploadController($this);
 		$this->token = uniqid();
 	}
-
+	
+	/**
+	 * @param int $type
+	 * @return int|NULL
+	 */
+	public function getUiTemplate($type) {
+		return isset($this->uiTemplates[$type]) ? $this->uiTemplates[$type] : NULL;
+	}
+	
+	/**
+	 * @param int $type
+	 * @param string $file
+	 */
+	public function setUiTemplate($type, $file) {
+		$this->uiTemplates[$type] = $file;
+	}
+	
 	/**
 	 * @param $form
 	 */
