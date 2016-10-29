@@ -17,4 +17,5 @@ composer require jzechy/jquery-fileupload
 ## Odkazy
 * [Dokumentace](https://github.com/JZechy/jQuery-FileUpload/wiki)
 * [Demo](http://zechy.cz/fileupload/)
+* [Vlákno na Nette Forum](https://forum.nette.org/cs/27287-jquery-fileupload-snadny-upload-souboru)
 * [Plánovaná vylepšení](https://github.com/JZechy/jQuery-FileUpload/wiki/Pl%C3%A1novan%C3%A1-vylep%C5%A1en%C3%AD)
