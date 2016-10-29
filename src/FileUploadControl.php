@@ -15,17 +15,23 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	/**
 	 * @static
 	 * @param $systemContainer
-	 * @param string $uploadModel
+	 * @param array $configuration
 	 */
-	public static function register($systemContainer, $uploadModel = NULL) {
+	public static function register(\Nette\DI\Container $systemContainer, $configuration = []) {
 		$class = __CLASS__;
 		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
-			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = NULL
-		) use ($class, $systemContainer, $uploadModel) {
-			$component = new $class($name, $maxFiles, $maxFileSize);
+			\Nette\Forms\Container $container, $name, $maxFiles = NULL, $maxFileSize = NULL
+		) use ($class, $systemContainer, $configuration) {
+			$maxFiles = is_null($maxFiles) ? $configuration["maxFiles"] : $maxFiles;
+			$maxFileSize = is_null($maxFileSize) ? $configuration["maxFileSize"] : $maxFileSize;
+			
 			/** @var FileUploadControl $component */
+			$component = new $class($name, $maxFiles, $maxFileSize);
 			$component->setContainer($systemContainer);
-			$component->setUploadModel($uploadModel);
+			$component->setUploadModel($configuration["uploadModel"]);
+			$component->setFileFilter($configuration["fileFilter"]);
+			$component->setUIMode($configuration["uiMode"]);
+			
 			$container->addComponent($component, $name);
 
 			return $component;
@@ -36,10 +42,24 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Vloží CSS do stránky.
 	 * @static
 	 * @param string $basePath
+	 * @throws \Nette\DeprecatedException Use FileUploadControl::getHead()
 	 */
 	public static function getStyleSheet($basePath) {
+		throw new \Nette\DeprecatedException("Use FileUploadControl::getHead() instead.");
+		
 		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
 		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
+	}
+	
+	/**
+	 * Vloží CSS do stránky.
+	 * @static
+	 * @param string $basePath
+	 */
+	public static function getHead($basePath) {
+		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
+		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
 	}
 
 	/**
@@ -56,7 +76,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-process.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/uiRenderer.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/full.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/minimal.js"></script>';
 	}
 
 	# --------------------------------------------------------------------
@@ -85,6 +108,18 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
+	
+	/**
+	 * Plnohodntné a detailní rozhraní pro nahrávání souborů.
+	 * @var int
+	 */
+	const UI_FULL = 1;
+	
+	/**
+	 * Minimální rozhraní.
+	 * @var int
+	 */
+	const UI_MINIMAL = 2;
 
 	/**
 	 * @var \Nette\DI\Container
@@ -120,17 +155,30 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $uploadModel;
+	
+	/**
+	 * @var int
+	 */
+	private $uiMode = self::UI_FULL;
 
 	/**
 	 * Třída pro filtrování nahrávaných souborů.
 	 * @var string
 	 */
-	private static $fileFilter;
+	private $fileFilter;
 
 	/**
 	 * @var string
 	 */
 	private $token;
+	
+	/**
+	 * @var array
+	 */
+	private $uiTemplates = [
+		self::UI_FULL => __DIR__ . "/Template/full.latte",
+		self::UI_MINIMAL => __DIR__ . "/Template/minimal.latte"
+	];
 
 	/**
 	 * FileUploadControl constructor.
@@ -151,7 +199,23 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$this->controller = new Model\UploadController($this);
 		$this->token = uniqid();
 	}
-
+	
+	/**
+	 * @param int $type
+	 * @return int|NULL
+	 */
+	public function getUiTemplate($type) {
+		return isset($this->uiTemplates[$type]) ? $this->uiTemplates[$type] : NULL;
+	}
+	
+	/**
+	 * @param int $type
+	 * @param string $file
+	 */
+	public function setUiTemplate($type, $file) {
+		$this->uiTemplates[$type] = $file;
+	}
+	
 	/**
 	 * @param $form
 	 */
@@ -227,6 +291,22 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$this->uploadModel = $uploadModel;
 		return $this;
 	}
+	
+	/**
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setUIMode($mode) {
+		$this->uiMode = $mode;
+		return $this;
+	}
+	
+	/**
+	 * @return int
+	 */
+	public function getUIMode() {
+		return $this->uiMode;
+	}
 
 	/**
 	 * @return int
@@ -265,15 +345,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @internal
 	 */
 	public function getFileFilter() {
-		return self::$fileFilter;
+		return $this->fileFilter;
 	}
-
+	
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 * @param string $fileFilter
+	 * @return $this
 	 */
 	public function setFileFilter($fileFilter) {
-		self::$fileFilter = $fileFilter;
+		$this->fileFilter = $fileFilter;
+		return $this;
 	}
 	
 	/**
@@ -317,11 +399,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		$container->id = $this->getHtmlId() . "-container";
 
 		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
-		$token->setAttribute("name", $this->getHtmlName() ."-token");
-		$container->addHtml($token);
-
-		$container->addHtml($this->controller->getJavaScriptTemplate());
-		$container->addHtml($this->controller->getControlTemplate());
+		$token->addAttributes(["name" => $this->getHtmlName() ."-token"]);
+		
+		if(method_exists(\Nette\Utils\Html::class, "addHtml")) {
+			$container->addHtml($token);
+			$container->addHtml($this->controller->getJavaScriptTemplate());
+			$container->addHtml($this->controller->getControlTemplate());
+		} else { // pro starší nette
+			$container->add($token);
+			$container->add($this->controller->getJavaScriptTemplate());
+			$container->add($this->controller->getControlTemplate());
+		}
 
 		return $container;
 	}

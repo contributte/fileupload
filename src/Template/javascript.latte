@@ -28,17 +28,6 @@ docReady(function() {
 	var token = {$token|escapeJS|noescape};
 
 	/**
-	 * Třída pro práci s fileuploaderem.
-	 * @type FileUploadController
-	 */
-	var controller = new FileUploadController(input, productionMode, token);
-	controller.setDeleteLink({$deleteLink|escapeJS|noescape});
-	controller.setRenameLink({$renameLink|escapeJS|noescape});
-
-	// -----------------------------------------------------------------------
-	// Control variables
-	// -----------------------------------------------------------------------
-	/**
 	 * Maximální počet souborů.
 	 * @type number
 	 */
@@ -56,26 +45,35 @@ docReady(function() {
 	 */
 	var fileSizeString = {$fileSizeString|escapeJS|noescape};
 
+	/**
+	 * Konfigurace controlleru.
+	 * @type Object
+	 */
+	var controllerConfig = {
+		maxFiles: maxFiles,
+		maxFileSize: maxFileSize,
+		fileSizeString: fileSizeString,
+		deleteAction: {$deleteLink|escapeJS|noescape},
+		renameAction: {$renameLink|escapeJS|noescape},
+		uiMode: {$uiMode|escapeJS|noescape}
+	};
+
+	/**
+	 * Třída pro práci s fileuploaderem.
+	 * @type FileUploadController
+	 */
+	var controller = new FileUploadController(input, productionMode, token, controllerConfig);
+	{*controller.setDeleteLink({$deleteLink|escapeJS|noescape});
+	controller.setRenameLink({$renameLink|escapeJS|noescape});*}
+
 	// -----------------------------------------------------------------------
 	// Uploader state variables
 	// -----------------------------------------------------------------------
-	/**
-	 * Počet přidaných souborů.
-	 * @type number
-	 */
-	var filesCount = 0;
-
 	/**
 	 * ID odeslaného sobuoru.
 	 * @type number
 	 */
 	var fileId = 0;
-
-	/**
-	 * Z toho nahráno.
-	 * @type number
-	 */
-	var uploaded = 0;
 
 	// -----------------------------------------------------------------------
 	// FileUpload definition
@@ -86,7 +84,7 @@ docReady(function() {
 
 		// Přidání nového souboru.
 		add: function(e, data) {
-			if(uploaded >= maxFiles || filesCount >= maxFiles) {
+			/*if(uploaded >= maxFiles || filesCount >= maxFiles) {
 				fileId++;
 				controller.addRowError(data.files[0], "Maximální počet souborů je "+ maxFiles);
 			} else if(data.files[0]["size"] > maxFileSize) {
@@ -96,6 +94,10 @@ docReady(function() {
 				controller.addRow(data.files[0]);
 				filesCount++;
 				data.submit();
+			}*/
+
+			if(controller.add(data.files)) {
+				data.submit();
 			}
 		},
 
@@ -103,7 +105,7 @@ docReady(function() {
 		submit: function(e, data) {
 			data.formData = [{
 				name: "id",
-				value: fileId++
+				value: controller.getFileId()
 			}, {
 				name: "token",
 				value: token
@@ -112,12 +114,14 @@ docReady(function() {
 
 		// Kompletní fronta nahrávání
 		progressall: function(e, data) {
-			controller.setProgressAll(data);
+			//controller.setProgressAll(data);
+			controller.updateProgressAll(data);
 		},
 
 		// Progress jednoho souboru.
 		progress: function(e, data) {
-			controller.setFileProgress(data);
+			//controller.setFileProgress(data);
+			controller.updateFileProgress(data);
 		},
 
 		// Po dokončení
@@ -132,12 +136,13 @@ docReady(function() {
 
 		// Po dokončení jednotlivých uploadů.
 		done: function(e, data) {
-			var uploadResult = controller.uploadDone(data);
+			/*var uploadResult = controller.uploadDone(data);
 			if(uploadResult) {
 				uploaded++;
 			} else {
 				filesCount -= filesCount;
-			}
+			}*/
+			controller.done(data);
 		}
 	});
 });

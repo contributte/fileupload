@@ -1,0 +1,30 @@
+<div class="panel panel-primary">
+	<div class="panel-heading clearfix">
+		<h3 class="panel-title pull-left">Nahrávání souborů</h3>
+		<div class="btn-group pull-right">
+			{var $text = $maxFiles > 1 ? "Vybrat soubory" : "Vybrat soubor"}
+			<span class="fileinput-button btn btn-warning btn-xs" title="{$text}" data-toggle="tooltip">
+				<span>
+					<i class="glyphicon glyphicon-plus"></i>
+					<span class="hidden-xs">
+						{$text}
+					</span>
+				</span>
+				<input class="fileupload-input" type="file" name="{$htmlName}" id="{$htmlId}" multiple>
+			</span>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="progress zet-fileupload-progress" id="{$htmlId}-progress">
+			<div id="{$htmlId}-progressbar" class="progress-bar progress-bar-success progress-bar-striped active" style="width: 0%">
+				<span id="{$htmlId}-progressbar-value">0</span>%
+			</div>
+		</div>
+	</div>
+
+	<table class="table zet-fileupload-table" id="{$htmlId}-table">
+		<tbody id="{$htmlId}-table-tbody">
+		</tbody>
+	</table>
+</div>
