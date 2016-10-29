@@ -15,17 +15,23 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	/**
 	 * @static
 	 * @param $systemContainer
-	 * @param string $uploadModel
+	 * @param array $configuration
 	 */
-	public static function register($systemContainer, $uploadModel = NULL) {
+	public static function register(\Nette\DI\Container $systemContainer, $configuration = []) {
 		$class = __CLASS__;
 		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
-			\Nette\Forms\Container $container, $name, $maxFiles = 25, $maxFileSize = NULL
-		) use ($class, $systemContainer, $uploadModel) {
-			$component = new $class($name, $maxFiles, $maxFileSize);
+			\Nette\Forms\Container $container, $name, $maxFiles = NULL, $maxFileSize = NULL
+		) use ($class, $systemContainer, $configuration) {
+			$maxFiles = is_null($maxFiles) ? $configuration["maxFiles"] : $maxFiles;
+			$maxFileSize = is_null($maxFileSize) ? $configuration["maxFileSize"] : $maxFileSize;
+			
 			/** @var FileUploadControl $component */
+			$component = new $class($name, $maxFiles, $maxFileSize);
 			$component->setContainer($systemContainer);
-			$component->setUploadModel($uploadModel);
+			$component->setUploadModel($configuration["uploadModel"]);
+			$component->setFileFilter($configuration["fileFilter"]);
+			$component->setUIMode($configuration["uiMode"]);
+			
 			$container->addComponent($component, $name);
 
 			return $component;
@@ -159,7 +165,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * Třída pro filtrování nahrávaných souborů.
 	 * @var string
 	 */
-	private static $fileFilter;
+	private $fileFilter;
 
 	/**
 	 * @var string
@@ -315,7 +321,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @internal
 	 */
 	public function getFileFilter() {
-		return self::$fileFilter;
+		return $this->fileFilter;
 	}
 	
 	/**
@@ -324,7 +330,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @return $this
 	 */
 	public function setFileFilter($fileFilter) {
-		self::$fileFilter = $fileFilter;
+		$this->fileFilter = $fileFilter;
 		return $this;
 	}
 	
