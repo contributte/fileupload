@@ -420,9 +420,15 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function getValue() {
 		$files = $this->cache->load($this->getTokenizedCacheName($this->token));
-		$this->cache->remove($this->getTokenizedCacheName($this->token));
 
 		return $files;
+	}
+
+	/**
+	 * Delete cache 
+	 */
+	public function __destruct() {
+		$this->cache->remove($this->getTokenizedCacheName($this->token));
 	}
 
 	/**
