@@ -46,6 +46,11 @@ docReady(function() {
 	var fileSizeString = {$fileSizeString|escapeJS|noescape};
 
 	/**
+	 * Pole vlastních parametrů.
+	 */
+	var params = {$params|escapeJS|noescape};
+
+	/**
 	 * Konfigurace controlleru.
 	 * @type Object
 	 */
@@ -109,6 +114,9 @@ docReady(function() {
 			}, {
 				name: "token",
 				value: token
+			}, {
+				name: "params",
+				value: params
 			}];
 		},
 

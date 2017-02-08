@@ -166,6 +166,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $fileFilter;
+	
+	/**
+	 * Pole vlastních definovaných parametrů.
+	 * @var array
+	 */
+	private $params = [];
 
 	/**
 	 * @var string
@@ -198,6 +204,31 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		}
 		$this->controller = new Model\UploadController($this);
 		$this->token = uniqid();
+	}
+	
+	/**
+	 * Ověření nastavených direktiv, zda nepřekročují nastavení serveru.
+	 * @throws \Zet\FileUpload\InvalidValueException
+	 */
+	private function checkSettings() {
+		$postMaxSize = $this->parseIniSize($postMaxSizeString = ini_get("post_max_size"));
+		$iniMaxFileSize = $this->parseIniSize($iniMaxFileSizeString = ini_get("upload_max_filesize"));
+		
+		if($this->maxFileSize > $postMaxSize) {
+			throw new InvalidValueException(
+				sprintf(
+					"Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `post_max_size` (%s).",
+					$postMaxSizeString
+				)
+			);
+		} else if($this->maxFileSize > $iniMaxFileSize) {
+			throw new InvalidValueException(
+				sprintf(
+					"Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `upload_max_filesize` (%s).",
+					$iniMaxFileSizeString
+				)
+			);
+		}
 	}
 	
 	/**
@@ -376,6 +407,21 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getToken() {
 		return $this->token;
 	}
+	
+	/**
+	 * Nastavení vlastních parametrů k uploadovanému souboru.
+	 * @param array $params
+	 */
+	public function setParams(array $params) {
+		$this->params = $params;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getParams() {
+		return $this->params;
+	}
 
 	# --------------------------------------------------------------------
 	# Methods
@@ -393,6 +439,8 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @return \Nette\Utils\Html
 	 */
 	public function getControl() {
+		$this->checkSettings();
+		
 		$this->setOption("rendered", TRUE);
 
 		$container = \Nette\Utils\Html::el("div class='zet-fileupload-container'");

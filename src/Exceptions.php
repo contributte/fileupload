@@ -8,3 +8,5 @@ namespace Zet\FileUpload;
  * @package Zet\FileUpload
  */
 class InvalidFileException extends \Exception {}
+
+class InvalidValueException extends \Exception {}

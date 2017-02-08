@@ -8,13 +8,14 @@ namespace Zet\FileUpload\Model;
  * @package Zet\FileUpload\Model
  */
 interface IUploadModel {
-
+	
 	/**
 	 * Uložení nahraného souboru.
 	 * @param \Nette\Http\FileUpload $file
+	 * @param array $params Pole vlastních parametrů.
 	 * @return mixed Vlastní navrátová hodnota.
 	 */
-	public function save(\Nette\Http\FileUpload $file);
+	public function save(\Nette\Http\FileUpload $file, array $params = []);
 
 	/**
 	 * Zpracování přejmenování souboru.

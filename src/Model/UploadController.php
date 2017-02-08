@@ -90,6 +90,7 @@ class UploadController extends \Nette\Application\UI\Control {
 		$template->productionMode = \Tracy\Debugger::$productionMode;
 		$template->token = $this->uploadControl->getToken();
 		$template->uiMode = $this->uploadControl->getUIMode();
+		$template->params = json_encode($this->uploadControl->getParams());
 
 		return (string) $template;
 	}
@@ -113,6 +114,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function handleUpload() {
 		$files = $this->request->getFiles();
 		$token = $this->request->getPost("token");
+		$params = json_decode($this->request->getPost("params"), TRUE);
 		
 		/** @var \Nette\Http\FileUpload $file */
 		$file = $files[ $this->uploadControl->getHtmlName() ];
@@ -126,7 +128,7 @@ class UploadController extends \Nette\Application\UI\Control {
 			}
 
 			if($file->isOk()) {
-				$returnData = $model->save($file);
+				$returnData = $model->save($file, $params);
 
 				$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
 				if(empty($cacheFiles)) {
