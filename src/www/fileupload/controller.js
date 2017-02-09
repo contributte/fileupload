@@ -1,112 +1,148 @@
-/**
- * @param id
- * @param productionMode
- * @param token
- * @param config
- * @constructor
- */
-var FileUploadController = function(id, productionMode, token, config) {
+var RendererDefinition = function() {
+
+};
+
+RendererDefinition.prototype = {
 	
 	/**
-	 * Nette HTML ID
-	 * @var {string}
+	 * @param {object.<int, object>} file
+	 * @param {number} id
+	 */
+	add: function(file, id) {},
+	
+	/**
+	 * @param {object.<int, object>} file
+	 * @param {number} id
+	 * @param {string} message
+	 */
+	addError: function(file, id, message) {},
+	
+	/**
+	 * @param {object} data
+	 */
+	updateFileProgress: function(data) {},
+	
+	/**
+	 * @param {object} data
+	 */
+	updateProgressAll: function(data) {},
+	
+	/**
+	 *
+	 */
+	stop: function() {},
+	
+	/**
+	 *
+	 */
+	start: function() {},
+	
+	/**
+	 * @param {string} message
+	 * @param {number} id
+	 */
+	fileError: function(message, id) {},
+	
+	/**
+	 * @param {number} id
+	 */
+	fileDone: function(id) {},
+	
+	/**
+	 * @param {number} id
+	 */
+	stopFileProgress: function(id) {}
+};
+
+/**
+ * @param {number} id
+ * @param {string} token
+ * @param {RendererDefinition} renderer
+ * @param {object} config
+ * @constructor
+ */
+var FileUploadController = function(id, token, renderer, config) {
+	
+	/**
+	 * @type {number}
 	 */
 	this.id = id;
 	
 	/**
-	 * Provoz nebo vývoj?
-	 * @var {boolean}
-	 */
-	this.productionMode = productionMode;
-	
-	/**
-	 * Identifikační token upload inputu.
-	 * @var {string}
+	 * @type {string}
 	 */
 	this.token = token;
 	
 	/**
-	 * Konfigurace uploaderu
-	 * @var {Object.<String, Object>}
+	 * @type {RendererDefinition}
+	 */
+	this.renderer = renderer;
+	
+	/**
+	 * @type {object}
 	 */
 	this.config = config;
 	
 	/**
-	 * Kolik bylo nahráno souborů?
+	 * ID uploadovaného souboru.
+	 * @type {number}
+	 */
+	this.fileId = 0;
+	
+	/**
+	 * Počet nahraných souborů.
 	 * @type {number}
 	 */
 	this.uploaded = 0;
 	
 	/**
-	 * ID nově přidaného souboru.
-	 * @type {number}
-	 */
-	this.fileId = 1;
-	
-	/**
+	 * Počet přidaných souborů.
 	 * @type {number}
 	 */
 	this.addedFiles = 0;
 	
 	/**
-	 * @var {UIFullRenderer}
+	 * Chybové hlášky.
+	 * @type {object.<string, string>}
 	 */
-	this.renderer = null;
-	
-	/**
-	 * @type {string[]}
-	 */
-	this.messages = [
-		"Maximální počet souborů je %maxFiles%",
-		"Maximální velikost souboru je %maxFileSize%"
-	];
-	
-	/**
-	 *
-	 */
-	this.createInstance = function() {
-		switch(this.config.uiMode) {
-			case 1:
-				this.renderer = new UIFullRenderer(this.id, this.config.deleteAction, this.config.renameAction, this.token);
-				break;
-			case 2:
-				this.renderer = new UIMininalRenderer(this.id, this.config.deleteAction, this.config.renameAction, this.token);
-				break;
-		}
+	this.messages = {
+		maxFiles: "Maximální počet souborů je %maxFiles%.",
+		maxSize: "Maximální velikost souboru je %maxSize%.",
+		fileTypes: "Povolené typy souborů jsou %fileTypes%.",
 		
-		var self = this;
-		this.renderer.onDelete = function() {
-			self.uploaded -= 1;
-			self.addedFiles -= 1;
-		};
+		// PHP Errors
+		fileSize: "Soubor je příliš veliký.",
+		partialUpload: "Soubor byl nahrán pouze částěčně.",
+		noFile: "Nebyl nahrán žádný soubor.",
+		tmpFolder: "Chybí dočasná složka.",
+		cannotWrite: "Nepodařilo se zapsat soubor na disk.",
+		stopped: "Nahrávání souboru bylo přerušeno."
 	};
-	
-	this.createInstance();
 };
 
 FileUploadController.prototype = {
 	
 	/**
-	 * @param {Object.<int, Object>} files
-	 * @return {boolean}
+	 * Přidání nového souboru k odeslání.
+	 * @param {object.<int, object>} files
+	 * @returns {boolean}
 	 */
 	add: function(files) {
 		var readyToSend = false;
-		
 		var file = files[0];
 		var message = "";
 		
-		if(this.uploaded >= this.config.maxFiles || this.addedFiles >= this.config.maxFiles) {
-			message = this.messages[0].replace("%maxFiles%", this.config.maxFiles.toString());
-			this.renderer.addRowError(file, this.fileId, message);
+		if(!this.canUploadNextFile()) {
+			message = this.messages.maxFiles.replace("%maxFiles%", this.config.maxFiles.toString());
+			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else if(file["size"] > this.config.maxFileSize) {
-			message = this.messages[1].replace("%maxFileSize%", this.config.fileSizeString);
-			this.renderer.addRowError(file, this.fileId, message);
+			message = this.messages.maxSize.replace("%maxSize%", this.config.maxFileSize.toString());
+			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else {
 			this.addedFiles++;
-			this.renderer.addRow(file, this.fileId);
+			this.renderer.add(file, this.fileId);
 			readyToSend = true;
 		}
 		
@@ -114,6 +150,7 @@ FileUploadController.prototype = {
 	},
 	
 	/**
+	 * Aktualizace celkového postupu nahrávání.
 	 * @param {Object} data
 	 */
 	updateProgressAll: function(data) {
@@ -121,6 +158,7 @@ FileUploadController.prototype = {
 	},
 	
 	/**
+	 * Aktualizace postupu nahrávání jednoho souboru.
 	 * @param {Object} data
 	 */
 	updateFileProgress: function(data) {
@@ -128,21 +166,15 @@ FileUploadController.prototype = {
 	},
 	
 	/**
-	 *
-	 */
-	stop: function() {
-		this.renderer.stop();
-	},
-	
-	/**
-	 *
+	 * Spuštění uploadu.
 	 */
 	start: function() {
 		this.renderer.start();
 	},
 	
 	/**
-	 * @param {Object} data
+	 * Dokončení uploadu.
+	 * @param {object} data
 	 */
 	done: function(data) {
 		var success = true;
@@ -151,27 +183,27 @@ FileUploadController.prototype = {
 		var id = result.id;
 		var error = result.error;
 		
-		if (error != 0) {
+		if (error !== 0) {
 			var msg = "";
 			switch (error) {
 				case 1:
 				case 2:
-					msg = "Soubor je příliš veliký.";
+					msg = this.messages.fileSize;
 					break;
 				case 3:
-					msg = "Soubor byl nahrán pouze částečně.";
+					msg = this.messages.partialUpload;
 					break;
 				case 4:
-					msg = "Nebyl nahrán žádný soubor.";
+					msg = this.messages.noFile;
 					break;
 				case 6:
-					msg = "Chybí dočasná složka.";
+					msg = this.messages.tmpFolder;
 					break;
 				case 7:
-					msg = "Nepodařilo se zapsat soubor na disk.";
+					msg = this.messages.cannotWrite;
 					break;
 				case 8:
-					msg = "Nahrávání souboru bylo přerušeno.";
+					msg = this.messages.stopped;
 					break;
 				case 99:
 					//noinspection JSUnresolvedVariable
@@ -179,16 +211,14 @@ FileUploadController.prototype = {
 					break;
 				case 100:
 					//noinspection JSUnresolvedVariable
-					msg = "Povolené typy souborů jsou " + result.errorMessage + ".";
+					msg = this.messages.fileTypes.replace("%fileTypes%", result.errorMessage);
 					break;
 			}
-			this.renderer.writeError(msg, id);
+			this.renderer.fileError(data.files[0], msg, id);
 			success = false;
 		} else {
 			this.renderer.fileDone(id);
 		}
-		
-		this.renderer.stopFileProgress(id);
 		
 		if(success) {
 			this.uploaded++;
@@ -198,9 +228,25 @@ FileUploadController.prototype = {
 	},
 	
 	/**
+	 * ID dalšího souboru k odeslání.
 	 * @returns {number}
 	 */
 	getFileId: function() {
 		return this.fileId++;
+	},
+	
+	/**
+	 * Může uživatel nahrát další soubor?
+	 * @returns {boolean}
+	 */
+	canUploadNextFile: function() {
+		return this.uploaded <= this.config.maxFiles || this.addedFiles <= this.config.maxFiles;
+	},
+	
+	/**
+	 * @returns {Object.<string, string>}
+	 */
+	getMessages: function() {
+		return this.messages;
 	}
 };

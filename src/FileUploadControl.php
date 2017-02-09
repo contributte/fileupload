@@ -2,6 +2,9 @@
 
 namespace Zet\FileUpload;
 
+use Nette\InvalidStateException;
+use Zet\FileUpload\Template\BaseRenderer;
+
 /**
  * Class FileUploadControl
  * @author Zechy <email@zechy.cz>
@@ -30,7 +33,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			$component->setContainer($systemContainer);
 			$component->setUploadModel($configuration["uploadModel"]);
 			$component->setFileFilter($configuration["fileFilter"]);
-			$component->setUIMode($configuration["uiMode"]);
+			$component->setRenderer($configuration["renderer"]);
 			
 			$container->addComponent($component, $name);
 
@@ -77,9 +80,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/uiRenderer.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/full.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/ui/minimal.js"></script>';
 	}
 
 	# --------------------------------------------------------------------
@@ -108,18 +108,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
-	
-	/**
-	 * Plnohodntné a detailní rozhraní pro nahrávání souborů.
-	 * @var int
-	 */
-	const UI_FULL = 1;
-	
-	/**
-	 * Minimální rozhraní.
-	 * @var int
-	 */
-	const UI_MINIMAL = 2;
 
 	/**
 	 * @var \Nette\DI\Container
@@ -157,11 +145,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	private $uploadModel;
 	
 	/**
-	 * @var int
-	 */
-	private $uiMode = self::UI_FULL;
-
-	/**
 	 * Třída pro filtrování nahrávaných souborů.
 	 * @var string
 	 */
@@ -172,19 +155,16 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var array
 	 */
 	private $params = [];
+	
+	/**
+	 * @var string
+	 */
+	private $renderer;
 
 	/**
 	 * @var string
 	 */
 	private $token;
-	
-	/**
-	 * @var array
-	 */
-	private $uiTemplates = [
-		self::UI_FULL => __DIR__ . "/Template/full.latte",
-		self::UI_MINIMAL => __DIR__ . "/Template/minimal.latte"
-	];
 
 	/**
 	 * FileUploadControl constructor.
@@ -229,22 +209,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 				)
 			);
 		}
-	}
-	
-	/**
-	 * @param int $type
-	 * @return int|NULL
-	 */
-	public function getUiTemplate($type) {
-		return isset($this->uiTemplates[$type]) ? $this->uiTemplates[$type] : NULL;
-	}
-	
-	/**
-	 * @param int $type
-	 * @param string $file
-	 */
-	public function setUiTemplate($type, $file) {
-		$this->uiTemplates[$type] = $file;
 	}
 	
 	/**
@@ -421,6 +385,20 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function getParams() {
 		return $this->params;
+	}
+	
+	/**
+	 * @param string $renderer
+	 */
+	public function setRenderer($renderer) {
+		$this->renderer = $renderer;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getRenderer() {
+		return $this->renderer;
 	}
 
 	# --------------------------------------------------------------------

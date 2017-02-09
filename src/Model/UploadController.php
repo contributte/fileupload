@@ -1,7 +1,11 @@
 <?php
 
 namespace Zet\FileUpload\Model;
-	
+
+use Nette\InvalidStateException;
+use Zet\FileUpload\Template\JavascriptBuilder;
+use Zet\FileUpload\Template\Renderer\BaseRenderer;
+
 /**
  * Class UploadController
  * @author Zechy <email@zechy.cz>
@@ -23,6 +27,11 @@ class UploadController extends \Nette\Application\UI\Control {
 	 * @var \Zet\FileUpload\Filter\IMimeTypeFilter
 	 */
 	private $filter;
+	
+	/**
+	 * @var BaseRenderer
+	 */
+	private $renderer;
 
 	/**
 	 * UploadController constructor.
@@ -45,6 +54,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	 */
 	public function getFilter() {
 		if(is_null($this->filter)) {
+			/** @noinspection PhpInternalEntityUsedInspection */
 			$className = $this->uploadControl->getFileFilter();
 			if(!is_null($className)) {
 				$filterClass = new $className;
@@ -62,37 +72,40 @@ class UploadController extends \Nette\Application\UI\Control {
 	}
 	
 	/**
-	 * @return string
+	 * @return \Zet\FileUpload\FileUploadControl
 	 */
-	private function getControlFile() {
-		$template = $this->uploadControl->getUiTemplate($this->uploadControl->getUIMode());
-		if(is_null($template)) {
-			throw new \Nette\InvalidArgumentException();
-		}
-		return $template;
+	public function getUploadControl() {
+		return $this->uploadControl;
 	}
-
+	
+	/**
+	 * @return BaseRenderer
+	 */
+	public function getRenderer() {
+		if(is_null($this->renderer)) {
+			$rendererClass = $this->uploadControl->getRenderer();
+			$this->renderer = new $rendererClass($this->uploadControl);
+			
+			if(!($this->renderer instanceof BaseRenderer)) {
+				throw new InvalidStateException(
+					"Renderer musí být instancí třídy `\\Zet\\FileUpload\\Template\\BaseRenderer`."
+				);
+			}
+		}
+		
+		return $this->renderer;
+	}
 	/**
 	 * Vytvoření šablony s JavaScriptem pro FileUpload.
 	 * @return string
 	 */
 	public function getJavaScriptTemplate() {
-		$template = $this->template;
-		$template->setFile(__DIR__ . "/../Template/javascript.latte");
-
-		$template->uploadUrl = $this->link("upload");
-		$template->deleteLink = $this->link("remove");
-		$template->renameLink = $this->link("rename");
-		$template->inputId = $this->uploadControl->getHtmlId();
-		$template->maxFiles = $this->uploadControl->getMaxFiles();
-		$template->maxFileSize = $this->uploadControl->getMaxFileSize();
-		$template->fileSizeString = $this->uploadControl->getFileSizeString();
-		$template->productionMode = \Tracy\Debugger::$productionMode;
-		$template->token = $this->uploadControl->getToken();
-		$template->uiMode = $this->uploadControl->getUIMode();
-		$template->params = json_encode($this->uploadControl->getParams());
-
-		return (string) $template;
+		$builder = new JavascriptBuilder(
+			$this->getRenderer(),
+			$this
+		);
+		
+		return $builder->getJsTemplate();
 	}
 
 	/**
@@ -100,12 +113,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	 * @return string
 	 */
 	public function getControlTemplate() {
-		$template = $this->template;
-		$template->setFile($this->getControlFile());
-		$template->htmlId = $this->uploadControl->getHtmlId();
-		$template->htmlName = $this->uploadControl->getHtmlName();
-
-		return (string) $template;
+		return $this->getRenderer()->buildDefaultTemplate();
 	}
 
 	/**
@@ -117,7 +125,7 @@ class UploadController extends \Nette\Application\UI\Control {
 		$params = json_decode($this->request->getPost("params"), TRUE);
 		
 		/** @var \Nette\Http\FileUpload $file */
-		$file = $files[ $this->uploadControl->getHtmlName() ];
+		$file = $files[ $this->uploadControl->getHtmlName() ]; /** @noinspection PhpInternalEntityUsedInspection */
 		$model = $this->uploadControl->getUploadModel();
 		$cache = $this->uploadControl->getCache();
 		$filter = $this->getFilter();
@@ -129,13 +137,13 @@ class UploadController extends \Nette\Application\UI\Control {
 
 			if($file->isOk()) {
 				$returnData = $model->save($file, $params);
-
+				/** @noinspection PhpInternalEntityUsedInspection */
 				$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
 				if(empty($cacheFiles)) {
 					$cacheFiles = array($this->request->getPost("id") => $returnData);
 				} else {
 					$cacheFiles[ $this->request->getPost("id") ] = $returnData;
-				}
+				}/** @noinspection PhpInternalEntityUsedInspection */
 				$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 			}
 
@@ -167,11 +175,11 @@ class UploadController extends \Nette\Application\UI\Control {
 		$id = $this->request->getQuery("id");
 		$token = $this->request->getQuery("token");
 
-		$cache = $this->uploadControl->getCache();
+		$cache = $this->uploadControl->getCache();/** @noinspection PhpInternalEntityUsedInspection */
 		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
-		if(isset($cacheFiles[$id])) {
+		if(isset($cacheFiles[$id])) {/** @noinspection PhpInternalEntityUsedInspection */
 			$this->uploadControl->getUploadModel()->remove($cacheFiles[$id]);
-			unset($cacheFiles[$id]);
+			unset($cacheFiles[$id]);/** @noinspection PhpInternalEntityUsedInspection */
 			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 		}
 	}
@@ -184,11 +192,11 @@ class UploadController extends \Nette\Application\UI\Control {
 		$newName = $this->request->getQuery("newName");
 		$token = $this->request->getQuery("token");
 
-		$cache = $this->uploadControl->getCache();
+		$cache = $this->uploadControl->getCache();/** @noinspection PhpInternalEntityUsedInspection */
 		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
 		
-		if(isset($cacheFiles[$id])) {
-			$cacheFiles[$id] = $this->uploadControl->getUploadModel()->rename($cacheFiles[$id], $newName);
+		if(isset($cacheFiles[$id])) {/** @noinspection PhpInternalEntityUsedInspection */
+			$cacheFiles[$id] = $this->uploadControl->getUploadModel()->rename($cacheFiles[$id], $newName);/** @noinspection PhpInternalEntityUsedInspection */
 			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 		}
 	}

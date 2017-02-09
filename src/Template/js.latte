@@ -1,0 +1,430 @@
+<script>
+	docReady(function() {
+		// -----------------------------------------------------------------------
+		// Control sys variables
+		// -----------------------------------------------------------------------
+		/**
+		 * Adresa pro zpracování nahrávání souborů.
+		 * @type string
+		 */
+		var uploadUrl = {$uploadUrl|escapeJS|noescape};
+
+		/**
+		 * HTML ID elementu.
+		 * @type string
+		 */
+		var input = {$inputId|escapeJS|noescape};
+
+		/**
+		 * Jedná se o vývojovou verzi?
+		 * @type boolean
+		 */
+		var productionMode = {$productionMode|escapeJS|noescape};
+
+		/**
+		 * Identifikační token.
+		 * @type string
+		 */
+		var token = {$token|escapeJS|noescape};
+
+		/**
+		 * Maximální počet souborů.
+		 * @type number
+		 */
+		var maxFiles = {$maxFiles|escapeJS|noescape};
+
+		/**
+		 * Maximální velikosti souboru.
+		 * @type number
+		 */
+		var maxFileSize = {$maxFileSize|escapeJS|noescape};
+
+		/**
+		 * Velikost souboru vyjádřena stylem např. 3MB.
+		 * @type String
+		 */
+		var fileSizeString = {$fileSizeString|escapeJS|noescape};
+
+		/**
+		 * Pole vlastních parametrů.
+		 */
+		var params = {$params|escapeJS|noescape};
+
+		/**
+		 * Konfigurace controlleru.
+		 * @type Object
+		 */
+		var controllerConfig = {
+			maxFiles: maxFiles,
+			maxFileSize: maxFileSize,
+			fileSizeString: fileSizeString,
+			productionMode: productionMode
+		};
+
+		/**
+		 * JS Renderer.
+		 * @type RendererDefinition
+		 */
+		var renderer = new {php echo $rendererName;};
+
+		/**
+		 * Třída pro práci s fileuploaderem.
+		 * @type FileUploadController
+		 */
+		var controller = new FileUploadController(input, token, renderer, controllerConfig);
+
+		$("#" +input).click(function(event) {
+			if(!controller.canUploadNextFile()) {
+				event.preventDefault();
+				alert(controller.getMessages().maxFiles.replace("%maxFiles%", controllerConfig.maxFiles));
+			}
+		});
+
+		// -----------------------------------------------------------------------
+		// FileUpload definition
+		// -----------------------------------------------------------------------
+		$("#" +input).fileupload({
+			url: uploadUrl,
+			dataType: "json",
+
+			// Přidání nového souboru.
+			add: function(e, data) {
+				if(controller.add(data.files)) {
+					data.submit();
+				}
+			},
+
+			// Odesílání dat
+			submit: function(e, data) {
+				data.formData = [{
+					name: "id",
+					value: controller.getFileId()
+				}, {
+					name: "token",
+					value: token
+				}, {
+					name: "params",
+					value: params
+				}];
+			},
+
+			// Kompletní fronta nahrávání
+			progressall: function(e, data) {
+				controller.updateProgressAll(data);
+			},
+
+			// Progress jednoho souboru.
+			progress: function(e, data) {
+				controller.updateFileProgress(data);
+			},
+
+			// Start uploadu
+			start: function(e, data) {
+				controller.start();
+			},
+
+			// Po dokončení jednotlivých uploadů.
+			done: function(e, data) {
+				controller.done(data);
+			}
+		});
+	});
+
+
+	var {php echo $rendererName;} = function {php echo $rendererName;}() {
+
+		/**
+		 * @type string
+		 */
+		this.containerSelector = {$containerSelector|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasGlobalProgress = {$globalProgress|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.globalProgressSelector = {$globalProgressSelector|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.globalProgressValueSelector = {$globalProgressValue|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasGlobalProgressValue = {$globalProgressValue|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasImagePreview = {$imagePreview|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.imagePreviewSelector = {$imagePreviewSelector|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasFilePreview = {$filePreview|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.filePreviewSelector = {$filePreviewSelector|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasFileProgress = {$fileProgress|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.fileProgressSelector = {$fileProgressSelector|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasFileProgressValue = {$fileProgressValue|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.fileProgressValueSelector = {$fileProgressValue|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasFilename = {$filename|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.filenameSelector = {$filenameSelector|escapeJS|noescape};
+
+		/**
+		 * @type boolean
+		 */
+		this.hasDelete = {$delete|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.container = {$containerSelector|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
+		this.errorMessageSelector = {$errorMessageSelector|escapeJS|noescape};
+
+		/**
+		 * Základní koncovky obrázků.
+		 * @type string[]
+		 */
+		this.imageExtension = [
+			"jpg", "png", "jpeg", "gif"
+		];
+
+		this.selector = function(name) {
+			return "[data-upload-component='"+name+"']";
+		};
+
+		this.getTemplate = function(id) {
+			var template = $.parseHTML(document.getElementById(id).innerHTML);
+			return template[1];
+		};
+
+		/**
+		 * Vrátí koncovku souboru.
+		 * @param String filename
+		 * @returns String
+		 */
+		this.getFileExtension = function (filename) {
+			var filenameArray = filename.split(".");
+			return filenameArray[filenameArray.length - 1];
+		};
+
+		/**
+		 * @param string filename
+		 */
+		this.isImage = function(filename) {
+			return this.imageExtension.indexOf(this.getFileExtension(filename).toLowerCase()) !== -1;
+		};
+
+		/**
+		 * @param Element element
+		 * @param object file
+		 */
+		this.setImagePreview = function(element, file) {
+			var preview = "";
+
+			if(file.preview) {
+				preview = file.preview;
+			} else {
+				//noinspection JSUnresolvedVariable
+				preview = URL.createObjectURL(file);
+			}
+
+			element.setAttribute("src", preview);
+		};
+
+		/**
+		 *
+		 */
+		this.getFileContainer = function(id) {
+			var container = document.querySelector("[data-upload-id='"+id.toString()+"']");
+
+			return container;
+		};
+
+		/**
+		 *
+		 * @param file
+		 * @param id
+		 * @param message
+		 */
+		this.errorTemplate = function(file, id, message) {
+			var template = this.getTemplate("upload-template-file-error");
+
+			var filenameSelector = this.selector(this.filenameSelector);
+			if(this.hasFilename && (template.querySelector(filenameSelector) !== null)) {
+				template.querySelector(filenameSelector).textContent = file.name;
+			}
+
+			var imagePreviewSelector = this.selector(this.imagePreviewSelector);
+			var filenameSelector = this.selector(this.filenameSelector);
+			if(this.hasImagePreview && this.isImage(file.name) && (template.querySelector(imagePreviewSelector) !== null)) {
+				this.setImagePreview(template.querySelector(imagePreviewSelector), file);
+			} else if(this.hasFilePreview && (template.querySelector(filenameSelector) !== null)) {
+				template.querySelector(filenameSelector).textContent = this.getFileExtension(file.name);
+			}
+
+			template.querySelector(this.selector(this.errorMessageSelector)).textContent = message;
+
+			return template;
+		}
+	};
+
+	{php echo $rendererName;}.prototype = {
+		/**
+		 * @param object.<int, object> file
+		 * @param number id
+		 */
+		add: function(file, id) {
+			var template = this.getTemplate("upload-template-file-cotainer");
+			template.setAttribute("data-upload-id", id.toString());
+
+			if(this.isImage(file.name) && this.hasImagePreview) {
+				this.setImagePreview(template.querySelector(this.selector(this.imagePreviewSelector)), file);
+			} else if (this.hasFilePreview) {
+				var preview = template.querySelector(this.select(this.filePreviewSelector));
+				preview.textContent = this.getFileExtension(file.name);
+			}
+
+			if(this.hasFilename) {
+				template.querySelector(this.selector(this.filenameSelector)).textContent = file.name;
+			}
+
+			document.querySelector(this.selector(this.containerSelector)).appendChild(template);
+		},
+
+		/**
+		 * @param object.<int, object> file
+		 * @param number id
+		 * @param string message
+		 */
+		addError: function(file, id, message) {
+			var template = this.errorTemplate(file, id, message);
+
+			document.querySelector(this.selector(this.containerSelector)).appendChild(template);
+		},
+
+		/**
+		 * @param object data
+		 */
+		updateFileProgress: function(data) {
+			var container = this.getFileContainer(data.formData[0].value);
+			var percents = parseInt(data.loaded / data.total * 100, 10);
+
+			if(this.hasFileProgress) {
+				var progress = container.querySelector(this.selector(this.fileProgressSelector));
+				if(progress.tagName.toLowerCase() == "progress") {
+					progress.setAttribute("value", percents.toString());
+				} else {
+					progress.style.width = percents + "%";
+				}
+			}
+			if(this.hasFileProgressValue) {
+				var value = container.querySelector(this.selector(this.fileProgressValueSelector));
+				value.textContent = percents + "%";
+			}
+		},
+
+		/**
+		 * @param object data
+		 */
+		updateProgressAll: function(data) {
+			var percents = parseInt(data.loaded / data.total * 100, 10);
+
+			if(this.hasGlobalProgress) {
+				var progress = document.querySelector(this.selector(this.globalProgressSelector));
+				if(progress.tagName.toLowerCase() == "progress") {
+					progress.setAttribute("value", percents.toString());
+				} else {
+					progress.style.width = percents + "%";
+				}
+			}
+			if(this.hasGlobalProgressValue) {
+				var value = document.querySelector(this.selector(this.globalProgressValueSelector));
+				value.textContent = percents + "%";
+			}
+		},
+
+		/**
+		 *
+		 */
+		start: function() {
+			if(this.hasGlobalProgress) {
+				var progress = document.querySelector(this.selector(this.globalProgressSelector));
+				if(progress.tagName.toLowerCase() == "progress") {
+					progress.setAttribute("value", "0");
+				} else {
+					progress.style.width = "0%";
+				}
+			}
+			if(this.hasGlobalProgressValue) {
+				var value = document.querySelector(this.selector(this.globalProgressValueSelector));
+				value.textContent = "0%";
+			}
+		},
+
+		/**
+		 * @param string message
+		 * @param number id
+		 */
+		fileError: function(file, message, id) {
+			var template = this.errorTemplate(file, id, message);
+			var fileContainer = this.getFileContainer(id);
+
+			$(fileContainer).replaceWith(template);
+		},
+
+		/**
+		 * @param number id
+		 */
+		fileDone: function(id) {}
+	};
+</script>
+
+<script type="upload/file-container" id="upload-template-file-cotainer">
+	{$fileContainerTemplate|noescape}
+</script>
+<script type="upload/file-error" id="upload-template-file-error">
+	{$fileErrorTemplate|noescape}
+</script>

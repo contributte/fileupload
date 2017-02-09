@@ -18,7 +18,7 @@ class FileUploadExtension extends \Nette\DI\CompilerExtension {
 		"maxFileSize" => NULL,
 		"uploadModel" => NULL,
 		"fileFilter" => NULL,
-		"uiMode" => FileUploadControl::UI_FULL
+		"renderer" => '\Zet\FileUpload\Template\Renderer\Html5Renderer'
 	];
 	
 	/**
@@ -32,21 +32,6 @@ class FileUploadExtension extends \Nette\DI\CompilerExtension {
 	 */
 	public function loadConfiguration() {
 		$this->configuration = $this->getConfig($this->defaults);
-		if(is_string($this->configuration["uiMode"])) {
-			$value = $this->configuration["uiMode"];
-			
-			switch($value) {
-				case "full":
-					$this->configuration["uiMode"] = FileUploadControl::UI_FULL;
-					break;
-				case "minimal":
-					$this->configuration["uiMode"] = FileUploadControl::UI_MINIMAL;
-					break;
-				default:
-					$this->configuration["uiMode"] = FileUploadControl::UI_FULL;
-					break;
-			}
-		}
 	}
 	
 	/**

@@ -60,7 +60,7 @@ docReady(function() {
 		fileSizeString: fileSizeString,
 		deleteAction: {$deleteLink|escapeJS|noescape},
 		renameAction: {$renameLink|escapeJS|noescape},
-		uiMode: {$uiMode|escapeJS|noescape}
+		uiMode: 1
 	};
 
 	/**
@@ -68,8 +68,6 @@ docReady(function() {
 	 * @type FileUploadController
 	 */
 	var controller = new FileUploadController(input, productionMode, token, controllerConfig);
-	{*controller.setDeleteLink({$deleteLink|escapeJS|noescape});
-	controller.setRenameLink({$renameLink|escapeJS|noescape});*}
 
 	// -----------------------------------------------------------------------
 	// Uploader state variables
@@ -89,18 +87,6 @@ docReady(function() {
 
 		// Přidání nového souboru.
 		add: function(e, data) {
-			/*if(uploaded >= maxFiles || filesCount >= maxFiles) {
-				fileId++;
-				controller.addRowError(data.files[0], "Maximální počet souborů je "+ maxFiles);
-			} else if(data.files[0]["size"] > maxFileSize) {
-				fileId++;
-				controller.addRowError(data.files[0], "Maximální velikost souboru je "+ fileSizeString);
-			} else {
-				controller.addRow(data.files[0]);
-				filesCount++;
-				data.submit();
-			}*/
-
 			if(controller.add(data.files)) {
 				data.submit();
 			}
@@ -122,13 +108,11 @@ docReady(function() {
 
 		// Kompletní fronta nahrávání
 		progressall: function(e, data) {
-			//controller.setProgressAll(data);
 			controller.updateProgressAll(data);
 		},
 
 		// Progress jednoho souboru.
 		progress: function(e, data) {
-			//controller.setFileProgress(data);
 			controller.updateFileProgress(data);
 		},
 
@@ -144,12 +128,6 @@ docReady(function() {
 
 		// Po dokončení jednotlivých uploadů.
 		done: function(e, data) {
-			/*var uploadResult = controller.uploadDone(data);
-			if(uploadResult) {
-				uploaded++;
-			} else {
-				filesCount -= filesCount;
-			}*/
 			controller.done(data);
 		}
 	});
