@@ -100,7 +100,7 @@ class JavascriptBuilder extends Object {
 	private function setSettings() {
 		$this->template->uploadUrl = $this->controller->link("upload");
 		$this->template->renameLink = $this->controller->link("rename");
-		$this->template->deleteLink = $this->controller->link("remove");
+		$this->template->removeLink = $this->controller->link("remove");
 		$this->template->inputId = $this->renderer->getElements()["input"]->attrs["id"];
 		
 		/** @noinspection PhpInternalEntityUsedInspection */

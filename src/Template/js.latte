@@ -216,6 +216,11 @@
 		/**
 		 * @type string
 		 */
+		this.deleteSelector = {$deleteSelector|escapeJS|noescape};
+
+		/**
+		 * @type string
+		 */
 		this.container = {$containerSelector|escapeJS|noescape};
 
 		/**
@@ -224,12 +229,22 @@
 		this.errorMessageSelector = {$errorMessageSelector|escapeJS|noescape};
 
 		/**
+		 * @type string
+		 */
+		this.token = {$token|escapeJS|noescape};
+
+		/**
 		 * Základní koncovky obrázků.
 		 * @type string[]
 		 */
 		this.imageExtension = [
 			"jpg", "png", "jpeg", "gif"
 		];
+
+		/**
+		 *
+		 */
+		this.timeout = [];
 
 		this.selector = function(name) {
 			return "[data-upload-component='"+name+"']";
@@ -418,7 +433,59 @@
 		/**
 		 * @param number id
 		 */
-		fileDone: function(id) {}
+		fileDone: function(id) {
+			var fileContainer = this.getFileContainer(id);
+
+			if(this.hasDelete) {
+				var deleteButton = fileContainer.querySelector(this.selector(this.deleteSelector));
+				deleteButton.onclick = function() {
+					$.ajax({
+						url: {$removeLink|escapeJS|noescape},
+						data: {
+							id: id,
+							token: this.token
+						}
+					}).done(function() {
+						$(fileContainer).fadeOut(400, function() {
+							$(this).remove();
+						});
+					});
+				};
+			}
+
+			if(this.hasFilename) {
+				var filename = fileContainer.querySelector(this.selector(this.filenameSelector));
+				if(filename.tagName.toLowerCase() == "div") {
+					filename.setAttribute("contenteditable", "true");
+				}
+
+				var self = this;
+				filename.onkeyup = function(event) {
+					filename.style.fontStyle = "italic";
+
+					if (event.code != "Tab") {
+						clearTimeout(self.timeout[id]);
+
+						self.timeout[id] = setTimeout(function () {
+							$.ajax({
+								url: {$renameLink|escapeJS|noescape},
+								data: {
+									id: id,
+									newName: filename.textContent,
+									token: self.token
+								}
+							}).done(function () {
+								filename.style.fontStyle = "normal";
+								$(filename).fadeOut("400", function () {
+									$(filename).fadeIn();
+									filename.blur();
+								});
+							});
+						}, 750);
+					}
+				};
+			}
+		}
 	};
 </script>
 

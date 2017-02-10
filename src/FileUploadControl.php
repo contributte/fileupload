@@ -3,6 +3,7 @@
 namespace Zet\FileUpload;
 
 use Nette\InvalidStateException;
+use Tracy\Debugger;
 use Zet\FileUpload\Template\BaseRenderer;
 
 /**
