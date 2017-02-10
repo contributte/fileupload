@@ -20,17 +20,22 @@ class Html5Renderer extends BaseRenderer {
 		$this->elements["globalProgressValue"] = null;
 		$this->elements["fileProgressValue"] = null;
 		
-		$this->elements["container"]->setName("table");
+		$this->elements["container"]->setName("table")->addAttributes([
+			"style" => "width: 100%",
+			"border" => "1"
+		]);
 		
 		$this->elements["globalProgress"]->setName("progress")
 			->addAttributes([
 				"value" => 0,
-				"max" => 100
+				"max" => 100,
+				"style" => "width: 100%"
 			]);
 		$this->elements["fileProgress"]->setName("progress")
 			->addAttributes([
 				"value" => 0,
-				"max" => 100
+				"max" => 100,
+				"style" => "width: 100%"
 			]);
 		
 		$this->elements["imagePreview"]->addAttributes([
@@ -79,20 +84,28 @@ class Html5Renderer extends BaseRenderer {
 	public function buildFileContainerTemplate() {
 		$tr = Html::el("tr");
 		
-		$preview = Html::el("td");
+		$preview = Html::el("td")->addAttributes([
+			"style" => "width: 20%"
+		]);
 		$preview->addHtml($this->elements["imagePreview"]);
 		$preview->addHtml($this->elements["filePreview"]);
 		$tr->addHtml($preview);
 		
 		$name = Html::el("td");
-		$name->addHtml($this->elements["filename"]);
+		$name->addHtml($this->elements["filename"])->addAttributes([
+			"style" => "width: 55%"
+		]);
 		$tr->addHtml($name);
 		
 		$progress = Html::el("td");
-		$progress->addHtml($this->elements["fileProgress"]);
+		$progress->addHtml($this->elements["fileProgress"])->addAttributes([
+			"style" => "width: 15%"
+		]);
 		$tr->addHtml($progress);
 		
-		$delete = Html::el("td");
+		$delete = Html::el("td")->addAttributes([
+			"style" => "width: 5%; text-align: center",
+		]);
 		$delete->addHtml($this->elements["delete"]);
 		$tr->addHtml($delete);
 		
