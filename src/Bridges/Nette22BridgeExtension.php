@@ -1,0 +1,30 @@
+<?php
+
+namespace Zet\FileUpload\Bridges;
+
+use Nette;
+
+/**
+ * Class Nette22BridgeExtension
+ * @author Zechy <email@zechy.cz>
+ * @package Zet\FileUpload
+ */
+final class Nette22BridgeExtension extends \Nette\DI\CompilerExtension {
+
+	/**
+	 * @param \Nette\PhpGenerator\ClassType $class
+	 */
+	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
+		$init = $class->methods["initialize"];
+		
+		$init->addBody('
+			\Nette\Utils\Html::extensionMethod("addHtml", function(\Nette\Utils\Html $html, $child) {
+				if($child instanceof \Nette\Utils\Html) {
+					$html->add($child);
+				} else {
+					$html->setHtml($child);
+				}
+			});
+		');
+	}
+}

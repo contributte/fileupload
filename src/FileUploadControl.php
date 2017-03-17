@@ -217,7 +217,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	protected function attached($form) {
 		parent::attached($form);
-		$this->form->addComponent($this->controller, "uploadController");
+		$this->form->addComponent($this->controller, "uploadController" . ucfirst($this->name));
 	}
 
 	# --------------------------------------------------------------------

@@ -70,17 +70,7 @@ class JavascriptBuilder extends Object {
 	 * @return string
 	 */
 	public function getJsTemplate() {
-		if(Debugger::$productionMode) {
-			$cacheIdentifier = $this->controller->getUploadControl()->getHtmlId(). "-js";
-			if(is_null($cacheTemplate = $this->cache->load($cacheIdentifier))) {
-				$template = $this->buildTemplate();
-				$this->cache->save($cacheIdentifier, $template);
-			} else {
-				return $cacheTemplate;
-			}
-		} else {
-			return $this->buildTemplate();
-		}
+		return $this->buildTemplate();
 	}
 	
 	/**
