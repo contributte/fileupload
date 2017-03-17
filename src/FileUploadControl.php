@@ -242,9 +242,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	/**
 	 * @param int $type
 	 * @param string $file
+	 * @return \Zet\FileUpload\FileUploadControl
 	 */
 	public function setUiTemplate($type, $file) {
 		$this->uiTemplates[$type] = $file;
+		return $this;
 	}
 	
 	/**
@@ -411,9 +413,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	/**
 	 * Nastavení vlastních parametrů k uploadovanému souboru.
 	 * @param array $params
+	 * @return \Zet\FileUpload\FileUploadControl
 	 */
 	public function setParams(array $params) {
 		$this->params = $params;
+		return $this;
 	}
 	
 	/**
