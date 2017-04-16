@@ -7,7 +7,7 @@ namespace Zet\FileUpload;
  * @author Zechy <email@zechy.cz>
  * @package Zet\FileUpload
  */
-class FileUploadExtension extends \Nette\DI\CompilerExtension {
+final class FileUploadExtension extends \Nette\DI\CompilerExtension {
 	
 	/**
 	 * Výchozí konfigurační hodnoty.
