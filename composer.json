@@ -11,14 +11,13 @@
 		}
 	],
 	"require": {
-		"php": ">=5.6.0 || >=7.0",
-		"nette/forms": ">=v2.4.0",
-		"nette/http": ">=v2.4.0",
-		"nette/utils": ">=v2.4.0",
-		"nette/di": ">=v2.4.0",
-		"nette/application": ">=v2.4.0",
-		"tracy/tracy": ">=v2.4.0",
-		"latte/latte": ">=v2.4.0"
+		"php": ">=5.6.0",
+		"nette/forms": "^v2.4.0",
+		"nette/http": "^v2.4.0",
+		"nette/utils": "^v2.4.0",
+		"nette/di": "^v2.4.0",
+		"nette/application": "^v2.4.0",
+		"latte/latte": "^v2.4.0"
 	},
 	"autoload": {
 		"classmap": ["src/"]

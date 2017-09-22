@@ -2,10 +2,6 @@
 
 namespace Zet\FileUpload;
 
-use Nette\InvalidStateException;
-use Tracy\Debugger;
-use Zet\FileUpload\Template\BaseRenderer;
-
 /**
  * Class FileUploadControl
  * @author Zechy <email@zechy.cz>
@@ -41,19 +37,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			return $component;
 		});
 	}
-
-	/**
-	 * Vloží CSS do stránky.
-	 * @static
-	 * @param string $basePath
-	 * @throws \Nette\DeprecatedException Use FileUploadControl::getHead()
-	 */
-	public static function getStyleSheet($basePath) {
-		throw new \Nette\DeprecatedException("Use FileUploadControl::getHead() instead.");
-		
-		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
-		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
-	}
 	
 	/**
 	 * Vloží CSS do stránky.
@@ -61,8 +44,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @param string $basePath
 	 */
 	public static function getHead($basePath) {
-		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/css/jquery.fileupload.css">';
-		echo '<link rel="stylesheet" type="text/css" href="' . $basePath . '/fileupload/style.css">';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
 	}
 
@@ -74,8 +55,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public static function getScripts($basePath) {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/vendor/jquery.ui.widget.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/load-image.all.min.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/canvas-to-blob.min.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.iframe-transport.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-process.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
@@ -410,12 +389,15 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function loadHttpData() {
 		parent::loadHttpData();
-		$request = $this->getContainer()->getByType('\Nette\Http\Request'); /** @var \Nette\Http\Request $request */
+		
+		/** @var \Nette\Http\Request $request */
+		$request = $this->getContainer()->getByType('\Nette\Http\Request');
 		$this->token = $request->getPost($this->getHtmlName() ."-token");
 	}
-
+	
 	/**
 	 * @return \Nette\Utils\Html
+	 * @throws InvalidValueException
 	 */
 	public function getControl() {
 		$this->checkSettings();

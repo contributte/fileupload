@@ -9,7 +9,8 @@ use Zet\FileUpload\Template\Renderer\BaseRenderer;
 
 /**
  * Class JavascriptBuilder
- * @author Zechy <email@zechy.cz>
+ *
+ * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload
  */
 class JavascriptBuilder extends Object {
@@ -23,16 +24,11 @@ class JavascriptBuilder extends Object {
 	 * @var \Nette\Caching\Cache
 	 */
 	private $cache;
-
-	/**
-	 * @var string
-	 */
-	private $uploadUrl;
 	
 	/**
 	 * @var string
 	 */
-	private $deleteLink;
+	private $uploadUrl;
 	
 	/**
 	 * @var string
@@ -51,8 +47,9 @@ class JavascriptBuilder extends Object {
 	
 	/**
 	 * JavascriptBuilder constructor.
+	 *
 	 * @param \Zet\FileUpload\Template\Renderer\BaseRenderer $renderer
-	 * @param \Zet\FileUpload\Model\UploadController $controller
+	 * @param \Zet\FileUpload\Model\UploadController         $controller
 	 */
 	public function __construct(
 		BaseRenderer $renderer,
@@ -81,7 +78,7 @@ class JavascriptBuilder extends Object {
 		$this->setRendererSettings();
 		$this->buildTemplates();
 		
-		return (string) $this->template;
+		return (string)$this->template;
 	}
 	
 	/**
@@ -94,10 +91,13 @@ class JavascriptBuilder extends Object {
 		$this->template->inputId = $this->renderer->getElements()["input"]->attrs["id"];
 		
 		/** @noinspection PhpInternalEntityUsedInspection */
-		$this->template->maxFiles = $this->controller->getUploadControl()->getMaxFiles();/** @noinspection PhpInternalEntityUsedInspection */
-		$this->template->maxFileSize = $this->controller->getUploadControl()->getMaxFileSize();/** @noinspection PhpInternalEntityUsedInspection */
+		$this->template->maxFiles = $this->controller->getUploadControl()->getMaxFiles();
+		/** @noinspection PhpInternalEntityUsedInspection */
+		$this->template->maxFileSize = $this->controller->getUploadControl()->getMaxFileSize();
+		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->fileSizeString = $this->controller->getUploadControl()->getFileSizeString();
-		$this->template->productionMode = \Tracy\Debugger::$productionMode;/** @noinspection PhpInternalEntityUsedInspection */
+		$this->template->productionMode = \Tracy\Debugger::$productionMode;
+		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->token = $this->controller->getUploadControl()->getToken();
 		$this->template->params = json_encode($this->controller->getUploadControl()->getParams());
 	}
@@ -119,16 +119,15 @@ class JavascriptBuilder extends Object {
 		
 		$elements = $this->renderer->getElements();
 		
+		$components = [];
 		foreach($elements as $type => $element) {
-			$selector = $type . "Selector";
-			
-			if(!is_null($element)) {
-				$this->template->$type = true;
-				$this->template->$selector = $element->attrs["data-upload-component"];
+			if($element !== null) {
+				$components[$type] = $element->getAttribute("data-upload-component");
 			} else {
-				$this->template->$type = false;
-				$this->template->$selector = "";
+				$components[$type] = null;
 			}
 		}
+		
+		$this->template->components = $components;
 	}
 }
