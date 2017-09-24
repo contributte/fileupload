@@ -114,9 +114,6 @@ class JavascriptBuilder extends Object {
 	 *
 	 */
 	private function setRendererSettings() {
-		$name = str_replace("-", "", $this->controller->getUploadControl()->getHtmlId());
-		$this->template->rendererName = $name . "Renderer";
-		
 		$elements = $this->renderer->getElements();
 		
 		$components = [];

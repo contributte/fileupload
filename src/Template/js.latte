@@ -51,6 +51,16 @@
 		var params = {$params|escapeJS|noescape};
 
 		/**
+		 * Seznam nadefinovaných komponent.
+		 */
+		var components = {$components|escapeJS|noescape};
+
+		/**
+		 * Odkaz pro smazání souboru.
+		 */
+		var removeLink = {$removeLink|escapeJS|noescape};
+
+		/**
 		 * Konfigurace controlleru.
 		 * @type Object
 		 */
@@ -63,9 +73,9 @@
 
 		/**
 		 * JS Renderer.
-		 * @type RendererDefinition
+		 * @type Renderer
 		 */
-		var renderer = new {php echo $rendererName;};
+		var renderer = new Renderer(token, components, input, removeLink);
 
 		/**
 		 * Třída pro práci s fileuploaderem.
@@ -129,220 +139,6 @@
 			}
 		});
 	});
-
-
-	var {php echo $rendererName;} =
-
-	function {php echo $rendererName;}() {
-
-		/**
-		 * @type string
-		 */
-		this.token = {$token|escapeJS|noescape};
-
-		/**
-		 * Seznam registrovaných komponent uploaderu společně s jejich html id.
-		 * - container Kontejner ve kterém se nachází samotný uploaderu.
-		 * - input File Input na kterém je registrovaný uploader.
-		 * - globalProgress Element sloužící jako progress bar pro všechny nahrávané soubory.
-		 * - globalProgressValue Element sloužící pro hodnotu progressbaru.
-		 * - fileProgress Element sloužící jako progress bar pro aktuální soubor.
-		 * - fileProgressValue Element sloužící pro hodnotu progressbaru.
-		 * - imagePreview Element, ve kterém bude zobrazen náhled obrázku.
-		 * - filePreview Element, ve kterém budou zobrazeny informace o souboru.
-		 * - filename Element, ve kterém bude zobrazen název souboru.
-		 * - delete Element sloužící jako tlačítko pro smazání.
-		 * - errorMessage Element, ve kterém bude zobrazena chybová zpráva.
-		 *
-		 * @param { object.<string, string> }
-		 */
-		this.components = {$components|escapeJS|noescape};
-
-		this.inputHtmlId = {$inputId|escapeJS|noescape};
-
-		this.imageExtension = [
-			"jpg", "png", "jpeg", "gif"
-		];
-
-		this.getSelector = function (name) {
-			return "[data-upload-component=" + name + "]";
-		};
-
-		this.getFileExtension = function (filename) {
-			var filenameArray = filename.split(".");
-			return filenameArray[filenameArray.length - 1];
-		};
-
-		this.isImage = function (filename) {
-			return this.imageExtension.indexOf(this.getFileExtension(filename).toLowerCase()) !== -1;
-		};
-
-		this.setImagePreview = function (element, file) {
-			var preview = "";
-
-			if (file.preview) {
-				preview = file.preview;
-			} else {
-				//noinspection JSUnresolvedVariable
-				preview = URL.createObjectURL(file);
-			}
-
-			element.setAttribute("src", preview);
-		};
-
-		this.getFileContainer = function (id) {
-			var container = document.querySelector("[data-upload-id='" + id.toString() + "'][for='" + this.inputHtmlId + "']");
-
-			return container;
-		};
-
-
-		this.getTemplate = function (template) {
-			var template = $.parseHTML(document.querySelector("." + template + "[for=" + this.inputHtmlId + "]").innerHTML);
-			return template[1];
-		};
-	};
-
-	{php echo $rendererName;}.prototype = {
-
-		/**
-		 * @param { object.<int, object> } file
-		 * @param { number } id
-		 */
-		add: function (file, id) {
-			var template = this.getTemplate("upload-template-file-container");
-			template.setAttribute("data-upload-id", id);
-			template.setAttribute("for", this.inputHtmlId);
-
-			if (this.components.filename != "null") {
-				template.querySelector(this.getSelector(this.components.filename)).textContent = file.name;
-			}
-
-			if (this.isImage(file.name) && this.components.imagePreview != null) {
-				var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
-				this.setImagePreview(imagePreview, file);
-			} else if (this.components.filePreview != null) {
-				template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.name);
-			}
-
-			document.querySelector(this.getSelector(this.components.container)).appendChild(template);
-		},
-
-		/**
-		 * @param { object.<int, object> } file
-		 * @param { number } id
-		 * @param { string } message
-		 */
-		addError: function (file, id, message) {
-
-		},
-
-		/**
-		 * @param { object } data
-		 */
-		updateFileProgress: function (data) {
-			var container = this.getFileContainer(data.formData[0].value);
-			var percents = parseInt(data.loaded / data.total * 100, 10);
-
-			if(this.components.fileProgress != null) {
-				var progress = container.querySelector(this.getSelector(this.components.fileProgress));
-				if(progress.tagName.toLowerCase() == "progress") {
-					progress.setAttribute("value", percents.toString());
-				} else {
-					progress.style.width = percents + "%";
-				}
-			}
-
-			if(this.components.fileProgressValue != null) {
-				var value = container.querySelector(this.getSelector(this.components.fileProgressValue));
-				value.textContent = percents + "%";
-			}
-		},
-
-		/**
-		 * @param { object } data
-		 */
-		updateProgressAll: function (data) {
-			var percents = parseInt(data.loaded / data.total * 100, 10);
-
-			if(this.components.globalProgress != null) {
-				var progress = document.querySelector(this.getSelector(this.components.globalProgress));
-				if(progress.tagName.toLowerCase() == "progress") {
-					progress.setAttribute("value", percents.toString());
-				} else {
-					progress.style.width = percents + "%";
-				}
-			}
-
-			if(this.components.globalProgressValue != null) {
-				var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
-				value.textContent = percents + "%";
-			}
-		},
-
-		/**
-		 *
-		 */
-		stop: function () {
-		},
-
-		/**
-		 *
-		 */
-		start: function () {
-			if(this.components.globalProgress != null) {
-				var progress = document.querySelector(this.getSelector(this.components.globalProgress));
-				if(progress.tagName.toLowerCase() == "progress") {
-					progress.setAttribute("value", "0");
-				} else {
-					progress.style.width = "0%";
-				}
-			}
-
-			if(this.components.globalProgressValue != null) {
-				var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
-				value.textContent = "0%";
-			}
-		},
-
-		/**
-		 * @param { string } message
-		 * @param { number } id
-		 */
-		fileError: function (message, id) {
-		},
-
-		/**
-		 * @param { number } id
-		 */
-		fileDone: function (id) {
-			var fileContainer = this.getFileContainer(id);
-
-			if(this.components.delete != null) {
-				var deleteButton = fileContainer.querySelector(this.getSelector(this.components.delete));
-
-				deleteButton.addEventListener("click", function() {
-					$.ajax({
-						url: {$removeLink|escapeJS|noescape},
-						data: {
-							id: id,
-							token: this.token
-						}
-					}).done(function() {
-						$(fileContainer).fadeOut(400, function() {
-							$(this).remove();
-						});
-					});
-				});
-			}
-		},
-
-		/**
-		 * @param { number } id
-		 */
-		stopFileProgress: function (id) {
-		}
-	};
 </script>
 
 <script type="upload/file-container" class="upload-template-file-container" for="{$inputId|noescape}">
