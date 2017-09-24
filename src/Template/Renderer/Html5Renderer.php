@@ -56,14 +56,21 @@ class Html5Renderer extends BaseRenderer {
 	 */
 	public function buildDefaultTemplate() {
 		$table = $this->elements["container"];
+		$table->setAttribute("cellpadding", "5px");
 		
 		// Header
 		$tr = Html::el("tr");
-		$th = Html::el("th colspan='2'");
+		$th = Html::el("th colspan='2' style='border-right: none'");
 		$th->setText("Nahrávání souborů");
 		$tr->addHtml($th);
-		$th2 = Html::el("th colspan='2'");
-		$th2->addHtml($this->elements["input"]);
+		$th2 = Html::el("th colspan='2' style='text-align: right; border-left: none'");
+		$th2->addHtml($this->elements["input"]->setAttribute("style", "display: none"));
+		$button = Html::el("button type='button'");
+		$button->setText("Nahrát soubor");
+		$id = $this->elements["input"]->getAttribute("id");
+		$button->setAttribute("onclick", "document.getElementById('$id').click(); return false;");
+		$th2->addHtml($button);
+		
 		$tr->addHtml($th2);
 		$table->addHtml($tr);
 		
@@ -87,7 +94,7 @@ class Html5Renderer extends BaseRenderer {
 		$preview = Html::el("td")->addAttributes([
 			"style" => "width: 20%"
 		]);
-		$preview->addHtml($this->elements["imagePreview"]);
+		$preview->addHtml($this->elements["imagePreview"]->setAttribute("width", "100%"));
 		$preview->addHtml($this->elements["filePreview"]);
 		$tr->addHtml($preview);
 		

@@ -2,6 +2,8 @@
 
 namespace Zet\FileUpload;
 
+use Tracy\Debugger;
+
 /**
  * Class FileUploadControl
  * @author Zechy <email@zechy.cz>
@@ -156,11 +158,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		parent::__construct($name);
 		$this->maxFiles = $maxFiles;
 		if(is_null($maxFileSize)) {
-			$this->maxFileSize = $this->parseIniSize(ini_get("upload_max_filesize"));
 			$this->fileSizeString = ini_get("upload_max_filesize") . "B";
+			$this->maxFileSize = $this->parseIniSize(ini_get("upload_max_filesize"));
 		} else {
-			$this->maxFileSize = $this->parseIniSize($maxFileSize);
 			$this->fileSizeString = $maxFileSize . "B";
+			$this->maxFileSize = $this->parseIniSize($maxFileSize);
 		}
 		$this->controller = new Model\UploadController($this);
 		$this->token = uniqid();

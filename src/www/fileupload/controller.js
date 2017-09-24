@@ -325,7 +325,7 @@ FileUploadController.prototype = {
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else if (file["size"] > this.config.maxFileSize) {
-			message = this.messages.maxSize.replace("%maxSize%", this.config.maxFileSize.toString());
+			message = this.messages.maxSize.replace("%maxSize%", this.config.fileSizeString);
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else {
