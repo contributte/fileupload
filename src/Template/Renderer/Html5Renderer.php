@@ -22,7 +22,7 @@ class Html5Renderer extends BaseRenderer {
 		
 		$this->elements["container"]->setName("table")->addAttributes([
 			"style" => "width: 100%",
-			"border" => "1"
+			"border" => "0"
 		]);
 		
 		$this->elements["globalProgress"]->setName("progress")
@@ -92,26 +92,24 @@ class Html5Renderer extends BaseRenderer {
 		$tr = Html::el("tr");
 		
 		$preview = Html::el("td")->addAttributes([
-			"style" => "width: 20%"
+			"style" => "width: 15%"
 		]);
 		$preview->addHtml($this->elements["imagePreview"]->setAttribute("width", "100%"));
 		$preview->addHtml($this->elements["filePreview"]);
 		$tr->addHtml($preview);
 		
 		$name = Html::el("td");
-		$name->addHtml($this->elements["filename"])->addAttributes([
-			"style" => "width: 55%"
-		]);
+		$name->addHtml($this->elements["filename"]);
 		$tr->addHtml($name);
 		
 		$progress = Html::el("td");
 		$progress->addHtml($this->elements["fileProgress"])->addAttributes([
-			"style" => "width: 15%"
+			"style" => "width: 20%"
 		]);
 		$tr->addHtml($progress);
 		
 		$delete = Html::el("td")->addAttributes([
-			"style" => "width: 5%; text-align: center",
+			"style" => "width: 50px; text-align: center",
 		]);
 		$delete->addHtml($this->elements["delete"]);
 		$tr->addHtml($delete);

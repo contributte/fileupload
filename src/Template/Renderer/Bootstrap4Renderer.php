@@ -49,7 +49,7 @@ class Bootstrap4Renderer extends BaseRenderer {
 		
 		$thead = Html::el("thead class='thead-inverse'");
 		$tr = Html::el("tr");
-		$preview = Html::el("th style='width: 25%;'");
+		$preview = Html::el("th style='width: 15%;'");
 		$tr->addHtml($preview);
 		$filename = Html::el("th")->setText("Soubor");
 		$tr->addHtml($filename);
@@ -74,7 +74,7 @@ class Bootstrap4Renderer extends BaseRenderer {
 		$tr = Html::el("tr");
 		
 		$preview = Html::el("td class='align-middle'");
-		$preview->addHtml($this->elements["imagePreview"]->setAttribute("width", "100%"));
+		$preview->addHtml($this->elements["imagePreview"]->setAttribute("width", "100%")->setAttribute("class", "rounded"));
 		$preview->addHtml($this->elements["filePreview"]->setName("span")->setAttribute("class", "badge badge-pill badge-info"));
 		$tr->addHtml($preview);
 		
@@ -91,7 +91,11 @@ class Bootstrap4Renderer extends BaseRenderer {
 		$tr->addHtml($progressTd);
 		
 		$delete = Html::el("td class='align-middle text-center'");
-		$delete->addHtml($this->elements["delete"]->setAttribute("class", "btn btn-outline-danger")->setText("X"));
+		$delete->addHtml(
+			$this->elements["delete"]
+				->setAttribute("class", "btn btn-outline-danger")
+				->setHtml("&times;")
+		);
 		$tr->addHtml($delete);
 		
 		return $tr;
