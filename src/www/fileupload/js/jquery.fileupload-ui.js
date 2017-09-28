@@ -1,29 +1,39 @@
 /*
- * jQuery File Upload User Interface Plugin 9.6.0
+ * jQuery File Upload User Interface Plugin
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
  * https://blueimp.net
  *
  * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
+ * https://opensource.org/licenses/MIT
  */
 
 /* jshint nomen:false */
-/* global define, window */
+/* global define, require, window */
 
-(function (factory) {
+;(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
         define([
-            'jquery.fileupload',
-            'tmpl',
+            'jquery',
+            'blueimp-tmpl',
             './jquery.fileupload-image',
             './jquery.fileupload-audio',
             './jquery.fileupload-video',
             './jquery.fileupload-validate'
         ], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS:
+        factory(
+            require('jquery'),
+            require('blueimp-tmpl'),
+            require('./jquery.fileupload-image'),
+            require('./jquery.fileupload-audio'),
+            require('./jquery.fileupload-video'),
+            require('./jquery.fileupload-validate')
+        );
     } else {
         // Browser globals:
         factory(
@@ -62,10 +72,10 @@
             // The expected data type of the upload response, sets the dataType
             // option of the $.ajax upload requests:
             dataType: 'json',
-            
+
             // Error and info messages:
             messages: {
-                unknownError: 'Unknown error'  
+                unknownError: 'Unknown error'
             },
 
             // Function returning the current number of files,
