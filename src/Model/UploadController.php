@@ -86,7 +86,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function getRenderer() {
 		if(is_null($this->renderer)) {
 			$rendererClass = $this->uploadControl->getRenderer();
-			$this->renderer = new $rendererClass($this->uploadControl);
+			$this->renderer = new $rendererClass($this->uploadControl, $this->uploadControl->getTranslator());
 			
 			if(!($this->renderer instanceof BaseRenderer)) {
 				throw new InvalidStateException(

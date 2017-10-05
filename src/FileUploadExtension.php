@@ -18,7 +18,8 @@ final class FileUploadExtension extends \Nette\DI\CompilerExtension {
 		"maxFileSize" => NULL,
 		"uploadModel" => NULL,
 		"fileFilter" => NULL,
-		"renderer" => '\Zet\FileUpload\Template\Renderer\Html5Renderer'
+		"renderer" => '\Zet\FileUpload\Template\Renderer\Html5Renderer',
+		"translator" => NULL
 	];
 	
 	/**

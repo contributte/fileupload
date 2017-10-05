@@ -2,6 +2,7 @@
 
 namespace Zet\FileUpload;
 
+use Nette\Localization\ITranslator;
 use Tracy\Debugger;
 
 /**
@@ -33,6 +34,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			$component->setUploadModel($configuration["uploadModel"]);
 			$component->setFileFilter($configuration["fileFilter"]);
 			$component->setRenderer($configuration["renderer"]);
+			if($configuration["translator"] === null) {
+				$translator = $systemContainer->getByType(ITranslator::class);
+				$component->setTranslator($translator);
+			} else {
+				$component->setTranslator($configuration["translator"]);
+			}
 			
 			$container->addComponent($component, $name);
 
@@ -147,6 +154,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $token;
+	
+	/**
+	 * @var ITranslator
+	 */
+	private $translator;
 
 	/**
 	 * FileUploadControl constructor.
@@ -381,6 +393,20 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function getRenderer() {
 		return $this->renderer;
+	}
+	
+	/**
+	 * @return ITranslator
+	 */
+	public function getTranslator(): ITranslator {
+		return $this->translator;
+	}
+	
+	/**
+	 * @param ITranslator $translator
+	 */
+	public function setTranslator(ITranslator $translator) {
+		$this->translator = $translator;
 	}
 
 	# --------------------------------------------------------------------
