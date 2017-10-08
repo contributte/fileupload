@@ -4,6 +4,7 @@ namespace Zet\FileUpload;
 
 use Nette\Localization\ITranslator;
 use Tracy\Debugger;
+use Zet\FileUpload\Model\DefaultFile;
 
 /**
  * Class FileUploadControl
@@ -159,6 +160,11 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var ITranslator
 	 */
 	private $translator;
+	
+	/**
+	 * @var DefaultFile[]
+	 */
+	private $defaulltFiles = [];
 
 	/**
 	 * FileUploadControl constructor.
@@ -396,19 +402,26 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	}
 	
 	/**
-	 * @return ITranslator
+	 * @return DefaultFile[]
 	 */
-	public function getTranslator(): ITranslator {
-		return $this->translator;
+	public function getDefaulltFiles() {
+		return $this->defaulltFiles;
 	}
 	
 	/**
-	 * @param ITranslator $translator
+	 * @param DefaultFile[] $defaulltFiles
 	 */
-	public function setTranslator(ITranslator $translator) {
-		$this->translator = $translator;
+	public function setDefaulltFiles($defaulltFiles) {
+		$this->defaulltFiles = $defaulltFiles;
 	}
-
+	
+	/**
+	 * @param DefaultFile $defaultFile
+	 */
+	public function addDefaultFile($defaultFile) {
+		$this->defaulltFiles[] = $defaultFile;
+	}
+	
 	# --------------------------------------------------------------------
 	# Methods
 	# --------------------------------------------------------------------

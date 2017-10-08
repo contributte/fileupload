@@ -437,5 +437,13 @@ FileUploadController.prototype = {
 	 */
 	getMessages: function () {
 		return this.messages;
+	},
+	
+	/**
+	 *
+	 * @param defaultFiles
+	 */
+	addDefaultFiles: function(defaultFiles) {
+	
 	}
 };

@@ -87,7 +87,7 @@ class JavascriptBuilder extends Object {
 	private function setSettings() {
 		$this->template->uploadUrl = $this->controller->link("upload");
 		$this->template->renameLink = $this->controller->link("rename");
-		$this->template->removeLink = $this->controller->link("remove");
+		$this->template->removeLink = $this->controller->link("//remove");
 		$this->template->inputId = $this->renderer->getElements()["input"]->attrs["id"];
 		
 		/** @noinspection PhpInternalEntityUsedInspection */
@@ -100,6 +100,15 @@ class JavascriptBuilder extends Object {
 		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->token = $this->controller->getUploadControl()->getToken();
 		$this->template->params = json_encode($this->controller->getUploadControl()->getParams());
+		
+		$default = $this->controller->getUploadControl()->getDefaulltFiles();
+		
+		$defaultFiles = [];
+		foreach($default as $file) {
+			$defaultFiles[] = $file->toArray();
+		}
+		
+		$this->template->defaultFiles = $defaultFiles;
 	}
 	
 	/**

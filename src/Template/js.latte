@@ -61,6 +61,11 @@
 		var removeLink = {$removeLink|escapeJS|noescape};
 
 		/**
+		 * Seznam výchozích souborů.
+		 */
+		var defaultFiles = {$defaultFiles|escapeJS|noescape};
+
+		/**
 		 * Konfigurace controlleru.
 		 * @type Object
 		 */
@@ -138,6 +143,8 @@
 				controller.done(data);
 			}
 		});
+
+		controller.addDefaultFiles(defaultFiles);
 	});
 </script>
 
