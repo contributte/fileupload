@@ -225,12 +225,13 @@ Renderer.prototype = {
 		if (this.components.delete != null) {
 			var deleteButton = fileContainer.querySelector(this.getSelector(this.components.delete));
 			
+			var self = this;
 			deleteButton.addEventListener("click", function () {
 				$.ajax({
 					url: this.removeLink,
 					data: {
 						id: id,
-						token: this.token
+						token: self.token
 					}
 				}).done(function () {
 					$(fileContainer).fadeOut(400, function () {
