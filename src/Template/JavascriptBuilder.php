@@ -90,6 +90,9 @@ class JavascriptBuilder extends Object {
 		$this->template->removeLink = $this->controller->link("//remove");
 		$this->template->inputId = $this->renderer->getElements()["input"]->attrs["id"];
 		
+		$this->needTranslate();
+		$this->template->messages = $this->controller->getUploadControl()->getMessages();
+		
 		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->maxFiles = $this->controller->getUploadControl()->getMaxFiles();
 		/** @noinspection PhpInternalEntityUsedInspection */
@@ -101,7 +104,7 @@ class JavascriptBuilder extends Object {
 		$this->template->token = $this->controller->getUploadControl()->getToken();
 		$this->template->params = json_encode($this->controller->getUploadControl()->getParams());
 		
-		$default = $this->controller->getUploadControl()->getDefaulltFiles();
+		$default = $this->controller->getUploadControl()->getDefaultFiles();
 		
 		$defaultFiles = [];
 		foreach($default as $file) {
@@ -135,5 +138,17 @@ class JavascriptBuilder extends Object {
 		}
 		
 		$this->template->components = $components;
+	}
+	
+	/**
+	 *
+	 */
+	private function needTranslate() {
+		$upload = $this->controller->getUploadControl();
+		if($upload->isAutoTranslate()) {
+			foreach($upload->getMessages() as $key => $value) {
+				$upload->setMessage($key, $upload->getTranslator()->translate($value));
+			}
+		}
 	}
 }

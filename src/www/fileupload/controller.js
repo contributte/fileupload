@@ -286,9 +286,10 @@ Renderer.prototype = {
  * @param {string} token
  * @param {RendererDefinition} renderer
  * @param {object} config
+ * @param {object} messages
  * @constructor
  */
-var FileUploadController = function (id, token, renderer, config) {
+var FileUploadController = function (id, token, renderer, config, messages) {
 	
 	/**
 	 * @type {number}

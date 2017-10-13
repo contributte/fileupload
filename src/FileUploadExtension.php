@@ -19,7 +19,21 @@ final class FileUploadExtension extends \Nette\DI\CompilerExtension {
 		"uploadModel" => NULL,
 		"fileFilter" => NULL,
 		"renderer" => '\Zet\FileUpload\Template\Renderer\Html5Renderer',
-		"translator" => NULL
+		"translator" => NULL,
+		"autoTranslate" => false,
+		"messages" => [
+			"maxFiles" => "Maximální počet souborů je {maxFiles}.",
+			"maxSize" => "Maximální velikost souboru je {maxSize}.",
+			"fileTypes" => "Povolené typy souborů jsou {fileTypes}.",
+			
+			// PHP Errors
+			"fileSize" => "Soubor je příliš veliký.",
+			"partialUpload" => "Soubor byl nahrán pouze částěčně.",
+			"noFile" => "Nebyl nahrán žádný soubor.",
+			"tmpFolder" => "Chybí dočasná složka.",
+			"cannotWrite" => "Nepodařilo se zapsat soubor na disk.",
+			"stopped" => "Nahrávání souboru bylo přerušeno."
+		]
 	];
 	
 	/**
