@@ -180,10 +180,9 @@ class UploadController extends \Nette\Application\UI\Control {
 	 * Odstraní nahraný soubor.
 	 */
 	public function handleRemove() {
-		$id = $this->request->getPost("id");
-		$token = $this->request->getPost("token");
-		$default = $this->request->getPost("default", 0);
-		Debugger::log($this->request->getPost());
+		$id = $this->request->getQuery("id");
+		$token = $this->request->getQuery("token");
+		$default = $this->request->getQuery("default", 0);
 		
 		if($default == 0) {
 			$cache = $this->uploadControl->getCache();
@@ -198,6 +197,9 @@ class UploadController extends \Nette\Application\UI\Control {
 			}
 		} else {
 			$files = $this->uploadControl->getDefaulltFiles();
+			
+			Debugger::log("Výchozí soubory...");
+			Debugger::log($files);
 			
 			foreach($files as $file) {
 				if($file->getIdentifier() == $id) {

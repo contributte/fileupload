@@ -22,9 +22,9 @@ class DefaultFile extends Object {
 	public $onDelete = [];
 	
 	/**
-	 * Data sloužící jako náhled obrázku.
+	 * Odkaz na náhled obrázku.
 	 *
-	 * @var Html
+	 * @var string
 	 */
 	private $preview;
 	
@@ -47,21 +47,21 @@ class DefaultFile extends Object {
 	 */
 	public function toArray() {
 		return [
-			"preview" => (string) $this->preview,
+			"preview" => $this->preview,
 			"filename" => $this->filename,
 			"id" => $this->identifier
 		];
 	}
 	
 	/**
-	 * @return Html
+	 * @return string
 	 */
 	public function getPreview() {
 		return $this->preview;
 	}
 	
 	/**
-	 * @param Html $preview
+	 * @param string $preview
 	 */
 	public function setPreview($preview) {
 		$this->preview = $preview;

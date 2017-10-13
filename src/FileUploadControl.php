@@ -157,11 +157,6 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	private $token;
 	
 	/**
-	 * @var ITranslator
-	 */
-	private $translator;
-	
-	/**
 	 * @var DefaultFile[]
 	 */
 	private $defaulltFiles = [];

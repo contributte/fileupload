@@ -118,7 +118,7 @@ Renderer.prototype = {
 		template.setAttribute("data-upload-id", id.toString());
 		template.setAttribute("for", this.inputHtmlId);
 		
-		if (this.components.filename != "null") {
+		if (this.components.filename != null) {
 			template.querySelector(this.getSelector(this.components.filename)).textContent = file.name;
 		}
 		
@@ -127,6 +127,44 @@ Renderer.prototype = {
 			this.setImagePreview(imagePreview, file);
 		} else if (this.components.filePreview != null) {
 			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.name);
+		}
+		
+		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
+	},
+	
+	addDefaultFile: function(file) {
+		var template = this.getTemplate("upload-template-file-container");
+		template.setAttribute("for", this.inputHtmlId);
+		
+		if (this.components.filename != null) {
+			template.querySelector(this.getSelector(this.components.filename)).textContent = file.filename;
+		}
+		
+		if (this.isImage(file.filename) && this.components.imagePreview != null) {
+			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
+			imagePreview.setAttribute("src", file.preview);
+		} else if (this.components.filePreview != null) {
+			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.filename);
+		}
+		
+		if (this.components.delete != null) {
+			var deleteButton = template.querySelector(this.getSelector(this.components.delete));
+			
+			var self = this;
+			deleteButton.addEventListener("click", function () {
+				$.ajax({
+					url: self.removeLink,
+					data: {
+						id: file.id,
+						token: self.token,
+						default: 1
+					}
+				}).done(function () {
+					$(template).fadeOut(400, function () {
+						$(this).remove();
+					});
+				});
+			});
 		}
 		
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
@@ -225,12 +263,13 @@ Renderer.prototype = {
 		if (this.components.delete != null) {
 			var deleteButton = fileContainer.querySelector(this.getSelector(this.components.delete));
 			
+			var self = this;
 			deleteButton.addEventListener("click", function () {
 				$.ajax({
-					url: this.removeLink,
+					url: self.removeLink,
 					data: {
 						id: id,
-						token: this.token
+						token: self.token
 					}
 				}).done(function () {
 					$(fileContainer).fadeOut(400, function () {
@@ -444,6 +483,8 @@ FileUploadController.prototype = {
 	 * @param defaultFiles
 	 */
 	addDefaultFiles: function(defaultFiles) {
-	
+		for(var i = 0; i < defaultFiles.length; i++) {
+			this.renderer.addDefaultFile(defaultFiles[i]);
+		}
 	}
 };
