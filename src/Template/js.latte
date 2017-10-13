@@ -61,6 +61,11 @@
 		var removeLink = {$removeLink|escapeJS|noescape};
 
 		/**
+		 * Seznam výchozích souborů.
+		 */
+		var defaultFiles = {$defaultFiles|escapeJS|noescape};
+
+		/**
 		 * Konfigurace controlleru.
 		 * @type Object
 		 */
@@ -72,6 +77,11 @@
 		};
 
 		/**
+		 * Zprávy pro chybová hlášení.
+		 */
+		var messages = {$messages|escapeJS|noescape};
+
+		/**
 		 * JS Renderer.
 		 * @type Renderer
 		 */
@@ -81,7 +91,7 @@
 		 * Třída pro práci s fileuploaderem.
 		 * @type FileUploadController
 		 */
-		var controller = new FileUploadController(input, token, renderer, controllerConfig);
+		var controller = new FileUploadController(input, token, renderer, controllerConfig, messages);
 
 		$("#" + input).click(function (event) {
 			if (!controller.canUploadNextFile()) {
@@ -94,8 +104,11 @@
 		// FileUpload definition
 		// -----------------------------------------------------------------------
 		$("#" + input).fileupload({
-			url: uploadUrl,
-			dataType: "json",
+			"url": uploadUrl,
+			"dataType": "json",
+			{foreach $settings as $name => $value}
+			{$name}: {$value|escapeJS|noescape},
+			{/foreach}
 
 			// Přidání nového souboru.
 			add: function (e, data) {
@@ -138,6 +151,8 @@
 				controller.done(data);
 			}
 		});
+
+		controller.addDefaultFiles(defaultFiles);
 	});
 </script>
 

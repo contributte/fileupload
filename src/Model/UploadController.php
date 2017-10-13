@@ -3,6 +3,7 @@
 namespace Zet\FileUpload\Model;
 
 use Nette\InvalidStateException;
+use Tracy\Debugger;
 use Zet\FileUpload\Template\JavascriptBuilder;
 use Zet\FileUpload\Template\Renderer\BaseRenderer;
 
@@ -86,7 +87,7 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function getRenderer() {
 		if(is_null($this->renderer)) {
 			$rendererClass = $this->uploadControl->getRenderer();
-			$this->renderer = new $rendererClass($this->uploadControl);
+			$this->renderer = new $rendererClass($this->uploadControl, $this->uploadControl->getTranslator());
 			
 			if(!($this->renderer instanceof BaseRenderer)) {
 				throw new InvalidStateException(
@@ -181,16 +182,30 @@ class UploadController extends \Nette\Application\UI\Control {
 	public function handleRemove() {
 		$id = $this->request->getQuery("id");
 		$token = $this->request->getQuery("token");
+		$default = $this->request->getQuery("default", 0);
 		
-		$cache = $this->uploadControl->getCache();
-		/** @noinspection PhpInternalEntityUsedInspection */
-		$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
-		if(isset($cacheFiles[ $id ])) {
+		if($default == 0) {
+			$cache = $this->uploadControl->getCache();
 			/** @noinspection PhpInternalEntityUsedInspection */
-			$this->uploadControl->getUploadModel()->remove($cacheFiles[ $id ]);
-			unset($cacheFiles[ $id ]);
-			/** @noinspection PhpInternalEntityUsedInspection */
-			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
+			$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
+			if(isset($cacheFiles[ $id ])) {
+				/** @noinspection PhpInternalEntityUsedInspection */
+				$this->uploadControl->getUploadModel()->remove($cacheFiles[ $id ]);
+				unset($cacheFiles[ $id ]);
+				/** @noinspection PhpInternalEntityUsedInspection */
+				$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
+			}
+		} else {
+			$files = $this->uploadControl->getDefaulltFiles();
+			
+			Debugger::log("Výchozí soubory...");
+			Debugger::log($files);
+			
+			foreach($files as $file) {
+				if($file->getIdentifier() == $id) {
+					$file->onDelete($id);
+				}
+			}
 		}
 	}
 	
@@ -215,6 +230,6 @@ class UploadController extends \Nette\Application\UI\Control {
 	}
 	
 	public function validate() {
-		// Nette 2.3.10 bypass
+		// Nette ^2.3.10 bypass
 	}
 }

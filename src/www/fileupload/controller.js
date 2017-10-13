@@ -118,7 +118,7 @@ Renderer.prototype = {
 		template.setAttribute("data-upload-id", id.toString());
 		template.setAttribute("for", this.inputHtmlId);
 		
-		if (this.components.filename != "null") {
+		if (this.components.filename != null) {
 			template.querySelector(this.getSelector(this.components.filename)).textContent = file.name;
 		}
 		
@@ -127,6 +127,44 @@ Renderer.prototype = {
 			this.setImagePreview(imagePreview, file);
 		} else if (this.components.filePreview != null) {
 			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.name);
+		}
+		
+		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
+	},
+	
+	addDefaultFile: function(file) {
+		var template = this.getTemplate("upload-template-file-container");
+		template.setAttribute("for", this.inputHtmlId);
+		
+		if (this.components.filename != null) {
+			template.querySelector(this.getSelector(this.components.filename)).textContent = file.filename;
+		}
+		
+		if (this.isImage(file.filename) && this.components.imagePreview != null) {
+			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
+			imagePreview.setAttribute("src", file.preview);
+		} else if (this.components.filePreview != null) {
+			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.filename);
+		}
+		
+		if (this.components.delete != null) {
+			var deleteButton = template.querySelector(this.getSelector(this.components.delete));
+			
+			var self = this;
+			deleteButton.addEventListener("click", function () {
+				$.ajax({
+					url: self.removeLink,
+					data: {
+						id: file.id,
+						token: self.token,
+						default: 1
+					}
+				}).done(function () {
+					$(template).fadeOut(400, function () {
+						$(this).remove();
+					});
+				});
+			});
 		}
 		
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
@@ -225,12 +263,13 @@ Renderer.prototype = {
 		if (this.components.delete != null) {
 			var deleteButton = fileContainer.querySelector(this.getSelector(this.components.delete));
 			
+			var self = this;
 			deleteButton.addEventListener("click", function () {
 				$.ajax({
-					url: this.removeLink,
+					url: self.removeLink,
 					data: {
 						id: id,
-						token: this.token
+						token: self.token
 					}
 				}).done(function () {
 					$(fileContainer).fadeOut(400, function () {
@@ -247,9 +286,10 @@ Renderer.prototype = {
  * @param {string} token
  * @param {RendererDefinition} renderer
  * @param {object} config
+ * @param {object} messages
  * @constructor
  */
-var FileUploadController = function (id, token, renderer, config) {
+var FileUploadController = function (id, token, renderer, config, messages) {
 	
 	/**
 	 * @type {number}
@@ -293,19 +333,7 @@ var FileUploadController = function (id, token, renderer, config) {
 	 * Chybové hlášky.
 	 * @type {object.<string, string>}
 	 */
-	this.messages = {
-		maxFiles: "Maximální počet souborů je %maxFiles%.",
-		maxSize: "Maximální velikost souboru je %maxSize%.",
-		fileTypes: "Povolené typy souborů jsou %fileTypes%.",
-		
-		// PHP Errors
-		fileSize: "Soubor je příliš veliký.",
-		partialUpload: "Soubor byl nahrán pouze částěčně.",
-		noFile: "Nebyl nahrán žádný soubor.",
-		tmpFolder: "Chybí dočasná složka.",
-		cannotWrite: "Nepodařilo se zapsat soubor na disk.",
-		stopped: "Nahrávání souboru bylo přerušeno."
-	};
+	this.messages = messages;
 };
 
 FileUploadController.prototype = {
@@ -321,11 +349,11 @@ FileUploadController.prototype = {
 		var message = "";
 		
 		if (!this.canUploadNextFile()) {
-			message = this.messages.maxFiles.replace("%maxFiles%", this.config.maxFiles.toString());
+			message = this.messages.maxFiles.replace("{maxFiles}", this.config.maxFiles.toString());
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else if (file["size"] > this.config.maxFileSize) {
-			message = this.messages.maxSize.replace("%maxSize%", this.config.fileSizeString);
+			message = this.messages.maxSize.replace("{maxSize}", this.config.fileSizeString);
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else {
@@ -400,7 +428,7 @@ FileUploadController.prototype = {
 					break;
 				case 100:
 					//noinspection JSUnresolvedVariable
-					msg = this.messages.fileTypes.replace("%fileTypes%", result.errorMessage);
+					msg = this.messages.fileTypes.replace("{fileTypes}", result.errorMessage);
 					break;
 			}
 			this.renderer.fileError(data.files[0], msg, id);
@@ -437,5 +465,15 @@ FileUploadController.prototype = {
 	 */
 	getMessages: function () {
 		return this.messages;
+	},
+	
+	/**
+	 *
+	 * @param defaultFiles
+	 */
+	addDefaultFiles: function(defaultFiles) {
+		for(var i = 0; i < defaultFiles.length; i++) {
+			this.renderer.addDefaultFile(defaultFiles[i]);
+		}
 	}
 };

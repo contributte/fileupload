@@ -2,27 +2,29 @@
 
 namespace Zet\FileUpload;
 
-use Tracy\Debugger;
+use Nette\Localization\ITranslator;
+use Zet\FileUpload\Model\DefaultFile;
 
 /**
  * Class FileUploadControl
- * @author Zechy <email@zechy.cz>
+ *
+ * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload
  */
 class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
-
+	
 	# --------------------------------------------------------------------
 	# Registration
 	# --------------------------------------------------------------------
 	/**
 	 * @static
-	 * @param $systemContainer
+	 * @param       $systemContainer
 	 * @param array $configuration
 	 */
 	public static function register(\Nette\DI\Container $systemContainer, $configuration = []) {
 		$class = __CLASS__;
-		\Nette\Forms\Container::extensionMethod("addFileUpload", function (
-			\Nette\Forms\Container $container, $name, $maxFiles = NULL, $maxFileSize = NULL
+		\Nette\Forms\Container::extensionMethod("addFileUpload", function(
+			\Nette\Forms\Container $container, $name, $maxFiles = null, $maxFileSize = null
 		) use ($class, $systemContainer, $configuration) {
 			$maxFiles = is_null($maxFiles) ? $configuration["maxFiles"] : $maxFiles;
 			$maxFileSize = is_null($maxFileSize) ? $configuration["maxFileSize"] : $maxFileSize;
@@ -34,23 +36,36 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			$component->setFileFilter($configuration["fileFilter"]);
 			$component->setRenderer($configuration["renderer"]);
 			
+			if($configuration["translator"] === null) {
+				$translator = $systemContainer->getByType(ITranslator::class);
+				$component->setTranslator($translator);
+			} else {
+				$component->setTranslator($configuration["translator"]);
+			}
+			
+			$component->setAutoTranslate($configuration["autoTranslate"]);
+			$component->setMessages($configuration["messages"]);
+			$component->setUploadSettings($configuration["uploadSettings"]);
+			
 			$container->addComponent($component, $name);
-
+			
 			return $component;
 		});
 	}
 	
 	/**
 	 * Vloží CSS do stránky.
+	 *
 	 * @static
 	 * @param string $basePath
 	 */
 	public static function getHead($basePath) {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
 	}
-
+	
 	/**
 	 * Vloží skripty do stránky.
+	 *
 	 * @static
 	 * @param string $basePath
 	 */
@@ -63,64 +78,68 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
 	}
-
+	
 	# --------------------------------------------------------------------
 	# Control definition
 	# --------------------------------------------------------------------
 	/**
 	 * Povolí nahrávat pouze obrázky png, jpeg, jpg, gif.
+	 *
 	 * @var string
 	 */
 	const FILTER_IMAGES = 'Zet\FileUpload\Filter\ImageFilter';
-
+	
 	/**
 	 * Povolí nahrávat pouze dokumenty typu txt, doc, docx, xls, xlsx, ppt, pptx, pdf.
+	 *
 	 * @var string
 	 */
 	const FILTER_DOCUMENTS = 'Zet\FileUpload\Filter\DocumentFilter';
-
+	
 	/**
 	 * Povolí nahrávat soubory zip, tar, rar, 7z.
+	 *
 	 * @var string
 	 */
 	const FILTER_ARCHIVE = 'Zet\FileUpload\Filter\ArchiveFilter';
-
+	
 	/**
 	 * Povolí nahrávat pouze soubory mp3, ogg, aiff.
+	 *
 	 * @var string
 	 */
 	const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
-
+	
 	/**
 	 * @var \Nette\DI\Container
 	 */
 	private $container;
-
+	
 	/**
 	 * @var \Nette\Caching\Cache
 	 */
 	private $cache;
-
+	
 	/**
 	 * @var int
 	 */
 	private $maxFiles;
-
+	
 	/**
 	 * @var int
 	 */
 	private $maxFileSize;
-
+	
 	/**
 	 * @var string
 	 */
 	private $fileSizeString;
-
+	
 	/**
 	 * @var \Zet\FileUpload\Model\UploadController
 	 */
 	private $controller;
-
+	
 	/**
 	 * @var string
 	 */
@@ -128,12 +147,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * Třída pro filtrování nahrávaných souborů.
+	 *
 	 * @var string
 	 */
 	private $fileFilter;
 	
 	/**
 	 * Pole vlastních definovaných parametrů.
+	 *
 	 * @var array
 	 */
 	private $params = [];
@@ -142,19 +163,58 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @var string
 	 */
 	private $renderer;
-
+	
 	/**
 	 * @var string
 	 */
 	private $token;
-
+	
+	/**
+	 * @var DefaultFile[]
+	 */
+	private $defaultFiles = [];
+	
+	/**
+	 * Seznam chybových hlášek.
+	 * Chyby uploaderu:
+	 * - maxFiles
+	 * - maxSize
+	 * - fileTypes
+	 *
+	 * Chyby v PHP:
+	 * - fileSize
+	 * - partialUpload
+	 * - noFile
+	 * - tmpFolder
+	 * - cannotWrite
+	 * - stopped
+	 *
+	 * @var string[]
+	 */
+	private $messages = [];
+	
+	/**
+	 * Automaticky překládat všechny chybové zprávy?
+	 *
+	 * @var bool
+	 */
+	private $autoTranslate = false;
+	
+	/**
+	 * Pole vlastních hodnot pro konfiguraci uploaderu.
+	 *
+	 * @var array
+	 */
+	private $uploadSettings = [];
+	
 	/**
 	 * FileUploadControl constructor.
-	 * @param string $name Název inputu.
-	 * @param int $maxFiles Maximální počet souborů.
+	 *
+	 * @param string $name        Název inputu.
+	 * @param int    $maxFiles    Maximální počet souborů.
 	 * @param string $maxFileSize Maximální velikosti souboru.
 	 */
-	public function __construct($name, $maxFiles, $maxFileSize = NULL) {
+	public function __construct($name, $maxFiles, $maxFileSize = null) {
 		parent::__construct($name);
 		$this->maxFiles = $maxFiles;
 		if(is_null($maxFileSize)) {
@@ -170,6 +230,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * Ověření nastavených direktiv, zda nepřekročují nastavení serveru.
+	 *
 	 * @throws \Zet\FileUpload\InvalidValueException
 	 */
 	private function checkSettings() {
@@ -200,7 +261,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		parent::attached($form);
 		$this->form->addComponent($this->controller, "uploadController" . ucfirst($this->name));
 	}
-
+	
 	# --------------------------------------------------------------------
 	# Setters \ Getters
 	# --------------------------------------------------------------------
@@ -215,7 +276,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		/** @noinspection PhpParamsInspection */
 		$this->controller->setRequest($container->getByType('\Nette\Http\Request'));
 	}
-
+	
 	/**
 	 * @return \Nette\DI\Container
 	 * @internal
@@ -223,7 +284,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getContainer() {
 		return $this->container;
 	}
-
+	
 	/**
 	 * @return int
 	 * @internal
@@ -238,9 +299,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setMaxFiles($maxFiles) {
 		$this->maxFiles = $maxFiles;
+		
 		return $this;
 	}
-
+	
 	/**
 	 * @return Model\IUploadModel
 	 * @internal
@@ -266,25 +328,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setUploadModel($uploadModel) {
 		$this->uploadModel = $uploadModel;
+		
 		return $this;
 	}
 	
-	/**
-	 * @param int $mode
-	 * @return $this
-	 */
-	public function setUIMode($mode) {
-		$this->uiMode = $mode;
-		return $this;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getUIMode() {
-		return $this->uiMode;
-	}
-
 	/**
 	 * @return int
 	 * @internal
@@ -299,16 +346,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setMaxFileSize($maxFileSize) {
 		$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		
 		return $this;
 	}
-
+	
 	/**
 	 * @return \Nette\Caching\Cache
 	 */
 	public function getCache() {
 		return $this->cache;
 	}
-
+	
 	/**
 	 * @return string
 	 * @internal
@@ -316,7 +364,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getFileSizeString() {
 		return $this->fileSizeString;
 	}
-
+	
 	/**
 	 * @return string
 	 * @internal
@@ -327,16 +375,19 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
+	 *
 	 * @param string $fileFilter
 	 * @return $this
 	 */
 	public function setFileFilter($fileFilter) {
 		$this->fileFilter = $fileFilter;
+		
 		return $this;
 	}
 	
 	/**
 	 * Vrátí název pro frontu s tokenem.
+	 *
 	 * @param string $token
 	 * @return string
 	 * @internal
@@ -344,9 +395,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getTokenizedCacheName($token) {
 		return $this->getHtmlId() . "-" . $token;
 	}
-
+	
 	/**
 	 * Vrátí identifikační token.
+	 *
 	 * @return string
 	 * @internal
 	 */
@@ -356,10 +408,14 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * Nastavení vlastních parametrů k uploadovanému souboru.
+	 *
 	 * @param array $params
+	 * @return FileUploadControl
 	 */
 	public function setParams(array $params) {
 		$this->params = $params;
+		
+		return $this;
 	}
 	
 	/**
@@ -371,9 +427,12 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * @param string $renderer
+	 * @return FileUploadControl
 	 */
 	public function setRenderer($renderer) {
 		$this->renderer = $renderer;
+		
+		return $this;
 	}
 	
 	/**
@@ -382,7 +441,107 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getRenderer() {
 		return $this->renderer;
 	}
-
+	
+	/**
+	 * @return DefaultFile[]
+	 */
+	public function getDefaultFiles() {
+		return $this->defaultFiles;
+	}
+	
+	/**
+	 * @param DefaultFile[] $defaultFiles
+	 * @return FileUploadControl
+	 */
+	public function setDefaultFiles($defaultFiles) {
+		$this->defaultFiles = $defaultFiles;
+		
+		return $this;
+	}
+	
+	/**
+	 * @param DefaultFile $defaultFile
+	 * @return FileUploadControl
+	 */
+	public function addDefaultFile($defaultFile) {
+		$this->defaultFiles[] = $defaultFile;
+		
+		return $this;
+	}
+	
+	/**
+	 * @param string[] $messages
+	 * @return FileUploadControl
+	 */
+	public function setMessages(array $messages) {
+		$this->messages = $messages;
+		
+		return $this;
+	}
+	
+	/**
+	 * @param string $index
+	 * @param string $message
+	 * @return FileUploadControl
+	 */
+	public function setMessage($index, $message) {
+		$this->messages[ $index ] = $message;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return string[]
+	 */
+	public function getMessages() {
+		return $this->messages;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isAutoTranslate() {
+		return $this->autoTranslate;
+	}
+	
+	/**
+	 * @param bool $autoTranslate
+	 * @return FileUploadControl
+	 */
+	public function setAutoTranslate($autoTranslate) {
+		$this->autoTranslate = $autoTranslate;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getUploadSettings() {
+		return $this->uploadSettings;
+	}
+	
+	/**
+	 * @param array $uploadSettings
+	 * @return FileUploadControl
+	 */
+	public function setUploadSettings($uploadSettings) {
+		$this->uploadSettings = $uploadSettings;
+		
+		return $this;
+	}
+	
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 * @return FileUploadControl
+	 */
+	public function addUploadSettings($name, $value) {
+		$this->uploadSettings[ $name ] = $value;
+		
+		return $this;
+	}
+	
 	# --------------------------------------------------------------------
 	# Methods
 	# --------------------------------------------------------------------
@@ -394,7 +553,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 		
 		/** @var \Nette\Http\Request $request */
 		$request = $this->getContainer()->getByType('\Nette\Http\Request');
-		$this->token = $request->getPost($this->getHtmlName() ."-token");
+		$this->token = $request->getPost($this->getHtmlName() . "-token");
 	}
 	
 	/**
@@ -404,51 +563,53 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	public function getControl() {
 		$this->checkSettings();
 		
-		$this->setOption("rendered", TRUE);
-
+		$this->setOption("rendered", true);
+		
 		$container = \Nette\Utils\Html::el("div class='zet-fileupload-container'");
 		$container->id = $this->getHtmlId() . "-container";
-
+		
 		$token = \Nette\Utils\Html::el("input type='hidden' value='" . $this->token . "'");
-		$token->addAttributes(["name" => $this->getHtmlName() ."-token"]);
+		$token->addAttributes(["name" => $this->getHtmlName() . "-token"]);
 		
 		$container->addHtml($token);
 		$container->addHtml($this->controller->getJavaScriptTemplate());
 		$container->addHtml($this->controller->getControlTemplate());
-
+		
 		return $container;
 	}
-
+	
 	/**
 	 * Vrátí nacachované hodnoty z controlleru.
+	 *
 	 * @return mixed|NULL
 	 */
 	public function getValue() {
 		$files = $this->cache->load($this->getTokenizedCacheName($this->token));
-
+		
 		return $files;
 	}
-
+	
 	/**
-	 * Delete cache 
+	 * Delete cache
 	 */
 	public function __destruct() {
 		$this->cache->remove($this->getTokenizedCacheName($this->token));
 	}
-
+	
 	/**
 	 * Parses ini size
+	 *
 	 * @param string $value
 	 * @return int
 	 */
 	private function parseIniSize($value) {
-		$units = array('k' => 1024, 'm' => 1048576, 'g' => 1073741824);
+		$units = ['k' => 1024, 'm' => 1048576, 'g' => 1073741824];
 		$unit = strtolower(substr($value, -1));
 		if(is_numeric($unit) || !isset($units[ $unit ])) {
 			return $value;
 		}
-
-		return ((int) $value) * $units[ $unit ];
+		
+		return ((int)$value) * $units[ $unit ];
 	}
-
+	
 }
