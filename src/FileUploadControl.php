@@ -3,7 +3,6 @@
 namespace Zet\FileUpload;
 
 use Nette\Localization\ITranslator;
-use Tracy\Debugger;
 use Zet\FileUpload\Model\DefaultFile;
 
 /**
