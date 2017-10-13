@@ -333,19 +333,7 @@ var FileUploadController = function (id, token, renderer, config, messages) {
 	 * Chybové hlášky.
 	 * @type {object.<string, string>}
 	 */
-	this.messages = {
-		maxFiles: "Maximální počet souborů je %maxFiles%.",
-		maxSize: "Maximální velikost souboru je %maxSize%.",
-		fileTypes: "Povolené typy souborů jsou %fileTypes%.",
-		
-		// PHP Errors
-		fileSize: "Soubor je příliš veliký.",
-		partialUpload: "Soubor byl nahrán pouze částěčně.",
-		noFile: "Nebyl nahrán žádný soubor.",
-		tmpFolder: "Chybí dočasná složka.",
-		cannotWrite: "Nepodařilo se zapsat soubor na disk.",
-		stopped: "Nahrávání souboru bylo přerušeno."
-	};
+	this.messages = messages;
 };
 
 FileUploadController.prototype = {
@@ -361,11 +349,11 @@ FileUploadController.prototype = {
 		var message = "";
 		
 		if (!this.canUploadNextFile()) {
-			message = this.messages.maxFiles.replace("%maxFiles%", this.config.maxFiles.toString());
+			message = this.messages.maxFiles.replace("{maxFiles}", this.config.maxFiles.toString());
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else if (file["size"] > this.config.maxFileSize) {
-			message = this.messages.maxSize.replace("%maxSize%", this.config.fileSizeString);
+			message = this.messages.maxSize.replace("{maxSize}", this.config.fileSizeString);
 			this.renderer.addError(file, this.fileId, message);
 			this.fileId++;
 		} else {
@@ -440,7 +428,7 @@ FileUploadController.prototype = {
 					break;
 				case 100:
 					//noinspection JSUnresolvedVariable
-					msg = this.messages.fileTypes.replace("%fileTypes%", result.errorMessage);
+					msg = this.messages.fileTypes.replace("{fileTypes}", result.errorMessage);
 					break;
 			}
 			this.renderer.fileError(data.files[0], msg, id);
