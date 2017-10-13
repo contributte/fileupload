@@ -46,6 +46,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			
 			$component->setAutoTranslate($configuration["autoTranslate"]);
 			$component->setMessages($configuration["messages"]);
+			$component->setUploadSettings($configuration["uploadSettings"]);
 			
 			$container->addComponent($component, $name);
 			
@@ -195,9 +196,17 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * Automaticky překládat všechny chybové zprávy?
+	 *
 	 * @var bool
 	 */
 	private $autoTranslate = false;
+	
+	/**
+	 * Pole vlastních hodnot pro konfiguraci uploaderu.
+	 *
+	 * @var array
+	 */
+	private $uploadSettings = [];
 	
 	/**
 	 * FileUploadControl constructor.
@@ -406,6 +415,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setParams(array $params) {
 		$this->params = $params;
+		
 		return $this;
 	}
 	
@@ -422,6 +432,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setRenderer($renderer) {
 		$this->renderer = $renderer;
+		
 		return $this;
 	}
 	
@@ -445,6 +456,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setDefaultFiles($defaultFiles) {
 		$this->defaultFiles = $defaultFiles;
+		
 		return $this;
 	}
 	
@@ -454,6 +466,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function addDefaultFile($defaultFile) {
 		$this->defaultFiles[] = $defaultFile;
+		
 		return $this;
 	}
 	
@@ -463,6 +476,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 */
 	public function setMessages(array $messages) {
 		$this->messages = $messages;
+		
 		return $this;
 	}
 	
@@ -472,7 +486,8 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	 * @return FileUploadControl
 	 */
 	public function setMessage($index, $message) {
-		$this->messages[$index] = $message;
+		$this->messages[ $index ] = $message;
+		
 		return $this;
 	}
 	
@@ -492,9 +507,40 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	
 	/**
 	 * @param bool $autoTranslate
+	 * @return FileUploadControl
 	 */
 	public function setAutoTranslate($autoTranslate) {
 		$this->autoTranslate = $autoTranslate;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getUploadSettings() {
+		return $this->uploadSettings;
+	}
+	
+	/**
+	 * @param array $uploadSettings
+	 * @return FileUploadControl
+	 */
+	public function setUploadSettings($uploadSettings) {
+		$this->uploadSettings = $uploadSettings;
+		
+		return $this;
+	}
+	
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 * @return FileUploadControl
+	 */
+	public function addUploadSettings($name, $value) {
+		$this->uploadSettings[ $name ] = $value;
+		
+		return $this;
 	}
 	
 	# --------------------------------------------------------------------

@@ -103,6 +103,7 @@ class JavascriptBuilder extends Object {
 		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->token = $this->controller->getUploadControl()->getToken();
 		$this->template->params = json_encode($this->controller->getUploadControl()->getParams());
+		$this->template->settings = $this->controller->getUploadControl()->getUploadSettings();
 		
 		$default = $this->controller->getUploadControl()->getDefaultFiles();
 		

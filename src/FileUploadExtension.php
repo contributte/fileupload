@@ -33,7 +33,8 @@ final class FileUploadExtension extends \Nette\DI\CompilerExtension {
 			"tmpFolder" => "Chybí dočasná složka.",
 			"cannotWrite" => "Nepodařilo se zapsat soubor na disk.",
 			"stopped" => "Nahrávání souboru bylo přerušeno."
-		]
+		],
+		"uploadSettings" => []
 	];
 	
 	/**

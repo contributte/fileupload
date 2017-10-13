@@ -104,8 +104,11 @@
 		// FileUpload definition
 		// -----------------------------------------------------------------------
 		$("#" + input).fileupload({
-			url: uploadUrl,
-			dataType: "json",
+			"url": uploadUrl,
+			"dataType": "json",
+			{foreach $settings as $name => $value}
+			{$name}: {$value|escapeJS|noescape},
+			{/foreach}
 
 			// Přidání nového souboru.
 			add: function (e, data) {
