@@ -2,7 +2,9 @@
 
 namespace Zet\FileUpload;
 
+use Nette\Application\UI\Form;
 use Nette\Localization\ITranslator;
+use Tracy\Debugger;
 use Zet\FileUpload\Model\DefaultFile;
 
 /**
@@ -255,7 +257,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	}
 	
 	/**
-	 * @param $form
+	 * @param Form $form
 	 */
 	protected function attached($form) {
 		parent::attached($form);

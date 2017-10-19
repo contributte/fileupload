@@ -70,14 +70,14 @@ class DefaultFile extends Object {
 	/**
 	 * @return string
 	 */
-	public function getFilename(): string {
+	public function getFilename() {
 		return $this->filename;
 	}
 	
 	/**
 	 * @param string $filename
 	 */
-	public function setFilename(string $filename) {
+	public function setFilename($filename) {
 		$this->filename = $filename;
 	}
 	
