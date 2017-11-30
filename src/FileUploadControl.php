@@ -39,7 +39,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 			$component->setRenderer($configuration["renderer"]);
 			
 			if($configuration["translator"] === null) {
-				$translator = $systemContainer->getByType(ITranslator::class);
+				$translator = $systemContainer->getByType(ITranslator::class, FALSE);
 				$component->setTranslator($translator);
 			} else {
 				$component->setTranslator($configuration["translator"]);
