@@ -93,12 +93,14 @@
 		 */
 		var controller = new FileUploadController(input, token, renderer, controllerConfig, messages);
 
+		{syntax off}
 		$("#" + input).click(function (event) {
 			if (!controller.canUploadNextFile()) {
 				event.preventDefault();
-				alert(controller.getMessages().maxFiles.replace("%maxFiles%", controllerConfig.maxFiles));
+				alert(controller.getMessages().maxFiles.replace("{maxFiles}", controllerConfig.maxFiles));
 			}
 		});
+		{/syntax}
 
 		// -----------------------------------------------------------------------
 		// FileUpload definition

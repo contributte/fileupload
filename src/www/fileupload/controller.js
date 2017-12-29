@@ -256,8 +256,9 @@ Renderer.prototype = {
 	
 	/**
 	 * @param { number } id
+	 * @param { FileUploadController } controller
 	 */
-	fileDone: function (id) {
+	fileDone: function (id, controller) {
 		var fileContainer = this.getFileContainer(id);
 		
 		if (this.components.delete != null) {
@@ -274,6 +275,8 @@ Renderer.prototype = {
 				}).done(function () {
 					$(fileContainer).fadeOut(400, function () {
 						$(this).remove();
+						controller.uploaded -= 1;
+						controller.addedFiles -= 1;
 					});
 				});
 			});
@@ -434,12 +437,13 @@ FileUploadController.prototype = {
 			this.renderer.fileError(data.files[0], msg, id);
 			success = false;
 		} else {
-			this.renderer.fileDone(id);
+			this.renderer.fileDone(id, this);
 		}
 		
 		if (success) {
 			this.uploaded++;
 		} else {
+			this.uploaded -= 1;
 			this.addedFiles -= 1;
 		}
 	},
@@ -473,6 +477,8 @@ FileUploadController.prototype = {
 	 */
 	addDefaultFiles: function(defaultFiles) {
 		for(var i = 0; i < defaultFiles.length; i++) {
+			this.uploaded++;
+			this.addedFiles++;
 			this.renderer.addDefaultFile(defaultFiles[i]);
 		}
 	}

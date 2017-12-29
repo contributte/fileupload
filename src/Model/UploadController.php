@@ -196,10 +196,7 @@ class UploadController extends \Nette\Application\UI\Control {
 				$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 			}
 		} else {
-			$files = $this->uploadControl->getDefaulltFiles();
-			
-			Debugger::log("Výchozí soubory...");
-			Debugger::log($files);
+			$files = $this->uploadControl->getDefaultFiles();
 			
 			foreach($files as $file) {
 				if($file->getIdentifier() == $id) {
