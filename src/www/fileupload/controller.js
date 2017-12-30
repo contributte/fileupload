@@ -78,24 +78,24 @@ var Renderer = function (token, components, inputHtmlId, removeLink) {
 		return template[1];
 	};
 	
-	this.errorTemplate = function(file, message) {
+	this.errorTemplate = function (file, message) {
 		var template = this.getTemplate("upload-template-file-error");
 		
-		if(this.components.filename != null) {
+		if (this.components.filename != null) {
 			var filename = template.querySelector(this.getSelector(this.components.filename));
-			if(filename != null) {
+			if (filename != null) {
 				filename.textContent = file.name;
 			}
 		}
 		
-		if(this.components.imagePreview != null && this.isImage(file.name)) {
+		if (this.components.imagePreview != null && this.isImage(file.name)) {
 			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
-			if(imagePreview != null) {
+			if (imagePreview != null) {
 				this.setImagePreview(imagePreview, file);
 			}
-		} else if(this.components.filePreview != null) {
+		} else if (this.components.filePreview != null) {
 			var filePreview = template.querySelector(this.getSelector(this.components.filePreview));
-			if(filePreview != null) {
+			if (filePreview != null) {
 				filePreview.textContent = this.getFileExtension(file.name);
 			}
 		}
@@ -132,7 +132,7 @@ Renderer.prototype = {
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
 	},
 	
-	addDefaultFile: function(file) {
+	addDefaultFile: function (file, controller) {
 		var template = this.getTemplate("upload-template-file-container");
 		template.setAttribute("for", this.inputHtmlId);
 		
@@ -162,6 +162,8 @@ Renderer.prototype = {
 				}).done(function () {
 					$(template).fadeOut(400, function () {
 						$(this).remove();
+						controller.uploaded--;
+						controller.addedFiles--;
 					});
 				});
 			});
@@ -475,11 +477,11 @@ FileUploadController.prototype = {
 	 *
 	 * @param defaultFiles
 	 */
-	addDefaultFiles: function(defaultFiles) {
-		for(var i = 0; i < defaultFiles.length; i++) {
+	addDefaultFiles: function (defaultFiles) {
+		for (var i = 0; i < defaultFiles.length; i++) {
 			this.uploaded++;
 			this.addedFiles++;
-			this.renderer.addDefaultFile(defaultFiles[i]);
+			this.renderer.addDefaultFile(defaultFiles[i], this);
 		}
 	}
 };

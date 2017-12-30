@@ -1,4 +1,4 @@
-(function(funcName, baseObj) {
+(function (funcName, baseObj) {
 	// The public function name defaults to window.docReady
 	// but you can pass in your own object and own function name and those will be used
 	// if you want to put them in a different namespace
@@ -29,7 +29,7 @@
 	}
 	
 	function readyStateChange() {
-		if ( document.readyState === "complete" ) {
+		if (document.readyState === "complete") {
 			ready();
 		}
 	}
@@ -38,11 +38,13 @@
 	// docReady(fn, context);
 	// the context argument is optional - if present, it will be passed
 	// as an argument to the callback
-	baseObj[funcName] = function(callback, context) {
+	baseObj[funcName] = function (callback, context) {
 		// if ready has already fired, then just schedule the callback
 		// to fire asynchronously, but right away
 		if (readyFired) {
-			setTimeout(function() {callback(context);}, 1);
+			setTimeout(function () {
+				callback(context);
+			}, 1);
 			return;
 		} else {
 			// add the function and context to the list
@@ -73,8 +75,9 @@
  * @param  {Object} child
  * @param  {Object} parent
  */
-var extendsClass = function(child, parent) {
-	var F = function() {};
+var extendsClass = function (child, parent) {
+	var F = function () {
+	};
 	F.prototype = parent.prototype;
 	child.prototype = new F();
 	child._superClass = parent.prototype;
