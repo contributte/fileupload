@@ -2,7 +2,7 @@
 
 namespace Zet\FileUpload\Template;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Tracy\Debugger;
 use Zet\FileUpload\Model\UploadController;
 use Zet\FileUpload\Template\Renderer\BaseRenderer;
@@ -13,7 +13,8 @@ use Zet\FileUpload\Template\Renderer\BaseRenderer;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload
  */
-class JavascriptBuilder extends Object {
+class JavascriptBuilder {
+	use SmartObject;
 	
 	/**
 	 * @var \Nette\Application\UI\ITemplate
@@ -41,15 +42,15 @@ class JavascriptBuilder extends Object {
 	private $renderer;
 	
 	/**
-	 * @var \Zet\FileUpload\Model\UploadController
+	 * @var UploadController
 	 */
 	private $controller;
 	
 	/**
 	 * JavascriptBuilder constructor.
 	 *
-	 * @param \Zet\FileUpload\Template\Renderer\BaseRenderer $renderer
-	 * @param \Zet\FileUpload\Model\UploadController         $controller
+	 * @param BaseRenderer $renderer
+	 * @param UploadController         $controller
 	 */
 	public function __construct(
 		BaseRenderer $renderer,
@@ -99,7 +100,7 @@ class JavascriptBuilder extends Object {
 		$this->template->maxFileSize = $this->controller->getUploadControl()->getMaxFileSize();
 		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->fileSizeString = $this->controller->getUploadControl()->getFileSizeString();
-		$this->template->productionMode = \Tracy\Debugger::$productionMode;
+		$this->template->productionMode = Debugger::$productionMode;
 		/** @noinspection PhpInternalEntityUsedInspection */
 		$this->template->token = $this->controller->getUploadControl()->getToken();
 		$this->template->params = json_encode($this->controller->getUploadControl()->getParams());

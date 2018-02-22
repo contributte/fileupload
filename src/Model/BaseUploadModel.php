@@ -2,7 +2,7 @@
 
 namespace Zet\FileUpload\Model;
 
-use Tracy\Debugger;
+use Nette\SmartObject;
 
 /**
  * Class BaseUploadModel
@@ -10,7 +10,8 @@ use Tracy\Debugger;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Model
  */
-class BaseUploadModel extends \Nette\Object implements IUploadModel {
+class BaseUploadModel implements IUploadModel {
+	use SmartObject;
 	
 	/**
 	 * Uložení nahraného souboru.

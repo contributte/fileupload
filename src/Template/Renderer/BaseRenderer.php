@@ -3,7 +3,7 @@
 namespace Zet\FileUpload\Template\Renderer;
 
 use Nette\Localization\ITranslator;
-use Nette\Object;
+use Nette\SmartObject;
 use Nette\Utils\Html;
 use Zet\FileUpload\FileUploadControl;
 
@@ -13,7 +13,8 @@ use Zet\FileUpload\FileUploadControl;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Template\Renderer
  */
-abstract class BaseRenderer extends Object implements IUploadRenderer {
+abstract class BaseRenderer implements IUploadRenderer {
+	use SmartObject;
 	
 	/**
 	 * ID template ve tvaru: HtmlId-ElementType
@@ -55,20 +56,20 @@ abstract class BaseRenderer extends Object implements IUploadRenderer {
 	];
 	
 	/**
-	 * @var \Zet\FileUpload\FileUploadControl
+	 * @var FileUploadControl
 	 */
 	protected $fileUploadControl;
 	
 	/**
-	 * @var \Nette\Localization\ITranslator|NULL
+	 * @var ITranslator|NULL
 	 */
 	protected $translator;
 	
 	/**
 	 * BaseRenderer constructor.
 	 *
-	 * @param \Zet\FileUpload\FileUploadControl    $fileUploadControl
-	 * @param \Nette\Localization\ITranslator|NULL $translator
+	 * @param FileUploadControl    $fileUploadControl
+	 * @param ITranslator|NULL $translator
 	 */
 	public function __construct(
 		FileUploadControl $fileUploadControl,
@@ -112,7 +113,7 @@ abstract class BaseRenderer extends Object implements IUploadRenderer {
 	}
 	
 	/**
-	 * @return \Nette\Utils\Html[]
+	 * @return Html[]
 	 */
 	public function getElements() {
 		return $this->elements;
@@ -121,21 +122,21 @@ abstract class BaseRenderer extends Object implements IUploadRenderer {
 	/**
 	 * Sestavení výchozí šablony uploaderu.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	abstract public function buildDefaultTemplate();
 	
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	abstract public function buildFileContainerTemplate();
 	
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	abstract public function buildFileError();
 }
