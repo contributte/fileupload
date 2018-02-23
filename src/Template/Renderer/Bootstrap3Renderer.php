@@ -2,7 +2,6 @@
 
 namespace Zet\FileUpload\Template\Renderer;
 
-use Nette\Object;
 use Nette\Utils\Html;
 
 /**
@@ -23,7 +22,7 @@ class Bootstrap3Renderer extends BaseRenderer {
 	/**
 	 * Sestavení výchozí šablony uploaderu.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildDefaultTemplate() {
 		$customContainer = Html::el("div");
@@ -74,7 +73,7 @@ class Bootstrap3Renderer extends BaseRenderer {
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileContainerTemplate() {
 		$tr = Html::el("tr");
@@ -109,7 +108,7 @@ class Bootstrap3Renderer extends BaseRenderer {
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileError() {
 		$tr = Html::el("tr class='danger'");

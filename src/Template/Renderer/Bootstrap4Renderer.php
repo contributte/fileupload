@@ -22,7 +22,7 @@ class Bootstrap4Renderer extends BaseRenderer {
 	/**
 	 * Sestavení výchozí šablony uploaderu.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildDefaultTemplate() {
 		$customContainer = Html::el("div");
@@ -68,7 +68,7 @@ class Bootstrap4Renderer extends BaseRenderer {
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileContainerTemplate() {
 		$tr = Html::el("tr");
@@ -104,7 +104,7 @@ class Bootstrap4Renderer extends BaseRenderer {
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileError() {
 		$tr = Html::el("tr class='bg-danger text-light'");

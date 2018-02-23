@@ -2,8 +2,7 @@
 
 namespace Zet\FileUpload\Model;
 
-use Nette\Object;
-use Nette\Utils\Html;
+use Nette\SmartObject;
 
 /**
  * Class DefaultFile
@@ -12,7 +11,8 @@ use Nette\Utils\Html;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Model
  */
-class DefaultFile extends Object {
+class DefaultFile {
+	use SmartObject;
 	
 	/**
 	 * Callback pro smazání výchozího souboru s parametry (mixed $identifier).

@@ -2,6 +2,8 @@
 
 namespace Zet\FileUpload\Template\Renderer;
 
+use Nette\Utils\Html;
+
 /**
  * Interface IUploadRenderer
  *
@@ -13,21 +15,21 @@ interface IUploadRenderer {
 	/**
 	 * Sestavení výchozí šablony uploaderu.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildDefaultTemplate();
 	
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileContainerTemplate();
 	
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 *
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileError();
 }

@@ -119,7 +119,7 @@ class Html5Renderer extends BaseRenderer {
 	
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
-	 * @return \Nette\Utils\Html
+	 * @return Html
 	 */
 	public function buildFileError() {
 		$tr = Html::el("tr style='background-color: #ffb6c1'");

@@ -2,13 +2,16 @@
 
 namespace Zet\FileUpload\Filter;
 
+use Nette\SmartObject;
+
 /**
  * Class BaseFilter
  *
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Filter
  */
-abstract class BaseFilter extends \Nette\Object implements IMimeTypeFilter {
+abstract class BaseFilter implements IMimeTypeFilter {
+	use SmartObject;
 	
 	/**
 	 * Vrátí seznam povolených typů souborů s jejich typickou koncovkou.
