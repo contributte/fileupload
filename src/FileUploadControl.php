@@ -85,7 +85,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	# Control definition
 	# --------------------------------------------------------------------
 	/**
-	 * Povolí nahrávat pouze obrázky png, jpeg, jpg, gif.
+	 * Povolí nahrávat pouze obrázky png, jpeg, jpg, gif, tif.
 	 *
 	 * @var string
 	 */
@@ -106,7 +106,7 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl {
 	const FILTER_ARCHIVE = 'Zet\FileUpload\Filter\ArchiveFilter';
 	
 	/**
-	 * Povolí nahrávat pouze soubory mp3, ogg, aiff.
+	 * Povolí nahrávat pouze soubory mp3, ogg, aiff, wav.
 	 *
 	 * @var string
 	 */

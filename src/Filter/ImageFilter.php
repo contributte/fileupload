@@ -22,6 +22,7 @@ class ImageFilter extends BaseFilter {
 			"image/pjpeg" => "jpeg",
 			"image/jpeg" => "jpg",
 			"image/gif" => "gif",
+			'image/tif' => 'tif',
 		];
 	}
 	
