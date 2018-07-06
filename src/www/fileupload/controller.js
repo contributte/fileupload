@@ -463,7 +463,7 @@ FileUploadController.prototype = {
 	 * @returns {boolean}
 	 */
 	canUploadNextFile: function () {
-		return this.uploaded < this.config.maxFiles || this.addedFiles < this.config.maxFiles;
+		return this.uploaded < this.config.maxFiles && this.addedFiles < this.config.maxFiles;
 	},
 	
 	/**
