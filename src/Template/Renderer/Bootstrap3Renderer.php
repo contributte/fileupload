@@ -66,8 +66,6 @@ class Bootstrap3Renderer extends BaseRenderer {
 		$customContainer->addHtml($container);
 		
 		return $customContainer;
-		
-		return $customContainer;
 	}
 	
 	/**
