@@ -198,8 +198,8 @@ Renderer.prototype = {
 			}
 		}
 		
-		if (this.components.fileProgressValue != null) {
-			var value = container.querySelector(this.getSelector(this.components.fileProgressValue));
+		if (this.components.fileProgress != null) {
+			var value = container.querySelector(this.getSelector(this.components.fileProgress));
 			value.textContent = percents + "%";
 		}
 	},
@@ -219,8 +219,8 @@ Renderer.prototype = {
 			}
 		}
 		
-		if (this.components.globalProgressValue != null) {
-			var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
+		if (this.components.globalProgress != null) {
+			var value = document.querySelector(this.getSelector(this.components.globalProgress));
 			value.textContent = percents + "%";
 		}
 	},
@@ -238,8 +238,8 @@ Renderer.prototype = {
 			}
 		}
 		
-		if (this.components.globalProgressValue != null) {
-			var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
+		if (this.components.globalProgress != null) {
+			var value = document.querySelector(this.getSelector(this.components.globalProgress));
 			value.textContent = "0%";
 		}
 	},
