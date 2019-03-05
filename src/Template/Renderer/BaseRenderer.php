@@ -15,14 +15,14 @@ use Zet\FileUpload\FileUploadControl;
  */
 abstract class BaseRenderer implements IUploadRenderer {
 	use SmartObject;
-	
+
 	/**
 	 * ID template ve tvaru: HtmlId-ElementType
 	 *
 	 * @var string
 	 */
 	private $idTemplate = "%s-%s";
-	
+
 	/**
 	 * Seznam všech základních komponent uploaderu:
 	 * <ul>
@@ -39,7 +39,7 @@ abstract class BaseRenderer implements IUploadRenderer {
 	 * <li><b>errorMessage</b>: Element pro zobrazení chybové zprávy.</li>
 	 * </ul>
 	 *
-	 * @var Html[]
+	 * @var array<string, Html|null>
 	 */
 	protected $elements = [
 		"container" => null,
@@ -54,17 +54,17 @@ abstract class BaseRenderer implements IUploadRenderer {
 		"delete" => null,
 		"errorMessage" => null
 	];
-	
+
 	/**
 	 * @var FileUploadControl
 	 */
 	protected $fileUploadControl;
-	
+
 	/**
 	 * @var ITranslator|NULL
 	 */
 	protected $translator;
-	
+
 	/**
 	 * BaseRenderer constructor.
 	 *
@@ -76,17 +76,17 @@ abstract class BaseRenderer implements IUploadRenderer {
 		ITranslator $translator = null
 	) {
 		$this->fileUploadControl = $fileUploadControl;
-		
+
 		$this->init();
 		$this->translator = $translator;
 	}
-	
+
 	/**
 	 * Inicializace elementů.
 	 */
 	public function init() {
 		$htmlId = $this->fileUploadControl->getHtmlId();
-		
+
 		foreach($this->elements as $type => $value) {
 			if($type == "input") {
 				$element = Html::el("input type='file' multiple='multiple'")->addAttributes([
@@ -107,32 +107,32 @@ abstract class BaseRenderer implements IUploadRenderer {
 					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type)
 				]);
 			}
-			
+
 			$this->elements[ $type ] = $element;
 		}
 	}
-	
+
 	/**
 	 * @return Html[]
 	 */
 	public function getElements() {
 		return $this->elements;
 	}
-	
+
 	/**
 	 * Sestavení výchozí šablony uploaderu.
 	 *
 	 * @return Html
 	 */
 	abstract public function buildDefaultTemplate();
-	
+
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
 	 *
 	 * @return Html
 	 */
 	abstract public function buildFileContainerTemplate();
-	
+
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 *
