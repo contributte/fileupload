@@ -1,5 +1,6 @@
 {
 	"name": "jzechy/jquery-fileupload",
+	"version": "3.0",
 	"description": "Nette UploadControl rozšířené o blueimp jQuery FileUpload.",
 	"homepage": "https://github.com/JZechy/jQuery-FileUpload",
 	"license": "MIT",
@@ -11,15 +12,23 @@
 		}
 	],
 	"require": {
-		"php": ">=5.6.0",
-		"nette/forms": "^v2.4.0",
-		"nette/http": "^v2.4.0",
-		"nette/utils": "^v2.4.0",
-		"nette/di": "^v2.4.0",
-		"nette/application": "^v2.4.0",
-		"latte/latte": "^v2.4.0"
+		"php": ">=7.2",
+		"nette/forms": "^3.0.1",
+		"nette/http": "^3.0.1",
+		"nette/utils": "^3.0.1",
+		"nette/di": "^3.0.1",
+		"nette/application": "^3.0.1",
+		"latte/latte": "^2.7.0"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": [
+			"src/"
+		]
+	},
+	"minimum-stability": "dev",
+	"config": {
+		"platform": {
+			"php": "7.2"
+		}
 	}
 }
