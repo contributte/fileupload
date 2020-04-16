@@ -25,7 +25,7 @@
 	}
 }(function ($) {
 	'use strict';
-	
+
 	var counter = 0,
 		names = [
 			'accepts',
@@ -49,7 +49,7 @@
 		convert = function (p) {
 			return p;
 		};
-	
+
 	$.ajaxSetup({
 		converters: {
 			'postmessage text': convert,
@@ -57,7 +57,7 @@
 			'postmessage html': convert
 		}
 	});
-	
+
 	$.ajaxTransport('postmessage', function (options) {
 		if (options.postMessage && window.postMessage) {
 			var iframe,
@@ -122,5 +122,5 @@
 			};
 		}
 	});
-	
+
 }));

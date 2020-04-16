@@ -43,17 +43,17 @@
 	}
 }(function ($, tmpl) {
 	'use strict';
-	
+
 	$.blueimp.fileupload.prototype._specialOptions.push(
 		'filesContainer',
 		'uploadTemplateId',
 		'downloadTemplateId'
 	);
-	
+
 	// The UI version extends the file upload widget
 	// and adds complete user interface interaction:
 	$.widget('blueimp.fileupload', $.blueimp.fileupload, {
-		
+
 		options: {
 			// By default, files added to the widget are uploaded as soon
 			// as the user clicks on the start buttons. To enable automatic
@@ -72,19 +72,19 @@
 			// The expected data type of the upload response, sets the dataType
 			// option of the $.ajax upload requests:
 			dataType: 'json',
-			
+
 			// Error and info messages:
 			messages: {
 				unknownError: 'Unknown error'
 			},
-			
+
 			// Function returning the current number of files,
 			// used by the maxNumberOfFiles validation:
 			getNumberOfFiles: function () {
 				return this.filesContainer.children()
 					.not('.processing').length;
 			},
-			
+
 			// Callback to retrieve the list of files from the server response:
 			getFilesFromResponse: function (data) {
 				if (data.result && $.isArray(data.result.files)) {
@@ -92,7 +92,7 @@
 				}
 				return [];
 			},
-			
+
 			// The add callback is invoked as soon as files are added to the fileupload
 			// widget (via file input selection, drag & drop or add API call).
 			// See the basic file upload widget for more information:
@@ -392,11 +392,11 @@
 				}
 			}
 		},
-		
+
 		_resetFinishedDeferreds: function () {
 			this._finishedUploads = [];
 		},
-		
+
 		_addFinishedDeferreds: function (deferred) {
 			if (!deferred) {
 				deferred = $.Deferred();
@@ -404,11 +404,11 @@
 			this._finishedUploads.push(deferred);
 			return deferred;
 		},
-		
+
 		_getFinishedDeferreds: function () {
 			return this._finishedUploads;
 		},
-		
+
 		// Link handler, that allows to download files
 		// by drag & drop of the links to the desktop:
 		_enableDragToDesktop: function () {
@@ -426,7 +426,7 @@
 				}
 			});
 		},
-		
+
 		_formatFileSize: function (bytes) {
 			if (typeof bytes !== 'number') {
 				return '';
@@ -439,7 +439,7 @@
 			}
 			return (bytes / 1000).toFixed(2) + ' KB';
 		},
-		
+
 		_formatBitrate: function (bits) {
 			if (typeof bits !== 'number') {
 				return '';
@@ -455,7 +455,7 @@
 			}
 			return bits.toFixed(2) + ' bit/s';
 		},
-		
+
 		_formatTime: function (seconds) {
 			var date = new Date(seconds * 1000),
 				days = Math.floor(seconds / 86400);
@@ -465,11 +465,11 @@
 				('0' + date.getUTCMinutes()).slice(-2) + ':' +
 				('0' + date.getUTCSeconds()).slice(-2);
 		},
-		
+
 		_formatPercentage: function (floatValue) {
 			return (floatValue * 100).toFixed(2) + ' %';
 		},
-		
+
 		_renderExtendedProgress: function (data) {
 			return this._formatBitrate(data.bitrate) + ' | ' +
 				this._formatTime(
@@ -481,7 +481,7 @@
 				this._formatFileSize(data.loaded) + ' / ' +
 				this._formatFileSize(data.total);
 		},
-		
+
 		_renderTemplate: function (func, files) {
 			if (!func) {
 				return $();
@@ -496,27 +496,27 @@
 			}
 			return $(this.options.templatesContainer).html(result).children();
 		},
-		
+
 		_renderPreviews: function (data) {
 			data.context.find('.preview').each(function (index, elm) {
 				$(elm).append(data.files[index].preview);
 			});
 		},
-		
+
 		_renderUpload: function (files) {
 			return this._renderTemplate(
 				this.options.uploadTemplate,
 				files
 			);
 		},
-		
+
 		_renderDownload: function (files) {
 			return this._renderTemplate(
 				this.options.downloadTemplate,
 				files
 			).find('a[download]').each(this._enableDragToDesktop).end();
 		},
-		
+
 		_startHandler: function (e) {
 			e.preventDefault();
 			var button = $(e.currentTarget),
@@ -527,7 +527,7 @@
 				data.submit();
 			}
 		},
-		
+
 		_cancelHandler: function (e) {
 			e.preventDefault();
 			var template = $(e.currentTarget)
@@ -541,7 +541,7 @@
 				this._trigger('fail', e, data);
 			}
 		},
-		
+
 		_deleteHandler: function (e) {
 			e.preventDefault();
 			var button = $(e.currentTarget);
@@ -550,12 +550,12 @@
 				type: 'DELETE'
 			}, button.data()));
 		},
-		
+
 		_forceReflow: function (node) {
 			return $.support.transition && node.length &&
 				node[0].offsetWidth;
 		},
-		
+
 		_transition: function (node) {
 			var dfd = $.Deferred();
 			if ($.support.transition && node.hasClass('fade') && node.is(':visible')) {
@@ -576,7 +576,7 @@
 			}
 			return dfd;
 		},
-		
+
 		_initButtonBarEventHandlers: function () {
 			var fileUploadButtonBar = this.element.find('.fileupload-buttonbar'),
 				filesList = this.options.filesContainer;
@@ -611,7 +611,7 @@
 				}
 			});
 		},
-		
+
 		_destroyButtonBarEventHandlers: function () {
 			this._off(
 				this.element.find('.fileupload-buttonbar')
@@ -623,7 +623,7 @@
 				'change.'
 			);
 		},
-		
+
 		_initEventHandlers: function () {
 			this._super();
 			this._on(this.options.filesContainer, {
@@ -633,25 +633,25 @@
 			});
 			this._initButtonBarEventHandlers();
 		},
-		
+
 		_destroyEventHandlers: function () {
 			this._destroyButtonBarEventHandlers();
 			this._off(this.options.filesContainer, 'click');
 			this._super();
 		},
-		
+
 		_enableFileInputButton: function () {
 			this.element.find('.fileinput-button input')
 				.prop('disabled', false)
 				.parent().removeClass('disabled');
 		},
-		
+
 		_disableFileInputButton: function () {
 			this.element.find('.fileinput-button input')
 				.prop('disabled', true)
 				.parent().addClass('disabled');
 		},
-		
+
 		_initTemplates: function () {
 			var options = this.options;
 			options.templatesContainer = this.document[0].createElement(
@@ -666,7 +666,7 @@
 				}
 			}
 		},
-		
+
 		_initFilesContainer: function () {
 			var options = this.options;
 			if (options.filesContainer === undefined) {
@@ -675,13 +675,13 @@
 				options.filesContainer = $(options.filesContainer);
 			}
 		},
-		
+
 		_initSpecialOptions: function () {
 			this._super();
 			this._initFilesContainer();
 			this._initTemplates();
 		},
-		
+
 		_create: function () {
 			this._super();
 			this._resetFinishedDeferreds();
@@ -689,7 +689,7 @@
 				this._disableFileInputButton();
 			}
 		},
-		
+
 		enable: function () {
 			var wasDisabled = false;
 			if (this.options.disabled) {
@@ -701,7 +701,7 @@
 				this._enableFileInputButton();
 			}
 		},
-		
+
 		disable: function () {
 			if (!this.options.disabled) {
 				this.element.find('input, button').prop('disabled', true);
@@ -709,7 +709,7 @@
 			}
 			this._super();
 		}
-		
+
 	});
-	
+
 }));

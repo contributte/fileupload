@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Zet\FileUpload\Model;
 
 /**
@@ -8,8 +10,10 @@ namespace Zet\FileUpload\Model;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Model
  */
-interface IUploadModel {
-	
+interface IUploadModel
+{
+
+
 	/**
 	 * Uložení nahraného souboru.
 	 *
@@ -18,7 +22,8 @@ interface IUploadModel {
 	 * @return mixed Vlastní navrátová hodnota.
 	 */
 	public function save(\Nette\Http\FileUpload $file, array $params = []);
-	
+
+
 	/**
 	 * Zpracování přejmenování souboru.
 	 *
@@ -27,12 +32,12 @@ interface IUploadModel {
 	 * @return mixed Vlastní návratová hodnota.
 	 */
 	public function rename($upload, $newName);
-	
+
+
 	/**
 	 * Zpracování požadavku o smazání souboru.
 	 *
 	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
 	public function remove($uploaded);
-	
 }

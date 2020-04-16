@@ -39,9 +39,9 @@
 	}
 }(function () {
 	'use strict';
-	
+
 	angular.module('blueimp.fileupload', [])
-	
+
 	// The fileUpload service provides configuration options
 	// for the fileUpload directive and default handlers for
 	// File Upload events:
@@ -163,7 +163,7 @@
 				}
 			];
 		})
-		
+
 		// Format byte numbers to readable presentations:
 		.provider('formatFileSizeFilter', function () {
 			var $config = {
@@ -197,7 +197,7 @@
 				};
 			};
 		})
-		
+
 		// The FileUploadController initializes the fileupload widget and
 		// provides scope methods to control the File Upload functionality:
 		.controller('FileUploadController', [
@@ -353,7 +353,7 @@
 				);
 			}
 		])
-		
+
 		// Provide File Upload progress feedback:
 		.controller('FileUploadProgressController', [
 			'$scope', '$attrs', '$parse',
@@ -379,7 +379,7 @@
 				);
 			}
 		])
-		
+
 		// Display File Upload previews:
 		.controller('FileUploadPreviewController', [
 			'$scope', '$element', '$attrs',
@@ -395,27 +395,27 @@
 				);
 			}
 		])
-		
+
 		.directive('fileUpload', function () {
 			return {
 				controller: 'FileUploadController',
 				scope: true
 			};
 		})
-		
+
 		.directive('fileUploadProgress', function () {
 			return {
 				controller: 'FileUploadProgressController',
 				scope: true
 			};
 		})
-		
+
 		.directive('fileUploadPreview', function () {
 			return {
 				controller: 'FileUploadPreviewController'
 			};
 		})
-		
+
 		// Enhance the HTML5 download attribute to
 		// allow drag&drop of files to the desktop:
 		.directive('download', function () {
@@ -435,5 +435,5 @@
 				});
 			};
 		});
-	
+
 }));

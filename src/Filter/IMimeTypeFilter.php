@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Zet\FileUpload\Filter;
 
 /**
@@ -9,8 +11,10 @@ namespace Zet\FileUpload\Filter;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Filter
  */
-interface IMimeTypeFilter {
-	
+interface IMimeTypeFilter
+{
+
+
 	/**
 	 * Ověří mimetype předaného souboru.
 	 *
@@ -18,7 +22,8 @@ interface IMimeTypeFilter {
 	 * @return bool Má soubor správný mimetype?
 	 */
 	public function checkType(\Nette\Http\FileUpload $file);
-	
+
+
 	/**
 	 * Vrátí seznam povolených typů souborů.
 	 *

@@ -1,10 +1,10 @@
 var Renderer = function (token, components, inputHtmlId, removeLink) {
-	
+
 	/**
 	 * @type {string}
 	 */
 	this.token = token;
-	
+
 	/**
 	 * Seznam registrovaných komponent uploaderu společně s jejich html id.
 	 * - container Kontejner ve kterém se nachází samotný uploaderu.
@@ -22,72 +22,72 @@ var Renderer = function (token, components, inputHtmlId, removeLink) {
 	 * @param { object.<string, string> }
 	 */
 	this.components = components;
-	
+
 	/**
 	 * @type {string}
 	 */
 	this.inputHtmlId = inputHtmlId;
-	
+
 	/**
 	 * @type {string}
 	 */
 	this.removeLink = removeLink;
-	
+
 	/**
 	 * @type {string[]}
 	 */
 	this.imageExtension = [
 		"jpg", "png", "jpeg", "gif"
 	];
-	
+
 	this.getSelector = function (name) {
 		return "[data-upload-component=" + name + "]";
 	};
-	
+
 	this.getFileExtension = function (filename) {
 		var filenameArray = filename.split(".");
 		return filenameArray[filenameArray.length - 1];
 	};
-	
+
 	this.isImage = function (filename) {
 		return this.imageExtension.indexOf(this.getFileExtension(filename).toLowerCase()) !== -1;
 	};
-	
+
 	this.setImagePreview = function (element, file) {
 		var preview = "";
-		
+
 		if (file.preview) {
 			preview = file.preview;
 		} else {
 			//noinspection JSUnresolvedVariable
 			preview = URL.createObjectURL(file);
 		}
-		
+
 		element.setAttribute("src", preview);
 	};
-	
+
 	this.getFileContainer = function (id) {
 		var container = document.querySelector("[data-upload-id='" + id.toString() + "'][for='" + this.inputHtmlId + "']");
-		
+
 		return container;
 	};
-	
-	
+
+
 	this.getTemplate = function (template) {
 		var template = $.parseHTML(document.querySelector("." + template + "[for=" + this.inputHtmlId + "]").innerHTML);
 		return template[1];
 	};
-	
+
 	this.errorTemplate = function (file, message) {
 		var template = this.getTemplate("upload-template-file-error");
-		
+
 		if (this.components.filename != null) {
 			var filename = template.querySelector(this.getSelector(this.components.filename));
 			if (filename != null) {
 				filename.textContent = file.name;
 			}
 		}
-		
+
 		if (this.components.imagePreview != null && this.isImage(file.name)) {
 			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
 			if (imagePreview != null) {
@@ -99,16 +99,16 @@ var Renderer = function (token, components, inputHtmlId, removeLink) {
 				filePreview.textContent = this.getFileExtension(file.name);
 			}
 		}
-		
+
 		template.querySelector(this.getSelector(this.components.errorMessage)).textContent = message;
-		
+
 		return template;
 	}
-	
+
 };
 
 Renderer.prototype = {
-	
+
 	/**
 	 * @param { object.<int, object> } file
 	 * @param { number } id
@@ -117,39 +117,39 @@ Renderer.prototype = {
 		var template = this.getTemplate("upload-template-file-container");
 		template.setAttribute("data-upload-id", id.toString());
 		template.setAttribute("for", this.inputHtmlId);
-		
+
 		if (this.components.filename != null) {
 			template.querySelector(this.getSelector(this.components.filename)).textContent = file.name;
 		}
-		
+
 		if (this.isImage(file.name) && this.components.imagePreview != null) {
 			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
 			this.setImagePreview(imagePreview, file);
 		} else if (this.components.filePreview != null) {
 			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.name);
 		}
-		
+
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
 	},
-	
+
 	addDefaultFile: function (file, controller) {
 		var template = this.getTemplate("upload-template-file-container");
 		template.setAttribute("for", this.inputHtmlId);
-		
+
 		if (this.components.filename != null) {
 			template.querySelector(this.getSelector(this.components.filename)).textContent = file.filename;
 		}
-		
+
 		if (this.isImage(file.filename) && this.components.imagePreview != null) {
 			var imagePreview = template.querySelector(this.getSelector(this.components.imagePreview));
 			imagePreview.setAttribute("src", file.preview);
 		} else if (this.components.filePreview != null) {
 			template.querySelector(this.getSelector(this.components.filePreview)).textContent = this.getFileExtension(file.filename);
 		}
-		
+
 		if (this.components.delete != null) {
 			var deleteButton = template.querySelector(this.getSelector(this.components.delete));
-			
+
 			var self = this;
 			deleteButton.addEventListener("click", function () {
 				$.ajax({
@@ -168,10 +168,10 @@ Renderer.prototype = {
 				});
 			});
 		}
-		
+
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
 	},
-	
+
 	/**
 	 * @param { object.<int, object> } file
 	 * @param { number } id
@@ -181,14 +181,14 @@ Renderer.prototype = {
 		var template = this.errorTemplate(file, message);
 		document.querySelector(this.getSelector(this.components.container)).appendChild(template);
 	},
-	
+
 	/**
 	 * @param { object } data
 	 */
 	updateFileProgress: function (data) {
 		var container = this.getFileContainer(data.formData[0].value);
 		var percents = parseInt(data.loaded / data.total * 100, 10);
-		
+
 		if (this.components.fileProgress != null) {
 			var progress = container.querySelector(this.getSelector(this.components.fileProgress));
 			if (progress.tagName.toLowerCase() == "progress") {
@@ -197,19 +197,19 @@ Renderer.prototype = {
 				progress.style.width = percents + "%";
 			}
 		}
-		
+
 		if (this.components.fileProgressValue != null) {
 			var value = container.querySelector(this.getSelector(this.components.fileProgressValue));
 			value.textContent = percents + "%";
 		}
 	},
-	
+
 	/**
 	 * @param { object } data
 	 */
 	updateProgressAll: function (data) {
 		var percents = parseInt(data.loaded / data.total * 100, 10);
-		
+
 		if (this.components.globalProgress != null) {
 			var progress = document.querySelector(this.getSelector(this.components.globalProgress));
 			if (progress.tagName.toLowerCase() == "progress") {
@@ -218,13 +218,13 @@ Renderer.prototype = {
 				progress.style.width = percents + "%";
 			}
 		}
-		
+
 		if (this.components.globalProgressValue != null) {
 			var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
 			value.textContent = percents + "%";
 		}
 	},
-	
+
 	/**
 	 *
 	 */
@@ -237,13 +237,13 @@ Renderer.prototype = {
 				progress.style.width = "0%";
 			}
 		}
-		
+
 		if (this.components.globalProgressValue != null) {
 			var value = document.querySelector(this.getSelector(this.components.globalProgressValue));
 			value.textContent = "0%";
 		}
 	},
-	
+
 	/**
 	 * @param { Object } file
 	 * @param { string } message
@@ -252,20 +252,20 @@ Renderer.prototype = {
 	fileError: function (file, message, id) {
 		var template = this.errorTemplate(file, message);
 		var fileContainer = this.getFileContainer(id);
-		
+
 		$(fileContainer).replaceWith(template);
 	},
-	
+
 	/**
 	 * @param { number } id
 	 * @param { FileUploadController } controller
 	 */
 	fileDone: function (id, controller) {
 		var fileContainer = this.getFileContainer(id);
-		
+
 		if (this.components.delete != null) {
 			var deleteButton = fileContainer.querySelector(this.getSelector(this.components.delete));
-			
+
 			var self = this;
 			deleteButton.addEventListener("click", function () {
 				$.ajax({
@@ -295,45 +295,45 @@ Renderer.prototype = {
  * @constructor
  */
 var FileUploadController = function (id, token, renderer, config, messages) {
-	
+
 	/**
 	 * @type {number}
 	 */
 	this.id = id;
-	
+
 	/**
 	 * @type {string}
 	 */
 	this.token = token;
-	
+
 	/**
 	 * @type {Renderer}
 	 */
 	this.renderer = renderer;
-	
+
 	/**
 	 * @type {object}
 	 */
 	this.config = config;
-	
+
 	/**
 	 * ID uploadovaného souboru.
 	 * @type {number}
 	 */
 	this.fileId = 0;
-	
+
 	/**
 	 * Počet nahraných souborů.
 	 * @type {number}
 	 */
 	this.uploaded = 0;
-	
+
 	/**
 	 * Počet přidaných souborů.
 	 * @type {number}
 	 */
 	this.addedFiles = 0;
-	
+
 	/**
 	 * Chybové hlášky.
 	 * @type {object.<string, string>}
@@ -342,7 +342,7 @@ var FileUploadController = function (id, token, renderer, config, messages) {
 };
 
 FileUploadController.prototype = {
-	
+
 	/**
 	 * Přidání nového souboru k odeslání.
 	 * @param {object.<int, object>} files
@@ -352,7 +352,7 @@ FileUploadController.prototype = {
 		var readyToSend = false;
 		var file = files[0];
 		var message = "";
-		
+
 		if (!this.canUploadNextFile()) {
 			message = this.messages.maxFiles.replace("{maxFiles}", this.config.maxFiles.toString());
 			this.renderer.addError(file, this.fileId, message);
@@ -366,10 +366,10 @@ FileUploadController.prototype = {
 			this.renderer.add(file, this.fileId);
 			readyToSend = true;
 		}
-		
+
 		return readyToSend;
 	},
-	
+
 	/**
 	 * Aktualizace celkového postupu nahrávání.
 	 * @param {Object} data
@@ -377,7 +377,7 @@ FileUploadController.prototype = {
 	updateProgressAll: function (data) {
 		this.renderer.updateProgressAll(data);
 	},
-	
+
 	/**
 	 * Aktualizace postupu nahrávání jednoho souboru.
 	 * @param {Object} data
@@ -385,28 +385,28 @@ FileUploadController.prototype = {
 	updateFileProgress: function (data) {
 		this.renderer.updateFileProgress(data);
 	},
-	
+
 	/**
 	 * Spuštění uploadu.
 	 */
 	start: function () {
 		this.renderer.start();
 	},
-	
+
 	/**
 	 * Dokončení uploadu.
 	 * @param {object} data
 	 */
 	done: function (data) {
 		var success = true;
-		
+
 		var result = data.result;
 		var id = result.id;
 		var error = result.error;
-		
+
 		if (error !== 0) {
 			var msg = "";
-			
+
 			switch (error) {
 				case 1:
 				case 2:
@@ -441,7 +441,7 @@ FileUploadController.prototype = {
 		} else {
 			this.renderer.fileDone(id, this);
 		}
-		
+
 		if (success) {
 			this.uploaded++;
 		} else {
@@ -449,7 +449,7 @@ FileUploadController.prototype = {
 			this.addedFiles -= 1;
 		}
 	},
-	
+
 	/**
 	 * ID dalšího souboru k odeslání.
 	 * @returns {number}
@@ -457,7 +457,7 @@ FileUploadController.prototype = {
 	getFileId: function () {
 		return this.fileId++;
 	},
-	
+
 	/**
 	 * Může uživatel nahrát další soubor?
 	 * @returns {boolean}
@@ -465,14 +465,14 @@ FileUploadController.prototype = {
 	canUploadNextFile: function () {
 		return this.uploaded < this.config.maxFiles && this.addedFiles < this.config.maxFiles;
 	},
-	
+
 	/**
 	 * @returns {Object.<string, string>}
 	 */
 	getMessages: function () {
 		return this.messages;
 	},
-	
+
 	/**
 	 *
 	 * @param defaultFiles
