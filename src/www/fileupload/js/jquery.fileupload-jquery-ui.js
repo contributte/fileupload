@@ -32,9 +32,9 @@
 	}
 }(function ($) {
 	'use strict';
-	
+
 	$.widget('blueimp.fileupload', $.blueimp.fileupload, {
-		
+
 		options: {
 			processdone: function (e, data) {
 				data.context.find('.start').button('enable');
@@ -65,7 +65,7 @@
 				});
 			}
 		},
-		
+
 		_renderUpload: function (func, files) {
 			var node = this._super(func, files),
 				showIconText = $(window).width() > 480;
@@ -83,7 +83,7 @@
 			}
 			return node;
 		},
-		
+
 		_renderDownload: function (func, files) {
 			var node = this._super(func, files),
 				showIconText = $(window).width() > 480;
@@ -96,12 +96,12 @@
 			}
 			return node;
 		},
-		
+
 		_startHandler: function (e) {
 			$(e.currentTarget).button('disable');
 			this._super(e);
 		},
-		
+
 		_transition: function (node) {
 			var deferred = $.Deferred();
 			if (node.hasClass('fade')) {
@@ -117,7 +117,7 @@
 			}
 			return deferred;
 		},
-		
+
 		_create: function () {
 			this._super();
 			this.element
@@ -136,7 +136,7 @@
 				.button({icons: {primary: 'ui-icon-trash'}})
 				.end().find('.progress').progressbar();
 		},
-		
+
 		_destroy: function () {
 			this.element
 				.find('.fileupload-buttonbar')
@@ -155,7 +155,7 @@
 				.end().find('.progress').progressbar('destroy');
 			this._super();
 		}
-		
+
 	});
-	
+
 }));

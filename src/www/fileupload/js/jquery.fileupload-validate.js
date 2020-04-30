@@ -33,7 +33,7 @@
 	}
 }(function ($) {
 	'use strict';
-	
+
 	// Append to the default processQueue:
 	$.blueimp.fileupload.prototype.options.processQueue.push(
 		{
@@ -49,11 +49,11 @@
 			disabled: '@disableValidation'
 		}
 	);
-	
+
 	// The File Upload Validation plugin extends the fileupload widget
 	// with file validation functionality:
 	$.widget('blueimp.fileupload', $.blueimp.fileupload, {
-		
+
 		options: {
 			/*
 			// The regular expression for allowed file types, matches
@@ -66,11 +66,11 @@
 			// The limit of files to be uploaded:
 			maxNumberOfFiles: 10,
 			*/
-			
+
 			// Function returning the current number of files,
 			// has to be overriden for maxNumberOfFiles validation:
 			getNumberOfFiles: $.noop,
-			
+
 			// Error and info messages:
 			messages: {
 				maxNumberOfFiles: 'Maximum number of files exceeded',
@@ -79,9 +79,9 @@
 				minFileSize: 'File is too small'
 			}
 		},
-		
+
 		processActions: {
-			
+
 			validate: function (data, options) {
 				if (options.disabled) {
 					return data;
@@ -117,9 +117,9 @@
 				}
 				return dfd.promise();
 			}
-			
+
 		}
-		
+
 	});
-	
+
 }));

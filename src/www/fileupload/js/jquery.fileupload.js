@@ -32,7 +32,7 @@
 	}
 }(function ($) {
 	'use strict';
-	
+
 	// Detect file input support, based on
 	// http://viljamis.com/blog/2012/file-upload-support-on-mobile/
 	$.support.fileInput = !(new RegExp(
@@ -44,7 +44,7 @@
 		).test(window.navigator.userAgent) ||
 		// Feature detection for all other devices:
 		$('<input type="file">').prop('disabled'));
-	
+
 	// The FileReader API is not actually used, but works as feature detection,
 	// as some Safari versions (5?) support XHR file uploads via the FormData API,
 	// but not non-multipart XHR file uploads.
@@ -52,11 +52,11 @@
 	// window.ProgressEvent instead to detect XHR2 file upload capability:
 	$.support.xhrFileUpload = !!(window.ProgressEvent && window.FileReader);
 	$.support.xhrFormDataFileUpload = !!window.FormData;
-	
+
 	// Detect support for Blob slicing (required for chunked uploads):
 	$.support.blobSlice = window.Blob && (Blob.prototype.slice ||
 		Blob.prototype.webkitSlice || Blob.prototype.mozSlice);
-	
+
 	// Helper function to create drag handlers for dragover/dragenter/dragleave:
 	function getDragHandler(type) {
 		var isDragOver = type === 'dragover';
@@ -75,7 +75,7 @@
 			}
 		};
 	}
-	
+
 	// The fileupload widget listens for change events on file input fields defined
 	// via fileInput setting and paste or drop events of the given dropZone.
 	// In addition to the default jQuery Widget methods, the fileupload widget
@@ -85,7 +85,7 @@
 	// "add" method are uploaded immediately, but it is possible to override
 	// the "add" callback option to queue file uploads.
 	$.widget('blueimp.fileupload', {
-		
+
 		options: {
 			// The drop target element(s), by the default the complete document.
 			// Set to null to disable drag & drop support:
@@ -165,12 +165,12 @@
 			bitrateInterval: 500,
 			// By default, uploads are started automatically when adding files:
 			autoUpload: true,
-			
+
 			// Error and info messages:
 			messages: {
 				uploadedBytes: 'Uploaded bytes exceed file size'
 			},
-			
+
 			// Translation function, gets the message key to be translated
 			// and an object with context specific data as arguments:
 			i18n: function (message, context) {
@@ -182,7 +182,7 @@
 				}
 				return message;
 			},
-			
+
 			// Additional form data to be sent along with the file uploads can be set
 			// using this option, which accepts an array of objects with name and
 			// value properties, a function returning such an array, a FormData
@@ -191,7 +191,7 @@
 			formData: function (form) {
 				return form.serializeArray();
 			},
-			
+
 			// The add callback is invoked as soon as files are added to the fileupload
 			// widget (via file input selection, drag & drop, paste or add API call).
 			// If the singleFileUploads option is enabled, this callback will be
@@ -219,60 +219,60 @@
 					});
 				}
 			},
-			
+
 			// Other callbacks:
-			
+
 			// Callback for the submit event of each file upload:
 			// submit: function (e, data) {}, // .bind('fileuploadsubmit', func);
-			
+
 			// Callback for the start of each file upload request:
 			// send: function (e, data) {}, // .bind('fileuploadsend', func);
-			
+
 			// Callback for successful uploads:
 			// done: function (e, data) {}, // .bind('fileuploaddone', func);
-			
+
 			// Callback for failed (abort or error) uploads:
 			// fail: function (e, data) {}, // .bind('fileuploadfail', func);
-			
+
 			// Callback for completed (success, abort or error) requests:
 			// always: function (e, data) {}, // .bind('fileuploadalways', func);
-			
+
 			// Callback for upload progress events:
 			// progress: function (e, data) {}, // .bind('fileuploadprogress', func);
-			
+
 			// Callback for global upload progress events:
 			// progressall: function (e, data) {}, // .bind('fileuploadprogressall', func);
-			
+
 			// Callback for uploads start, equivalent to the global ajaxStart event:
 			// start: function (e) {}, // .bind('fileuploadstart', func);
-			
+
 			// Callback for uploads stop, equivalent to the global ajaxStop event:
 			// stop: function (e) {}, // .bind('fileuploadstop', func);
-			
+
 			// Callback for change events of the fileInput(s):
 			// change: function (e, data) {}, // .bind('fileuploadchange', func);
-			
+
 			// Callback for paste events to the pasteZone(s):
 			// paste: function (e, data) {}, // .bind('fileuploadpaste', func);
-			
+
 			// Callback for drop events of the dropZone(s):
 			// drop: function (e, data) {}, // .bind('fileuploaddrop', func);
-			
+
 			// Callback for dragover events of the dropZone(s):
 			// dragover: function (e) {}, // .bind('fileuploaddragover', func);
-			
+
 			// Callback for the start of each chunk upload request:
 			// chunksend: function (e, data) {}, // .bind('fileuploadchunksend', func);
-			
+
 			// Callback for successful chunk uploads:
 			// chunkdone: function (e, data) {}, // .bind('fileuploadchunkdone', func);
-			
+
 			// Callback for failed (abort or error) chunk uploads:
 			// chunkfail: function (e, data) {}, // .bind('fileuploadchunkfail', func);
-			
+
 			// Callback for completed (success, abort or error) chunk upload requests:
 			// chunkalways: function (e, data) {}, // .bind('fileuploadchunkalways', func);
-			
+
 			// The plugin options are used as settings object for the ajax calls.
 			// The following are jQuery ajax settings required for the file uploads:
 			processData: false,
@@ -280,7 +280,7 @@
 			cache: false,
 			timeout: 0
 		},
-		
+
 		// A list of options that require reinitializing event listeners and/or
 		// special initialization code:
 		_specialOptions: [
@@ -290,12 +290,12 @@
 			'multipart',
 			'forceIframeTransport'
 		],
-		
+
 		_blobSlice: $.support.blobSlice && function () {
 			var slice = this.slice || this.webkitSlice || this.mozSlice;
 			return slice.apply(this, arguments);
 		},
-		
+
 		_BitrateTimer: function () {
 			this.timestamp = ((Date.now) ? Date.now() : (new Date()).getTime());
 			this.loaded = 0;
@@ -310,13 +310,13 @@
 				return this.bitrate;
 			};
 		},
-		
+
 		_isXHRUpload: function (options) {
 			return !options.forceIframeTransport &&
 				((!options.multipart && $.support.xhrFileUpload) ||
 					$.support.xhrFormDataFileUpload);
 		},
-		
+
 		_getFormData: function (options) {
 			var formData;
 			if ($.type(options.formData) === 'function') {
@@ -334,7 +334,7 @@
 			}
 			return [];
 		},
-		
+
 		_getTotal: function (files) {
 			var total = 0;
 			$.each(files, function (index, file) {
@@ -342,7 +342,7 @@
 			});
 			return total;
 		},
-		
+
 		_initProgressObject: function (obj) {
 			var progress = {
 				loaded: 0,
@@ -355,7 +355,7 @@
 				obj._progress = progress;
 			}
 		},
-		
+
 		_initResponseObject: function (obj) {
 			var prop;
 			if (obj._response) {
@@ -368,7 +368,7 @@
 				obj._response = {};
 			}
 		},
-		
+
 		_onProgress: function (e, data) {
 			if (e.lengthComputable) {
 				var now = ((Date.now) ? Date.now() : (new Date()).getTime()),
@@ -413,7 +413,7 @@
 				);
 			}
 		},
-		
+
 		_initProgressListener: function (options) {
 			var that = this,
 				xhr = options.xhr ? options.xhr() : $.ajaxSettings.xhr();
@@ -433,12 +433,12 @@
 				};
 			}
 		},
-		
+
 		_isInstanceOf: function (type, obj) {
 			// Cross-frame instanceof check
 			return Object.prototype.toString.call(obj) === '[object ' + type + ']';
 		},
-		
+
 		_initXHRData: function (options) {
 			var that = this,
 				formData,
@@ -511,7 +511,7 @@
 			// Blob reference is not needed anymore, free memory:
 			options.blob = null;
 		},
-		
+
 		_initIframeSettings: function (options) {
 			var targetHost = $('<a></a>').prop('href', options.url).prop('host');
 			// Setting the dataType to iframe enables the iframe transport:
@@ -526,7 +526,7 @@
 				});
 			}
 		},
-		
+
 		_initDataSettings: function (options) {
 			if (this._isXHRUpload(options)) {
 				if (!this._chunkedUpload(options, true)) {
@@ -544,7 +544,7 @@
 				this._initIframeSettings(options);
 			}
 		},
-		
+
 		_getParamName: function (options) {
 			var fileInput = $(options.fileInput),
 				paramName = options.paramName;
@@ -567,7 +567,7 @@
 			}
 			return paramName;
 		},
-		
+
 		_initFormSettings: function (options) {
 			// Retrieve missing options from the input field and the
 			// associated form, if available:
@@ -596,14 +596,14 @@
 				options.formAcceptCharset = options.form.attr('accept-charset');
 			}
 		},
-		
+
 		_getAJAXSettings: function (data) {
 			var options = $.extend({}, this.options, data);
 			this._initFormSettings(options);
 			this._initDataSettings(options);
 			return options;
 		},
-		
+
 		// jQuery 1.6 doesn't provide .state(),
 		// while jQuery 1.8+ removed .isRejected() and .isResolved():
 		_getDeferredState: function (deferred) {
@@ -618,7 +618,7 @@
 			}
 			return 'pending';
 		},
-		
+
 		// Maps jqXHR callbacks to the equivalent
 		// methods of the given Promise object:
 		_enhancePromise: function (promise) {
@@ -627,7 +627,7 @@
 			promise.complete = promise.always;
 			return promise;
 		},
-		
+
 		// Creates and returns a Promise object enhanced with
 		// the jqXHR methods abort, success, error and complete:
 		_getXHRPromise: function (resolveOrReject, context, args) {
@@ -642,7 +642,7 @@
 			promise.abort = dfd.promise;
 			return this._enhancePromise(promise);
 		},
-		
+
 		// Adds convenience methods to the data callback argument:
 		_addConvenienceMethods: function (e, data) {
 			var that = this,
@@ -702,7 +702,7 @@
 				return this._response;
 			};
 		},
-		
+
 		// Parses the Range header from the server response
 		// and returns the uploaded bytes:
 		_getUploadedBytes: function (jqXHR) {
@@ -712,7 +712,7 @@
 					parseInt(parts[1], 10);
 			return upperBytesPos && upperBytesPos + 1;
 		},
-		
+
 		// Uploads a file in multiple, sequential requests
 		// by splitting the file up in multiple blob chunks.
 		// If the second parameter is true, only tests if the file
@@ -817,7 +817,7 @@
 			upload();
 			return promise;
 		},
-		
+
 		_beforeSend: function (e, data) {
 			if (this._active === 0) {
 				// the start callback is triggered when an upload starts
@@ -843,7 +843,7 @@
 			this._progress.loaded += data.loaded;
 			this._progress.total += data.total;
 		},
-		
+
 		_onDone: function (result, textStatus, jqXHR, options) {
 			var total = options._progress.total,
 				response = options._response;
@@ -861,7 +861,7 @@
 			response.jqXHR = options.jqXHR = jqXHR;
 			this._trigger('done', null, options);
 		},
-		
+
 		_onFail: function (jqXHR, textStatus, errorThrown, options) {
 			var response = options._response;
 			if (options.recalculateProgress) {
@@ -875,13 +875,13 @@
 			response.errorThrown = options.errorThrown = errorThrown;
 			this._trigger('fail', null, options);
 		},
-		
+
 		_onAlways: function (jqXHRorResult, textStatus, jqXHRorError, options) {
 			// jqXHRorResult, textStatus and jqXHRorError are added to the
 			// options object via done and fail callbacks
 			this._trigger('always', null, options);
 		},
-		
+
 		_onSend: function (e, data) {
 			if (!data.submit) {
 				this._addConvenienceMethods(e, data);
@@ -967,7 +967,7 @@
 			}
 			return send();
 		},
-		
+
 		_onAdd: function (e, data) {
 			var that = this,
 				result = true,
@@ -1043,7 +1043,7 @@
 			});
 			return result;
 		},
-		
+
 		_replaceFileInput: function (data) {
 			var input = data.fileInput,
 				inputClone = input.clone(true),
@@ -1076,7 +1076,7 @@
 				this.element = inputClone;
 			}
 		},
-		
+
 		_handleFileTreeEntry: function (entry, path) {
 			var that = this,
 				dfd = $.Deferred(),
@@ -1132,7 +1132,7 @@
 			}
 			return dfd.promise();
 		},
-		
+
 		_handleFileTreeEntries: function (entries, path) {
 			var that = this;
 			return $.when.apply(
@@ -1147,7 +1147,7 @@
 				);
 			});
 		},
-		
+
 		_getDroppedFiles: function (dataTransfer) {
 			dataTransfer = dataTransfer || {};
 			var items = dataTransfer.items;
@@ -1172,7 +1172,7 @@
 				$.makeArray(dataTransfer.files)
 			).promise();
 		},
-		
+
 		_getSingleFileInputFiles: function (fileInput) {
 			fileInput = $(fileInput);
 			var entries = fileInput.prop('webkitEntries') ||
@@ -1201,7 +1201,7 @@
 			}
 			return $.Deferred().resolve(files).promise();
 		},
-		
+
 		_getFileInputFiles: function (fileInput) {
 			if (!(fileInput instanceof $) || fileInput.length === 1) {
 				return this._getSingleFileInputFiles(fileInput);
@@ -1216,7 +1216,7 @@
 				);
 			});
 		},
-		
+
 		_onChange: function (e) {
 			var that = this,
 				data = {
@@ -1237,7 +1237,7 @@
 				}
 			});
 		},
-		
+
 		_onPaste: function (e) {
 			var items = e.originalEvent && e.originalEvent.clipboardData &&
 				e.originalEvent.clipboardData.items,
@@ -1258,7 +1258,7 @@
 				}
 			}
 		},
-		
+
 		_onDrop: function (e) {
 			e.dataTransfer = e.originalEvent && e.originalEvent.dataTransfer;
 			var that = this,
@@ -1278,13 +1278,13 @@
 				});
 			}
 		},
-		
+
 		_onDragOver: getDragHandler('dragover'),
-		
+
 		_onDragEnter: getDragHandler('dragenter'),
-		
+
 		_onDragLeave: getDragHandler('dragleave'),
-		
+
 		_initEventHandlers: function () {
 			if (this._isXHRUpload(this.options)) {
 				this._on(this.options.dropZone, {
@@ -1305,17 +1305,17 @@
 				});
 			}
 		},
-		
+
 		_destroyEventHandlers: function () {
 			this._off(this.options.dropZone, 'dragenter dragleave dragover drop');
 			this._off(this.options.pasteZone, 'paste');
 			this._off(this.options.fileInput, 'change');
 		},
-		
+
 		_destroy: function () {
 			this._destroyEventHandlers();
 		},
-		
+
 		_setOption: function (key, value) {
 			var reinit = $.inArray(key, this._specialOptions) !== -1;
 			if (reinit) {
@@ -1327,7 +1327,7 @@
 				this._initEventHandlers();
 			}
 		},
-		
+
 		_initSpecialOptions: function () {
 			var options = this.options;
 			if (options.fileInput === undefined) {
@@ -1343,19 +1343,19 @@
 				options.pasteZone = $(options.pasteZone);
 			}
 		},
-		
+
 		_getRegExp: function (str) {
 			var parts = str.split('/'),
 				modifiers = parts.pop();
 			parts.shift();
 			return new RegExp(parts.join('/'), modifiers);
 		},
-		
+
 		_isRegExpOption: function (key, value) {
 			return key !== 'url' && $.type(value) === 'string' &&
 				/^\/.*\/[igm]{0,3}$/.test(value);
 		},
-		
+
 		_initDataAttributes: function () {
 			var that = this,
 				options = this.options,
@@ -1380,7 +1380,7 @@
 				}
 			);
 		},
-		
+
 		_create: function () {
 			this._initDataAttributes();
 			this._initSpecialOptions();
@@ -1390,13 +1390,13 @@
 			this._initProgressObject(this);
 			this._initEventHandlers();
 		},
-		
+
 		// This method is exposed to the widget API and allows to query
 		// the number of active uploads:
 		active: function () {
 			return this._active;
 		},
-		
+
 		// This method is exposed to the widget API and allows to query
 		// the widget upload progress.
 		// It returns an object with loaded, total and bitrate properties
@@ -1404,7 +1404,7 @@
 		progress: function () {
 			return this._progress;
 		},
-		
+
 		// This method is exposed to the widget API and allows adding files
 		// using the fileupload API. The data parameter accepts an object which
 		// must have a files property and can contain additional options:
@@ -1424,7 +1424,7 @@
 				this._onAdd(null, data);
 			}
 		},
-		
+
 		// This method is exposed to the widget API and allows sending files
 		// using the fileupload API. The data parameter accepts an object which
 		// must have a files or fileInput property and can contain additional options:
@@ -1476,7 +1476,7 @@
 			}
 			return this._getXHRPromise(false, data && data.context);
 		}
-		
+
 	});
-	
+
 }));
