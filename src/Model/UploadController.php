@@ -191,9 +191,10 @@ class UploadController extends \Nette\Application\UI\Control
 	{
 		$id = $this->request->getQuery('id');
 		$token = $this->request->getQuery('token');
-		$default = $this->request->getQuery('default', 0);
+	//$default = $this->request->getQuery('default', 0);
+		$default = $this->request->getQuery('default');
 
-		if ($default == 0) {
+		if ($default == null) {
 			$cache = $this->uploadControl->getCache();
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
