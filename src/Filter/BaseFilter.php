@@ -35,7 +35,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 */
 	public function checkType(\Nette\Http\FileUpload $file)
 	{
-		if (\Nette\Utils\Arrays::searchKey($this->getMimeTypes(), $file->getContentType()) !== false) {
+		if (\Nette\Utils\Arrays::searchKey($this->getMimeTypes(), $file->getContentType()) !== null) {
 			return true;
 		} else {
 			// Pokud se nepodaří ověřit mimetype, ověříme alespoň koncovku.
@@ -55,7 +55,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 */
 	public function getAllowedTypes()
 	{
-		return implode(array_unique($this->getMimeTypes()), ', ');
+		return implode(', ', array_unique($this->getMimeTypes()));
 	}
 
 
