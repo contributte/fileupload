@@ -1,0 +1,5 @@
+includes:
+        - c:\Wamp\NetteTools\phpstan\vendor\phpstan\phpstan-nette\extension.neon
+        - c:\Wamp\NetteTools\phpstan\vendor\phpstan\phpstan-nette\rules.neon
+
+parameters:
