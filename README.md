@@ -11,7 +11,7 @@ Komponenta nabízí možnost [vlastního uživatelského rozhraní](https://gith
 
 ## Composer
 ```
-composer require jzechy/jquery-fileupload
+$ composer require jzechy/jquery-fileupload
 ```
 
 ## Odkazy
