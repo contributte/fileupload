@@ -10,8 +10,8 @@ jQuery-FileUpload je komponenta, fungující jako rozšíření UploadControl v 
 Komponenta nabízí možnost [vlastního uživatelského rozhraní](https://github.com/JZechy/jQuery-FileUpload/wiki/Rendering) a [vlastního zpracování nahrávaných souborů](https://github.com/JZechy/jQuery-FileUpload/wiki/Upload-model).
 
 ## Composer
-```
-$ composer require jzechy/jquery-fileupload
+```bash
+composer require jzechy/jquery-fileupload
 ```
 
 ## Odkazy
