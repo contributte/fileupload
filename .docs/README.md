@@ -191,6 +191,7 @@ FileUploadControl::setUIMode(FileUploadControl::UI_MINIMAL);
 ```
 
 ### Custom parameters
+
 As of version 1.2.1, an array of custom parameters can be passed to the FileUploader, using the method **FileUplaodControl::setParams()**.
 
 ```php
@@ -209,12 +210,12 @@ Uploaded files can be obtained by processing the form from the field **$values**
 ### Setters
 
 ```php
-FileUploadControl::setMaxFiles(25); // Sets maxium of files.
-FileUploadControl::setMaxFileSize("2M"); // Setsa of maximum of file size.
-FileUploadControl::setUploadModel('\Model\File\UploadModel'); // Sets custom upload model.
-FileUploadControl::setFileFilter('\Zet\FileUpload\Filter\ImageFilter'); // Sets restrictions on uploading files to specified types. You can string a custom class or use the FileUploadControl constants.
+FileUploadControl::setMaxFiles(25); // Setter for maximum of files.
+FileUploadControl::setMaxFileSize("2M"); // Setter for maximum of file size.
+FileUploadControl::setUploadModel('\Model\File\UploadModel'); // Setter for custom upload model.
+FileUploadControl::setFileFilter('\Zet\FileUpload\Filter\ImageFilter'); // Setter for restrictions on uploading files to specified types. You can string a custom class or use the FileUploadControl constants.
 FileUploadControl::setUiTemplate(FileUploadControl::UI_FULL, __DIR__ . "/path/to/my/template.latte");
-FileUploadControl::setParams(["productId" => 10]); // Sets custom values for the uploaded file
+FileUploadControl::setParams(["productId" => 10]); // Setter for custom values for the uploaded file
 ```
 
 ## Catching exceptions
@@ -227,3 +228,164 @@ On the controller side, any exceptions can be thrown from the UploadModel. Excep
 
 If an error is returned from the server while uploading a file, its name will be replaced in the file list by an error message. If the application is not in run mode, the information with the error message from the exception is written as an error to the console.
 
+## Upgrading from 1.2 tp 2.0
+
+### Registration
+
+* UiMode was removed from registration. Newly replaced by Renderer settings.
+* UI Modes are replaced by custom renderer class.
+
+### Configuration
+
+New options have been added to the configuration:
+
+#### renderer
+
+Replacing uiMode, it takes the name of the class that will render the FileUploader. Can be used [predefined or custom](#rendering).
+
+#### translator
+
+Name of class (not required) which implements translator. If the is no one, upúloader tries to load **\Nette\Localization\ITranslator**.interface.
+
+#### autoTranslate
+
+Default value is `false`. Automatically translates entered error messages.
+
+#### messages
+
+The error messages:
+* maxFiles - The maximum of files.
+* maxSize - The maximum size of file.
+* fileTypes - Allowed file MIME types.
+* fileSize - PHP error - the file is too big.
+* partialUpload - PHP error - The file was partially uploaded.
+* noFile - PHP error. No file uploaded.
+* tmpFolder - PHP error. Temporary folder is missing.
+* cannotWrite - PHP error. Cannot write the file.
+* stopped - PHP error. File upload was interrupted.
+
+#### uploadSettings
+
+List of custom configuration values for the uploader. This item is used to customize the blueimp uploader, allows you to specify all the configuration properties that the uploader offers.
+
+## Rendering
+
+### Default renderers
+
+Fileuploader comes with three predefined renderers:
+* [Html5Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Html5Renderer.php)
+* [Bootstrap3Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Bootstrap3Renderer.php)
+* [Bootstrap4Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Bootstrap4Renderer.php)
+
+By default, Html5Renderer is selected.
+
+### Custom renderer
+
+It is also possible to create custom class for rendering the uploader. Everything is done with the help of the class **\Nette\Utils\Html**. There are several basic elements / components available to render the uploader which you can modify as you wish.
+
+* **container**: Element that wraps the entire uploader.
+* **input**: File input to which uploader events are linked.
+* **globalProgress**: An element used for showing progress bar for the entire file queue.
+* **globalProgressValue**: Element used to showing list the percentage of uploaded of the current queue.
+* **fileProgress**: Element that used for showing progress bar for the file itself.
+* **fileProgressValue**: Element used for showing list percentage of upload of the current file.
+* **imagePreview**: Element which is for showing uploaded image preview.
+* **filePreview**: Element which is for showing type of uploaded file is listed.
+* **filename**: Element in which shows the file name.
+* **delete**: Element that is used for a button / link to delete a file.
+* **errorMessage**: Element into which error messages are written.
+
+All elements are set by default as `div`, except of the following:
+
+* **input** is input type = "file"
+* **delete** is button type = "button"
+* **imagePreview** is img
+
+Progress bars can be HTML5 tags &lt;progress&gt; or &lt;div&gt;.
+
+#### BaseRenderer
+
+The custom renderer must inherit from the **\Zet\FileUpload\Template\Renderer\BaseRenderer** class. This class has the attribute **$elements** in which are stored the Html Prototypes of all components in the field on indexes.
+
+BaseRenderer contains three abstract methods that need to be implemented.
+
+```php
+/**
+ * Class BaseRenderer
+ *
+ * @author  Zechy <email@zechy.cz>
+ * @package Zet\FileUpload\Template\Renderer
+ */
+abstract class BaseRenderer extends Object implements IUploadRenderer {
+
+	/**
+	 * Sestavení výchozí šablony uploaderu.
+	 *
+	 * @return \Nette\Utils\Html
+	 */
+	abstract public function buildDefaultTemplate();
+	
+	/**
+	 * Sestavení šablony pro vkládání nových souborů.
+	 *
+	 * @return \Nette\Utils\Html
+	 */
+	abstract public function buildFileContainerTemplate();
+	
+	/**
+	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
+	 *
+	 * @return \Nette\Utils\Html
+	 */
+	abstract public function buildFileError();
+}
+```
+
+The **buildDefaultTemplate()** method builds the base renderer template, which is what is visible when the page is loaded. Each additional file added then uses a template that is built using **buuildFileContainerTemplate()**. If an error occurs while uploading the file, the template from the **buildFileError()** method is used.
+
+If it is not necessary to use a component in the template, it is possible to overwrite its HTML prototype with the value null, then no attempt will be made to fill / use it during rendering.
+
+### Default files
+
+Since version 2.0.0-beta2, default files can be entered into the uploader. When loaded these files are displayed as already uploaded files that the user can delete.
+
+### DefaultFile
+
+Use the container **\Zet\FileUpload\Model\DefaultFile** to add a default file. 
+
+```php
+class DefaultFile extends Object {
+	
+	/**
+	 * Callback pro smazání výchozího souboru s parametry (mixed $identifier).
+	 *
+	 * @var array
+	 */
+	public $onDelete = [];
+	
+	/**
+	 * Odkaz na náhled obrázku.
+	 *
+	 * @var string
+	 */
+	private $preview;
+	
+	/**
+	 * Název souboru.
+	 *
+	 * @var string
+	 */
+	private $filename;
+	
+	/**
+	 * Identifikátor souboru sloužící pro jeho smazání.
+	 *
+	 * @var mixed
+	 */
+	private $identifier;
+}
+```
+
+The container offers the ability to specify a PHP callback to a function that will eventually delete the default file. It is also possible to set a link to display a preview of the image, the file name and its identifier which is used for callback when deleting a file.
+
+The default file can be added to the uploader using `setDefaultFiles()`, which accepts an array of files, or `addDefaultFiles()`, which adds a single file to an array.
