@@ -30,16 +30,14 @@ composer require jzechy/jquery-fileupload
 
 For details on how to use this package, check out our [documentation](.docs).
 
+There is also [thread on Nette Forum](https://forum.nette.org/cs/27287-jquery-fileupload-snadny-upload-souboru).
+
 ## Versions
 
-| State       | Version         | Branch   | Nette  | PHP     |
-|-------------|-----------------|----------|--------|---------|
-| dev         | `^dev-master`   | `master` | `2.4`  | `^5.6`  |
-| stable      | `^2.0`          | `master` | `2.4`  | `^5.6`  |
-
-## Links
-
-* [Thread at Nette Forum (Czech)](https://forum.nette.org/cs/27287-jquery-fileupload-snadny-upload-souboru)
+| State       | Version  | Branch   | Nette  | PHP     |
+|-------------|----------|----------|--------|---------|
+| dev         | `^2.1`   | `master` | `2.4`  | `>=5.6` |
+| stable      | `^2.0`   | `master` | `2.4`  | `>=5.6` |
 
 ## Development
 
@@ -56,4 +54,4 @@ See [how to contribute](https://contributte.org/contributing.html) to this packa
 -----
 
 Consider to [support](https://contributte.org/partners.html) **contributte** development team.
-Also thank you for using this package. Thanks.
+Also thank you for using this package.
