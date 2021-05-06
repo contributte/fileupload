@@ -1,25 +1,32 @@
 {
-	"name": "jzechy/jquery-fileupload",
-	"description": "Nette UploadControl rozšířené o blueimp jQuery FileUpload.",
-	"homepage": "https://github.com/JZechy/jQuery-FileUpload",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Jan 'Zechy' Zechovský",
-			"email": "email@zechy.cz",
-			"homepage": "http://zechy.cz"
-		}
-	],
-	"require": {
-		"php": ">=5.6.0",
-		"nette/forms": "^v2.4.0",
-		"nette/http": "^v2.4.0",
-		"nette/utils": "^v2.4.0",
-		"nette/di": "^v2.4.0",
-		"nette/application": "^v2.4.0",
-		"latte/latte": "^v2.4.0"
-	},
-	"autoload": {
-		"classmap": ["src/"]
-	}
+  "name": "jzechy/jquery-fileupload",
+  "description": "Nette UploadControl rozšířené o blueimp jQuery FileUpload.",
+  "homepage": "https://github.com/JZechy/jQuery-FileUpload",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jan 'Zechy' Zechovský",
+      "email": "email@zechy.cz",
+      "homepage": "http://zechy.cz"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "nette/forms": "^v2.4.0",
+    "nette/http": "^v2.4.0",
+    "nette/utils": "^v2.4.0",
+    "nette/di": "^v2.4.0",
+    "nette/application": "^v2.4.0",
+    "latte/latte": "^v2.4.0"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.1.x-dev"
+    }
+  }
 }
