@@ -20,11 +20,21 @@
     "latte/latte": "^v2.4.0"
   },
   "require-dev": {
-    "ninjify/qa": "^0.12"
+    "ninjify/nunjuck": "^0.3",
+    "ninjify/qa": "^0.12",
+    "phpstan/phpstan": "^0.12",
+    "phpstan/phpstan-deprecation-rules": "^0.12",
+    "phpstan/phpstan-nette": "^0.12",
+    "phpstan/phpstan-strict-rules": "^0.12"
   },
   "autoload": {
     "classmap": [
       "src/"
     ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.1.x-dev"
+    }
   }
 }
