@@ -45,23 +45,17 @@ class UploadController extends Control
 		$this->uploadControl = $uploadControl;
 	}
 
-	/**
-	 * @param Request $request
-	 */
-	public function setRequest($request)
+	public function setRequest(Request $request): void
 	{
 		$this->request = $request;
 	}
 
-	/**
-	 * @return IMimeTypeFilter|NULL
-	 */
-	public function getFilter()
+	public function getFilter(): ?IMimeTypeFilter
 	{
 		if ($this->filter === null) {
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$className = $this->uploadControl->getFileFilter();
-			if ($className !== null) {
+			if ($className !== '') {
 				$filterClass = new $className();
 				if ($filterClass instanceof IMimeTypeFilter) {
 					$this->filter = $filterClass;
@@ -76,18 +70,12 @@ class UploadController extends Control
 		return $this->filter;
 	}
 
-	/**
-	 * @return FileUploadControl
-	 */
-	public function getUploadControl()
+	public function getUploadControl(): FileUploadControl
 	{
 		return $this->uploadControl;
 	}
 
-	/**
-	 * @return BaseRenderer
-	 */
-	public function getRenderer()
+	public function getRenderer(): BaseRenderer
 	{
 		if ($this->renderer === null) {
 			$rendererClass = $this->uploadControl->getRenderer();
@@ -105,10 +93,8 @@ class UploadController extends Control
 
 	/**
 	 * Vytvoření šablony s JavaScriptem pro FileUpload.
-	 *
-	 * @return string
 	 */
-	public function getJavaScriptTemplate()
+	public function getJavaScriptTemplate(): string
 	{
 		$builder = new JavascriptBuilder(
 			$this->getRenderer(),
@@ -120,10 +106,8 @@ class UploadController extends Control
 
 	/**
 	 * Vytvoření šablony s přehledem o uploadu.
-	 *
-	 * @return Html
 	 */
-	public function getControlTemplate()
+	public function getControlTemplate(): Html
 	{
 		return $this->getRenderer()->buildDefaultTemplate();
 	}
@@ -131,7 +115,7 @@ class UploadController extends Control
 	/**
 	 * Zpracování uploadu souboru.
 	 */
-	public function handleUpload()
+	public function handleUpload(): void
 	{
 		$files = $this->request->getFiles();
 		$token = $this->request->getPost('token');
@@ -146,14 +130,14 @@ class UploadController extends Control
 
 		try {
 			if ($filter !== null && !$filter->checkType($file)) {
-				throw new InvalidFileException($this->getFilter()->getAllowedTypes());
+				throw new InvalidFileException($this->getFilter() !== null ? $this->getFilter()->getAllowedTypes() : '');
 			}
 
 			if ($file->isOk()) {
 				$returnData = $model->save($file, $params);
 				/** @noinspection PhpInternalEntityUsedInspection */
 				$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
-				if (empty($cacheFiles)) {
+				if ($cacheFiles === '') {
 					$cacheFiles = [$this->request->getPost('id') => $returnData];
 				} else {
 					$cacheFiles[$this->request->getPost('id')] = $returnData;
@@ -186,7 +170,7 @@ class UploadController extends Control
 	/**
 	 * Odstraní nahraný soubor.
 	 */
-	public function handleRemove()
+	public function handleRemove(): void
 	{
 		$id = $this->request->getQuery('id');
 		$token = $this->request->getQuery('token');
@@ -217,7 +201,7 @@ class UploadController extends Control
 	/**
 	 * Přejmenuje nahraný soubor.
 	 */
-	public function handleRename()
+	public function handleRename(): void
 	{
 		$id = $this->request->getQuery('id');
 		$newName = $this->request->getQuery('newName');
@@ -233,11 +217,6 @@ class UploadController extends Control
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$cache->save($this->uploadControl->getTokenizedCacheName($token), $cacheFiles);
 		}
-	}
-
-	public function validate()
-	{
-		// Nette ^2.3.10 bypass
 	}
 
 }

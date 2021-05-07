@@ -3,7 +3,6 @@
 namespace Zet\FileUpload;
 
 use Nette;
-use Nette\Application\UI\Form;
 use Nette\Caching\Cache;
 use Nette\DI\Container;
 use Nette\Forms\Controls\UploadControl;
@@ -11,7 +10,9 @@ use Nette\Http\Request;
 use Nette\InvalidStateException;
 use Nette\Localization\ITranslator;
 use Nette\Utils\Html;
+use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\DefaultFile;
+use Zet\FileUpload\Model\IUploadModel;
 use Zet\FileUpload\Model\UploadController;
 
 /**
@@ -21,83 +22,6 @@ use Zet\FileUpload\Model\UploadController;
  */
 class FileUploadControl extends UploadControl
 {
-
-	// --------------------------------------------------------------------
-	// Registration
-	// --------------------------------------------------------------------
-
-	/**
-	 * @static
-	 * @param Container $systemContainer
-	 * @param array               $configuration
-	 */
-	public static function register(Container $systemContainer, array $configuration = [])
-	{
-		$class = self::class;
-		Nette\Forms\Container::extensionMethod('addFileUpload', function (
-			Nette\Forms\Container $container,
-			$name,
-			$maxFiles = null,
-			$maxFileSize = null
-		) use (
-			$class,
-			$systemContainer,
-			$configuration
-) {
-			$maxFiles = $maxFiles ?? $configuration['maxFiles'];
-			$maxFileSize = $maxFileSize ?? $configuration['maxFileSize'];
-
-			/** @var FileUploadControl $component */
-			$component = new $class($name, $maxFiles, $maxFileSize);
-			$component->setContainer($systemContainer);
-			$component->setUploadModel($configuration['uploadModel']);
-			$component->setFileFilter($configuration['fileFilter']);
-			$component->setRenderer($configuration['renderer']);
-
-			if ($configuration['translator'] === null) {
-				$translator = $systemContainer->getByType(ITranslator::class, false);
-				$component->setTranslator($translator);
-			} else {
-				$component->setTranslator($configuration['translator']);
-			}
-
-			$component->setAutoTranslate($configuration['autoTranslate']);
-			$component->setMessages($configuration['messages']);
-			$component->setUploadSettings($configuration['uploadSettings']);
-
-			$container->addComponent($component, $name);
-
-			return $component;
-		});
-	}
-
-	/**
-	 * Vloží CSS do stránky.
-	 *
-	 * @static
-	 * @param string $basePath
-	 */
-	public static function getHead($basePath)
-	{
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
-	}
-
-	/**
-	 * Vloží skripty do stránky.
-	 *
-	 * @static
-	 * @param string $basePath
-	 */
-	public static function getScripts($basePath)
-	{
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/vendor/jquery.ui.widget.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/load-image.all.min.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-process.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
-		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
-	}
 
 	// --------------------------------------------------------------------
 	// Control definition
@@ -153,7 +77,7 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Pole vlastních definovaných parametrů.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private $params = [];
 
@@ -195,7 +119,7 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Pole vlastních hodnot pro konfiguraci uploaderu.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private $uploadSettings = [];
 
@@ -204,13 +128,13 @@ class FileUploadControl extends UploadControl
 	 * @param int    $maxFiles    Maximální počet souborů.
 	 * @param string $maxFileSize Maximální velikosti souboru.
 	 */
-	public function __construct($name, $maxFiles, $maxFileSize = null)
+	public function __construct(string $name, int $maxFiles, ?string $maxFileSize = null)
 	{
 		parent::__construct($name);
 		$this->maxFiles = $maxFiles;
 		if ($maxFileSize === null) {
 			$this->fileSizeString = ini_get('upload_max_filesize') . 'B';
-			$this->maxFileSize = $this->parseIniSize(ini_get('upload_max_filesize'));
+			$this->maxFileSize = $this->parseIniSize((string) ini_get('upload_max_filesize'));
 		} else {
 			$this->fileSizeString = $maxFileSize . 'B';
 			$this->maxFileSize = $this->parseIniSize($maxFileSize);
@@ -220,15 +144,90 @@ class FileUploadControl extends UploadControl
 		$this->token = uniqid();
 	}
 
+	// --------------------------------------------------------------------
+	// Registration
+	// --------------------------------------------------------------------
+
+	/**
+	 * @static
+	 * @param Container    $systemContainer
+	 * @param array<mixed> $configuration
+	 */
+	public static function register(Container $systemContainer, array $configuration = []): void
+	{
+		$class = self::class;
+		Nette\Forms\Container::extensionMethod('addFileUpload', function (
+			Nette\Forms\Container $container,
+			$name,
+			$maxFiles = null,
+			$maxFileSize = null
+		) use (
+			$class,
+			$systemContainer,
+			$configuration
+		): FileUploadControl {
+			$maxFiles = $maxFiles ?? $configuration['maxFiles'];
+			$maxFileSize = $maxFileSize ?? $configuration['maxFileSize'];
+
+			/** @var FileUploadControl $component */
+			$component = new $class($name, $maxFiles, $maxFileSize);
+			$component->setContainer($systemContainer);
+			$component->setUploadModel($configuration['uploadModel']);
+			$component->setFileFilter($configuration['fileFilter']);
+			$component->setRenderer($configuration['renderer']);
+
+			if ($configuration['translator'] === null) {
+				$translator = $systemContainer->getByType(ITranslator::class, false);
+				$component->setTranslator($translator);
+			} else {
+				$component->setTranslator($configuration['translator']);
+			}
+
+			$component->setAutoTranslate($configuration['autoTranslate']);
+			$component->setMessages($configuration['messages']);
+			$component->setUploadSettings($configuration['uploadSettings']);
+
+			$container->addComponent($component, $name);
+
+			return $component;
+		});
+	}
+
+	/**
+	 * Vloží CSS do stránky.
+	 *
+	 * @static
+	 */
+	public static function getHead(string $basePath): void
+	{
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/functions.js"></script>';
+	}
+
+	/**
+	 * Vloží skripty do stránky.
+	 *
+	 * @static
+	 */
+	public static function getScripts(string $basePath): void
+	{
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/vendor/jquery.ui.widget.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/load-image.all.min.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-process.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-image.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
+		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
+	}
+
 	/**
 	 * Ověření nastavených direktiv, zda nepřekročují nastavení serveru.
 	 *
 	 * @throws InvalidValueException
 	 */
-	private function checkSettings()
+	private function checkSettings(): void
 	{
-		$postMaxSize = $this->parseIniSize($postMaxSizeString = ini_get('post_max_size'));
-		$iniMaxFileSize = $this->parseIniSize($iniMaxFileSizeString = ini_get('upload_max_filesize'));
+		$postMaxSize = $this->parseIniSize($postMaxSizeString = (string) ini_get('post_max_size'));
+		$iniMaxFileSize = $this->parseIniSize($iniMaxFileSizeString = (string) ini_get('upload_max_filesize'));
 
 		if ($this->maxFileSize > $postMaxSize) {
 			throw new InvalidValueException(
@@ -248,9 +247,9 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @param Form $form
+	 * @param mixed $form
 	 */
-	protected function attached($form)
+	protected function attached($form): void
 	{
 		parent::attached($form);
 		$this->form->addComponent($this->controller, 'uploadController' . ucfirst($this->name));
@@ -261,10 +260,9 @@ class FileUploadControl extends UploadControl
 	// --------------------------------------------------------------------
 
 	/**
-	 * @param Container $container
 	 * @internal
 	 */
-	public function setContainer($container)
+	public function setContainer(Container $container): void
 	{
 		$this->container = $container;
 		/** @noinspection PhpParamsInspection */
@@ -274,28 +272,22 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return Container
 	 * @internal
 	 */
-	public function getContainer()
+	public function getContainer(): Container
 	{
 		return $this->container;
 	}
 
 	/**
-	 * @return int
 	 * @internal
 	 */
-	public function getMaxFiles()
+	public function getMaxFiles(): int
 	{
 		return $this->maxFiles;
 	}
 
-	/**
-	 * @param int $maxFiles
-	 * @return $this
-	 */
-	public function setMaxFiles($maxFiles)
+	public function setMaxFiles(int $maxFiles): self
 	{
 		$this->maxFiles = $maxFiles;
 
@@ -303,16 +295,15 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return Model\IUploadModel
 	 * @internal
 	 */
-	public function getUploadModel()
+	public function getUploadModel(): IUploadModel
 	{
 		if ($this->uploadModel === null) {
-			return new Model\BaseUploadModel();
+			return new BaseUploadModel();
 		} else {
 			$model = $this->container->getByType($this->uploadModel);
-			if ($model instanceof Model\IUploadModel) {
+			if ($model instanceof IUploadModel) {
 				return $model;
 			} else {
 				throw new InvalidStateException(
@@ -322,11 +313,7 @@ class FileUploadControl extends UploadControl
 		}
 	}
 
-	/**
-	 * @param string $uploadModel
-	 * @return $this
-	 */
-	public function setUploadModel($uploadModel)
+	public function setUploadModel(string $uploadModel): self
 	{
 		$this->uploadModel = $uploadModel;
 
@@ -334,58 +321,45 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return int
 	 * @internal
 	 */
-	public function getMaxFileSize()
+	public function getMaxFileSize(): int
 	{
 		return $this->maxFileSize;
 	}
 
-	/**
-	 * @param int $maxFileSize
-	 * @return $this
-	 */
-	public function setMaxFileSize($maxFileSize)
+	public function setMaxFileSize(string $maxFileSize): self
 	{
 		$this->maxFileSize = $this->parseIniSize($maxFileSize);
 
 		return $this;
 	}
 
-	/**
-	 * @return Cache
-	 */
-	public function getCache()
+	public function getCache(): Cache
 	{
 		return $this->cache;
 	}
 
 	/**
-	 * @return string
 	 * @internal
 	 */
-	public function getFileSizeString()
+	public function getFileSizeString(): string
 	{
 		return $this->fileSizeString;
 	}
 
 	/**
-	 * @return string
 	 * @internal
 	 */
-	public function getFileFilter()
+	public function getFileFilter(): string
 	{
 		return $this->fileFilter;
 	}
 
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
-	 *
-	 * @param string $fileFilter
-	 * @return $this
 	 */
-	public function setFileFilter($fileFilter)
+	public function setFileFilter(string $fileFilter): self
 	{
 		$this->fileFilter = $fileFilter;
 
@@ -395,11 +369,9 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Vrátí název pro frontu s tokenem.
 	 *
-	 * @param string $token
-	 * @return string
 	 * @internal
 	 */
-	public function getTokenizedCacheName($token)
+	public function getTokenizedCacheName(string $token): string
 	{
 		return $this->getHtmlId() . '-' . $token;
 	}
@@ -407,10 +379,9 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Vrátí identifikační token.
 	 *
-	 * @return string
 	 * @internal
 	 */
-	public function getToken()
+	public function getToken(): string
 	{
 		return $this->token;
 	}
@@ -418,10 +389,9 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Nastavení vlastních parametrů k uploadovanému souboru.
 	 *
-	 * @param array $params
-	 * @return FileUploadControl
+	 * @param array<mixed> $params
 	 */
-	public function setParams(array $params)
+	public function setParams(array $params): self
 	{
 		$this->params = $params;
 
@@ -429,28 +399,21 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return array
+	 * @return array<mixed>
 	 */
-	public function getParams()
+	public function getParams(): array
 	{
 		return $this->params;
 	}
 
-	/**
-	 * @param string $renderer
-	 * @return FileUploadControl
-	 */
-	public function setRenderer($renderer)
+	public function setRenderer(string $renderer): self
 	{
 		$this->renderer = $renderer;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRenderer()
+	public function getRenderer(): string
 	{
 		return $this->renderer;
 	}
@@ -458,27 +421,22 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @return DefaultFile[]
 	 */
-	public function getDefaultFiles()
+	public function getDefaultFiles(): array
 	{
 		return $this->defaultFiles;
 	}
 
 	/**
 	 * @param DefaultFile[] $defaultFiles
-	 * @return FileUploadControl
 	 */
-	public function setDefaultFiles($defaultFiles)
+	public function setDefaultFiles(array $defaultFiles): self
 	{
 		$this->defaultFiles = $defaultFiles;
 
 		return $this;
 	}
 
-	/**
-	 * @param DefaultFile $defaultFile
-	 * @return FileUploadControl
-	 */
-	public function addDefaultFile($defaultFile)
+	public function addDefaultFile(DefaultFile $defaultFile): self
 	{
 		$this->defaultFiles[] = $defaultFile;
 
@@ -486,22 +444,16 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @param string[] $messages
-	 * @return FileUploadControl
+	 * @param array<mixed> $messages
 	 */
-	public function setMessages(array $messages)
+	public function setMessages(array $messages): self
 	{
 		$this->messages = $messages;
 
 		return $this;
 	}
 
-	/**
-	 * @param string $index
-	 * @param string $message
-	 * @return FileUploadControl
-	 */
-	public function setMessage($index, $message)
+	public function setMessage(string $index, string $message): self
 	{
 		$this->messages[$index] = $message;
 
@@ -509,26 +461,19 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return string[]
+	 * @return array<string>
 	 */
-	public function getMessages()
+	public function getMessages(): array
 	{
 		return $this->messages;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isAutoTranslate()
+	public function isAutoTranslate(): bool
 	{
 		return $this->autoTranslate;
 	}
 
-	/**
-	 * @param bool $autoTranslate
-	 * @return FileUploadControl
-	 */
-	public function setAutoTranslate($autoTranslate)
+	public function setAutoTranslate(bool $autoTranslate): self
 	{
 		$this->autoTranslate = $autoTranslate;
 
@@ -536,18 +481,17 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return array
+	 * @return array<mixed>
 	 */
-	public function getUploadSettings()
+	public function getUploadSettings(): array
 	{
 		return $this->uploadSettings;
 	}
 
 	/**
-	 * @param array $uploadSettings
-	 * @return FileUploadControl
+	 * @param array<mixed> $uploadSettings
 	 */
-	public function setUploadSettings($uploadSettings)
+	public function setUploadSettings(array $uploadSettings): self
 	{
 		$this->uploadSettings = $uploadSettings;
 
@@ -557,9 +501,8 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @param string $name
 	 * @param mixed  $value
-	 * @return FileUploadControl
 	 */
-	public function addUploadSettings($name, $value)
+	public function addUploadSettings(string $name, $value): self
 	{
 		$this->uploadSettings[$name] = $value;
 
@@ -573,7 +516,7 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Získání identifikačního tokenu.
 	 */
-	public function loadHttpData()
+	public function loadHttpData(): void
 	{
 		parent::loadHttpData();
 
@@ -583,10 +526,9 @@ class FileUploadControl extends UploadControl
 	}
 
 	/**
-	 * @return Html
 	 * @throws InvalidValueException
 	 */
-	public function getControl()
+	public function getControl(): Html
 	{
 		$this->checkSettings();
 
@@ -629,7 +571,7 @@ class FileUploadControl extends UploadControl
 	 * @param string $value
 	 * @return int
 	 */
-	private function parseIniSize($value)
+	private function parseIniSize(string $value): int
 	{
 		$units = ['k' => 1024, 'm' => 1048576, 'g' => 1073741824];
 		$unit = strtolower(substr($value, -1));

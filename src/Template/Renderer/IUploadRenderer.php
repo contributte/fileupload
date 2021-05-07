@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Zet\FileUpload\Template\Renderer;
 
@@ -14,22 +14,16 @@ interface IUploadRenderer {
 	
 	/**
 	 * Sestavení výchozí šablony uploaderu.
-	 *
-	 * @return Html
 	 */
-	public function buildDefaultTemplate();
+	public function buildDefaultTemplate(): Html;
 	
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
-	 *
-	 * @return Html
 	 */
-	public function buildFileContainerTemplate();
+	public function buildFileContainerTemplate(): Html;
 	
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
-	 *
-	 * @return Html
 	 */
-	public function buildFileError();
+	public function buildFileError(): Html;
 }

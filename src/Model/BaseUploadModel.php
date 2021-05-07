@@ -19,8 +19,8 @@ class BaseUploadModel implements IUploadModel
 	/**
 	 * Uložení nahraného souboru.
 	 *
-	 * @param FileUpload $file
-	 * @param array                  $params Pole vlastních parametrů.
+	 * @param FileUpload   $file
+	 * @param array<mixed> $params Pole vlastních parametrů.
 	 * @return mixed Vlastní navrátová hodnota.
 	 */
 	public function save(FileUpload $file, array $params = [])
@@ -33,7 +33,7 @@ class BaseUploadModel implements IUploadModel
 	 *
 	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove($uploaded)
+	public function remove($uploaded): void
 	{
 		// By Pass...
 	}

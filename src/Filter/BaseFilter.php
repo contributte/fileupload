@@ -36,7 +36,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 			return true;
 		} else {
 			// Pokud se nepodaří ověřit mimetype, ověříme alespoň koncovku.
-			return array_search($this->getExtension($file->getName()), array_unique($this->getMimeTypes())) !== false;
+			return array_search($this->getExtension($file->getName()), array_unique($this->getMimeTypes()), true) !== false;
 		}
 	}
 
@@ -47,7 +47,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 */
 	public function getAllowedTypes()
 	{
-		return implode(array_unique($this->getMimeTypes()), ', ');
+		return implode(', ', array_unique($this->getMimeTypes()));
 	}
 
 	/**

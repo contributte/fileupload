@@ -16,7 +16,7 @@ final class FileUploadExtension extends CompilerExtension
 	/**
 	 * Výchozí konfigurační hodnoty.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private $defaults = [
 		'maxFiles' => 25,
@@ -45,19 +45,16 @@ final class FileUploadExtension extends CompilerExtension
 	/**
 	 * Konfigurace nastavená uživatelem.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private $configuration = [];
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		$this->configuration = $this->getConfig($this->defaults);
 	}
 
-	/**
-	 * @param ClassType $class
-	 */
-	public function afterCompile(ClassType $class)
+	public function afterCompile(ClassType $class): void
 	{
 		$init = $class->methods['initialize'];
 

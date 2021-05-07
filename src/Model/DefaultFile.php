@@ -18,7 +18,7 @@ class DefaultFile
 	/**
 	 * Callback pro smazání výchozího souboru s parametry (mixed $identifier).
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
 	public $onDelete = [];
 
@@ -44,9 +44,9 @@ class DefaultFile
 	private $identifier;
 
 	/**
-	 * @return array
+	 * @return array<mixed>
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return [
 			'preview' => $this->preview,
@@ -55,34 +55,22 @@ class DefaultFile
 		];
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPreview()
+	public function getPreview(): string
 	{
 		return $this->preview;
 	}
 
-	/**
-	 * @param string $preview
-	 */
-	public function setPreview($preview)
+	public function setPreview(string $preview): void
 	{
 		$this->preview = $preview;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getFilename()
+	public function getFilename(): string
 	{
 		return $this->filename;
 	}
 
-	/**
-	 * @param string $filename
-	 */
-	public function setFilename($filename)
+	public function setFilename(string $filename): void
 	{
 		$this->filename = $filename;
 	}
@@ -98,7 +86,7 @@ class DefaultFile
 	/**
 	 * @param mixed $identifier
 	 */
-	public function setIdentifier($identifier)
+	public function setIdentifier($identifier): void
 	{
 		$this->identifier = $identifier;
 	}

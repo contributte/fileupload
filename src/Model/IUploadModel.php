@@ -15,9 +15,9 @@ interface IUploadModel
 	/**
 	 * Uložení nahraného souboru.
 	 *
-	 * @param FileUpload $file
-	 * @param array                  $params Pole vlastních parametrů.
-	 * @return mixed Vlastní navrátová hodnota.
+	 * @param FileUpload   $file
+	 * @param array<mixed> $params Pole vlastních parametrů.
+	 * @return mixed               Vlastní navrátová hodnota.
 	 */
 	public function save(FileUpload $file, array $params = []);
 
@@ -35,6 +35,6 @@ interface IUploadModel
 	 *
 	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove($uploaded);
+	public function remove($uploaded): void;
 
 }
