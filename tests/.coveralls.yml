@@ -1,0 +1,4 @@
+# for php-coveralls
+service_name: php-coveralls
+coverage_clover: coverage.xml
+json_path: coverage.json

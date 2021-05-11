@@ -11,13 +11,22 @@
     }
   ],
   "require": {
-    "php": ">=5.6.0",
+    "php": ">=7.1.0",
     "nette/forms": "^v2.4.0",
     "nette/http": "^v2.4.0",
     "nette/utils": "^v2.4.0",
     "nette/di": "^v2.4.0",
     "nette/application": "^v2.4.0",
     "latte/latte": "^v2.4.0"
+  },
+  "require-dev": {
+    "ninjify/nunjuck": "^0.3",
+    "ninjify/qa": "^0.12",
+    "phpstan/phpstan": "^0.12",
+    "phpstan/phpstan-deprecation-rules": "^0.12",
+    "phpstan/phpstan-nette": "^0.12",
+    "phpstan/phpstan-strict-rules": "^0.12",
+    "tracy/tracy": "~2.6.0"
   },
   "autoload": {
     "classmap": [

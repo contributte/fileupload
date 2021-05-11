@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Zet\FileUpload\Template\Renderer;
 
@@ -13,7 +13,9 @@ use Zet\FileUpload\FileUploadControl;
  * @author  Zechy <email@zechy.cz>
  * @package Zet\FileUpload\Template\Renderer
  */
-abstract class BaseRenderer implements IUploadRenderer {
+abstract class BaseRenderer implements IUploadRenderer
+{
+
 	use SmartObject;
 
 	/**
@@ -52,7 +54,7 @@ abstract class BaseRenderer implements IUploadRenderer {
 		"filePreview" => null,
 		"filename" => null,
 		"delete" => null,
-		"errorMessage" => null
+		"errorMessage" => null,
 	];
 
 	/**
@@ -68,13 +70,14 @@ abstract class BaseRenderer implements IUploadRenderer {
 	/**
 	 * BaseRenderer constructor.
 	 *
-	 * @param FileUploadControl    $fileUploadControl
-	 * @param ITranslator|NULL $translator
+	 * @param FileUploadControl $fileUploadControl
+	 * @param ITranslator|NULL  $translator
 	 */
 	public function __construct(
 		FileUploadControl $fileUploadControl,
 		ITranslator $translator = null
-	) {
+	)
+	{
 		$this->fileUploadControl = $fileUploadControl;
 
 		$this->init();
@@ -84,59 +87,55 @@ abstract class BaseRenderer implements IUploadRenderer {
 	/**
 	 * Inicializace elementů.
 	 */
-	public function init() {
+	public function init(): void
+	{
 		$htmlId = $this->fileUploadControl->getHtmlId();
 
-		foreach($this->elements as $type => $value) {
-			if($type == "input") {
+		foreach ($this->elements as $type => $value) {
+			if ($type == "input") {
 				$element = Html::el("input type='file' multiple='multiple'")->addAttributes([
 					"id" => $htmlId,
 					"name" => $this->fileUploadControl->getHtmlName(),
-					"data-upload-component" => $htmlId
+					"data-upload-component" => $htmlId,
 				]);
-			} else if($type == "delete") {
+			} elseif ($type == "delete") {
 				$element = Html::el("button type='button'")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type)
+					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
 				]);
-			} else if($type == "imagePreview") {
+			} elseif ($type == "imagePreview") {
 				$element = Html::el("img")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type)
+					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
 				]);
 			} else {
 				$element = Html::el("div")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type)
+					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
 				]);
 			}
 
-			$this->elements[ $type ] = $element;
+			$this->elements[$type] = $element;
 		}
 	}
 
 	/**
-	 * @return Html[]
+	 * @return array<string, Html|null>
 	 */
-	public function getElements() {
+	public function getElements()
+	{
 		return $this->elements;
 	}
 
 	/**
 	 * Sestavení výchozí šablony uploaderu.
-	 *
-	 * @return Html
 	 */
-	abstract public function buildDefaultTemplate();
+	abstract public function buildDefaultTemplate(): Html;
 
 	/**
 	 * Sestavení šablony pro vkládání nových souborů.
-	 *
-	 * @return Html
 	 */
-	abstract public function buildFileContainerTemplate();
+	abstract public function buildFileContainerTemplate(): Html;
 
 	/**
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
-	 *
-	 * @return Html
 	 */
-	abstract public function buildFileError();
+	abstract public function buildFileError(): Html;
 }
