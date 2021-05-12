@@ -265,5 +265,9 @@ jobs:
           CI: true
           COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
-          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
-          php php-coveralls.phar --verbose --config tests/.coveralls.yml
+          if [ -s coverage.xml ]
+          then
+            wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+            php php-coveralls.phar --verbose --config tests/.coveralls.yml
+          fi
+
