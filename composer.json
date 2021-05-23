@@ -20,7 +20,7 @@
     "latte/latte": "^v2.4.0"
   },
   "require-dev": {
-    "ninjify/nunjuck": "^0.3",
+    "ninjify/nunjuck": "^0.4",
     "ninjify/qa": "^0.12",
     "phpstan/phpstan": "^0.12",
     "phpstan/phpstan-deprecation-rules": "^0.12",
@@ -32,6 +32,11 @@
     "classmap": [
       "src/"
     ]
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true
   },
   "extra": {
     "branch-alias": {
