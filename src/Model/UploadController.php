@@ -4,6 +4,7 @@ namespace Zet\FileUpload\Model;
 
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Control;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Http\FileUpload;
 use Nette\Http\Request;
 use Nette\InvalidStateException;
@@ -19,6 +20,7 @@ use Zet\FileUpload\Template\Renderer\BaseRenderer;
 /**
  * Class UploadController
  *
+ * @property Template $template
  * @author  Zechy <email@zechy.cz>
  */
 class UploadController extends Control
@@ -137,7 +139,7 @@ class UploadController extends Control
 				$returnData = $model->save($file, $params);
 				/** @noinspection PhpInternalEntityUsedInspection */
 				$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
-				if ($cacheFiles === '') {
+				if (empty($cacheFiles)) {
 					$cacheFiles = [$this->request->getPost('id') => $returnData];
 				} else {
 					$cacheFiles[$this->request->getPost('id')] = $returnData;

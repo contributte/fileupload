@@ -1,15 +1,13 @@
+parameters:
+	level: max
+	ignoreErrors:
+		-
+			message: '#Construct empty\(\) is not allowed\. Use more strict comparison\.#'
+			path: src/Model/UploadController.php
+
 includes:
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 	- vendor/phpstan/phpstan-nette/extension.neon
 	- vendor/phpstan/phpstan-nette/rules.neon
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
-parameters:
-    ignoreErrors:
-        -
-            message: '#Property Zet\\FileUpload\\Template\\JavascriptBuilder::\$template \(Nette\\Application\\UI\\ITemplate\) does not accept Nette\\Application\\UI\\ITemplate|stdClass\.#'
-            path: src/Template/JavascriptBuilder.php
-
-        -
-                    message: '#Cannot cast Nette\\Application\\UI\\ITemplate to string\.#'
-                    path: src/Template/JavascriptBuilder.php

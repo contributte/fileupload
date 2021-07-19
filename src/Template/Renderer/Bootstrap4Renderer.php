@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Zet\FileUpload\Template\Renderer;
 
@@ -31,9 +31,9 @@ class Bootstrap4Renderer extends BaseRenderer
 		/** @var Html $input */
 		$input = $this->elements["input"];
 		$input->setAttribute("style", "display: none");
-		/** @var Html $id */
-		$id = $this->elements["input"];
-		$id->getAttribute("id");
+		/** @var Html $input */
+		$input = $this->elements["input"];
+		$id = $input->getAttribute("id");
 		$button = Html::el("button type='button' class='btn btn-primary mb-2'");
 		$button->setAttribute("onclick", "document.getElementById('$id').click(); return false;");
 		$button->setText("Nahrát soubor");
@@ -82,14 +82,10 @@ class Bootstrap4Renderer extends BaseRenderer
 		$preview = Html::el("td class='align-middle'");
 		/** @var Html $imagePreview */
 		$imagePreview = $this->elements["imagePreview"];
-		$imagePreview->setAttribute("width", "100%")
-			->setAttribute("class", "rounded");
-		$preview->addHtml($imagePreview);
+		$preview->addHtml($imagePreview->setAttribute("width", "100%")->setAttribute("class", "rounded"));
 		/** @var Html $filePreview */
 		$filePreview = $this->elements["filePreview"];
-		$filePreview->setName("span")
-			->setAttribute("class", "badge badge-pill badge-info");
-		$preview->addHtml($filePreview);
+		$preview->addHtml($filePreview->setName("span")->setAttribute("class", "badge badge-pill badge-info"));
 		$tr->addHtml($preview);
 
 		$name = Html::el("td class='align-middle'");
@@ -98,20 +94,20 @@ class Bootstrap4Renderer extends BaseRenderer
 
 		$progressTd = Html::el("td class='align-middle'");
 		$progressContainer = Html::el("div class='progress'");
-		/** @var Html $progress */
-		$progress = $this->elements["fileProgress"];
-		$progress->setAttribute("class", "progress-bar")
+		/** @var Html $fileProgress */
+		$fileProgress = $this->elements["fileProgress"];
+		$progress = $fileProgress->setAttribute("class", "progress-bar")
 			->setAttribute("style", "height: 10px");
 		$progressContainer->addHtml($progress);
 		$progressTd->addHtml($progressContainer);
 		$tr->addHtml($progressTd);
 
 		$delete = Html::el("td class='align-middle text-center'");
-		/** @var Html $deleteElement */
-		$deleteElement = $this->elements["delete"];
-		$deleteElement->setAttribute("class", "btn btn-outline-danger")
+		/** @var Html $delEl */
+		$delEl = $this->elements["delete"];
+		$delEl->setAttribute("class", "btn btn-outline-danger")
 			->setHtml("&times;");
-		$delete->addHtml($deleteElement);
+		$delete->addHtml($delEl);
 		$tr->addHtml($delete);
 
 		return $tr;
@@ -125,10 +121,9 @@ class Bootstrap4Renderer extends BaseRenderer
 		$tr = Html::el("tr class='bg-danger text-light'");
 		/** @var Html $errorMessage */
 		$errorMessage = $this->elements["errorMessage"];
-		$errorMessage->setName("td")->addAttributes([
+		$tr->addHtml($errorMessage->setName("td")->addAttributes([
 			"colspan" => 4,
-		]);
-		$tr->addHtml($errorMessage);
+		]));
 
 		return $tr;
 	}
