@@ -16,7 +16,7 @@ class ArchiveFilter extends BaseFilter
 	 * @example array("text/plain" => "txt")
 	 * @return string[]
 	 */
-	protected function getMimeTypes()
+	protected function getMimeTypes(): array
 	{
 		return [
 			'application/zip' => 'zip',

@@ -27,9 +27,9 @@ class Bootstrap3Renderer extends BaseRenderer
 	{
 		$customContainer = Html::el("div");
 
-		/** @var Html $element */
-		$element = $this->elements["input"];
-		$element->setAttribute("style", "display: none");
+		/** @var Html $input */
+		$input = $this->elements["input"];
+		$input->setAttribute("style", "display: none");
 		/** @var Html $input */
 		$input = $this->elements["input"];
 		$id = $input->getAttribute("id");
@@ -84,14 +84,10 @@ class Bootstrap3Renderer extends BaseRenderer
 		$preview = Html::el("td style='vertical-align: middle'");
 		/** @var Html $imagePreview */
 		$imagePreview = $this->elements["imagePreview"];
-		$imagePreview->setAttribute("width", "100%")
-			->setAttribute("class", "img-rounded");
-		$preview->addHtml($imagePreview);
+		$preview->addHtml($imagePreview->setAttribute("width", "100%")->setAttribute("class", "img-rounded"));
 		/** @var Html $filePreview */
 		$filePreview = $this->elements["filePreview"];
-		$filePreview->setName("span")
-			->setAttribute("class", "label label-info");
-		$preview->addHtml($filePreview);
+		$preview->addHtml($filePreview->setName("span")->setAttribute("class", "label label-info"));
 		$tr->addHtml($preview);
 
 		$name = Html::el("td style='vertical-align: middle'");
@@ -126,8 +122,9 @@ class Bootstrap3Renderer extends BaseRenderer
 		$tr = Html::el("tr class='danger'");
 		/** @var Html $errorMessage */
 		$errorMessage = $this->elements["errorMessage"];
-		$errorMessage->setName("td")->addAttributes(["colspan" => 4]);
-		$tr->addHtml($errorMessage);
+		$tr->addHtml($errorMessage->setName("td")->addAttributes([
+			"colspan" => 4,
+		]));
 
 		return $tr;
 	}

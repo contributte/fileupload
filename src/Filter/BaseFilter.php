@@ -22,7 +22,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 * @example array("text/plain" => "txt")
 	 * @return string[]
 	 */
-	abstract protected function getMimeTypes();
+	abstract protected function getMimeTypes(): array;
 
 	/**
 	 * Ověří mimetype předaného souboru.
@@ -30,7 +30,7 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 * @param FileUpload $file Nahraný soubor k ověření.
 	 * @return bool Má soubor správný mimetype?
 	 */
-	public function checkType(FileUpload $file)
+	public function checkType(FileUpload $file): bool
 	{
 		if (Arrays::searchKey($this->getMimeTypes(), $file->getContentType()) !== false) {
 			return true;
@@ -42,21 +42,16 @@ abstract class BaseFilter implements IMimeTypeFilter
 
 	/**
 	 * Vrátí seznam povolených typů souborů.
-	 *
-	 * @return string
 	 */
-	public function getAllowedTypes()
+	public function getAllowedTypes(): string
 	{
 		return implode(', ', array_unique($this->getMimeTypes()));
 	}
 
 	/**
 	 * Vrátí koncovku souboru.
-	 *
-	 * @param string $filename
-	 * @return string
 	 */
-	private function getExtension($filename)
+	private function getExtension(string $filename): string
 	{
 		$exploded = explode('.', $filename);
 

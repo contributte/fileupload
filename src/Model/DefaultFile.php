@@ -18,7 +18,7 @@ class DefaultFile
 	/**
 	 * Callback pro smazání výchozího souboru s parametry (mixed $identifier).
 	 *
-	 * @var array<string>
+	 * @var array<mixed>
 	 */
 	public $onDelete = [];
 

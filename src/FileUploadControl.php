@@ -18,7 +18,7 @@ use Zet\FileUpload\Model\UploadController;
 /**
  * Class FileUploadControl
  *
- * @author  Zechy <email@zechy.cz>
+ * @author Zechy <email@zechy.cz>
  */
 class FileUploadControl extends UploadControl
 {
@@ -150,8 +150,8 @@ class FileUploadControl extends UploadControl
 
 	/**
 	 * @static
-	 * @param Container    $systemContainer
-	 * @param array<mixed> $configuration
+	 * @param Container     $systemContainer
+	 * @param array<mixed>  $configuration
 	 */
 	public static function register(Container $systemContainer, array $configuration = []): void
 	{
@@ -165,7 +165,7 @@ class FileUploadControl extends UploadControl
 			$class,
 			$systemContainer,
 			$configuration
-		): FileUploadControl {
+		): self {
 			$maxFiles = $maxFiles ?? $configuration['maxFiles'];
 			$maxFileSize = $maxFileSize ?? $configuration['maxFileSize'];
 
@@ -246,10 +246,7 @@ class FileUploadControl extends UploadControl
 		}
 	}
 
-	/**
-	 * @param mixed $form
-	 */
-	protected function attached($form): void
+	protected function attached($form)
 	{
 		parent::attached($form);
 		$this->form->addComponent($this->controller, 'uploadController' . ucfirst($this->name));
@@ -567,9 +564,6 @@ class FileUploadControl extends UploadControl
 
 	/**
 	 * Parses ini size
-	 *
-	 * @param string $value
-	 * @return int
 	 */
 	private function parseIniSize(string $value): int
 	{

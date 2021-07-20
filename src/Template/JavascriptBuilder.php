@@ -1,11 +1,12 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Zet\FileUpload\Template;
 
-use Nette\Application\UI\ITemplate;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Caching\Cache;
 use Nette\Localization\ITranslator;
 use Nette\SmartObject;
+use Nette\Utils\Html;
 use Tracy\Debugger;
 use Zet\FileUpload\Model\UploadController;
 use Zet\FileUpload\Template\Renderer\BaseRenderer;
@@ -21,7 +22,7 @@ class JavascriptBuilder
 	use SmartObject;
 
 	/**
-	 * @var ITemplate
+	 * @var Template
 	 */
 	private $template;
 
@@ -91,7 +92,9 @@ class JavascriptBuilder
 		$this->template->uploadUrl = $this->controller->link("upload");
 		$this->template->renameLink = $this->controller->link("rename");
 		$this->template->removeLink = $this->controller->link("//remove");
-		$this->template->inputId = $this->renderer->getElements()["input"]  !== null? $this->renderer->getElements()["input"]->attrs["id"]: null;
+		/** @var Html $input */
+		$input = $this->renderer->getElements()["input"];
+		$this->template->inputId = $input->attrs["id"];
 
 		$this->needTranslate();
 		$this->template->messages = $this->controller->getUploadControl()->getMessages();

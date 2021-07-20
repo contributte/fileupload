@@ -16,7 +16,7 @@ class AudioFilter extends BaseFilter
 	 * @example array("text/plain" => "txt")
 	 * @return string[]
 	 */
-	protected function getMimeTypes()
+	protected function getMimeTypes(): array
 	{
 		return [
 			'audio/mpeg3' => 'mp3',

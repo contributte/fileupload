@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Zet\FileUpload\Template\Renderer;
 
@@ -12,9 +12,6 @@ use Nette\Utils\Html;
 class Html5Renderer extends BaseRenderer
 {
 
-	/**
-	 *
-	 */
 	public function init(): void
 	{
 		parent::init();
@@ -22,9 +19,9 @@ class Html5Renderer extends BaseRenderer
 		$this->elements["globalProgressValue"] = null;
 		$this->elements["fileProgressValue"] = null;
 
-		/** @var Html $container */
-		$container = $this->elements["container"];
-		$container->setName("table")->addAttributes([
+		/** @var Html $comtainer */
+		$comtainer = $this->elements["container"];
+		$comtainer->setName("table")->addAttributes([
 			"style" => "width: 100%",
 			"border" => "0",
 		]);
@@ -80,16 +77,17 @@ class Html5Renderer extends BaseRenderer
 		$th = Html::el("th colspan='2' style='border-right: none'");
 		$th->setText("Nahrávání souborů");
 		$tr->addHtml($th);
+		/** @var Html $th2 */
+		$th2 = Html::el("th colspan='2' style='text-align: right; border-left: none'");
 		/** @var Html $input */
 		$input = $this->elements["input"];
 		$input->setAttribute("style", "display: none");
-		$th2 = Html::el("th colspan='2' style='text-align: right; border-left: none'");
 		$th2->addHtml($input);
 		$button = Html::el("button type='button'");
 		$button->setText("Nahrát soubor");
-		/** @var Html $id */
-		$id = $this->elements["input"];
-		$id->getAttribute("id");
+		/** @var Html $input */
+		$input = $this->elements["input"];
+		$id = $input->getAttribute("id");
 		$button->setAttribute("onclick", "document.getElementById('$id').click(); return false;");
 		$th2->addHtml($button);
 
@@ -118,8 +116,7 @@ class Html5Renderer extends BaseRenderer
 		]);
 		/** @var Html $imagePreview */
 		$imagePreview = $this->elements["imagePreview"];
-		$imagePreview->setAttribute("width", "100%");
-		$preview->addHtml($imagePreview);
+		$preview->addHtml($imagePreview->setAttribute("width", "100%"));
 		$preview->addHtml($this->elements["filePreview"]);
 		$tr->addHtml($preview);
 
@@ -147,6 +144,7 @@ class Html5Renderer extends BaseRenderer
 	 */
 	public function buildFileError(): Html
 	{
+		/** @var Html $tr */
 		$tr = Html::el("tr style='background-color: #ffb6c1'");
 		/** @var Html $errorMessage */
 		$errorMessage = $this->elements["errorMessage"];
