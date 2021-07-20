@@ -36,8 +36,8 @@ There is also [thread on Nette Forum](https://forum.nette.org/cs/27287-jquery-fi
 
 | State       | Version  | Branch   | Nette  | PHP     |
 |-------------|----------|----------|--------|---------|
-| dev         | `^2.1`   | `master` | `2.4`  | `>=5.6` |
-| stable      | `^2.0`   | `master` | `2.4`  | `>=5.6` |
+| dev         | `~2.1.0` | `master` | `2.4`  | `>=7.1` |
+| stable      | `~2.0.3` | `master` | `2.4`  | `>=7.2` |
 
 ## Development
 
