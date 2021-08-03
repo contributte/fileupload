@@ -43,7 +43,6 @@ class UploadController extends Control
 	 */
 	public function __construct(FileUploadControl $uploadControl)
 	{
-		parent::__construct();
 		$this->uploadControl = $uploadControl;
 	}
 
@@ -57,7 +56,7 @@ class UploadController extends Control
 		if ($this->filter === null) {
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$className = $this->uploadControl->getFileFilter();
-			if ($className !== '') {
+			if (!empty($className)) {
 				$filterClass = new $className();
 				if ($filterClass instanceof IMimeTypeFilter) {
 					$this->filter = $filterClass;

@@ -3,7 +3,10 @@
 namespace Zet\FileUpload;
 
 use Nette\DI\CompilerExtension;
+use Nette\DI\Container;
 use Nette\PhpGenerator\ClassType;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 
 /**
  * Class FileUploadExtension
@@ -18,40 +21,31 @@ final class FileUploadExtension extends CompilerExtension
 	 *
 	 * @var array<mixed>
 	 */
-	private $defaults = [
-		'maxFiles' => 25,
-		'maxFileSize' => null,
-		'uploadModel' => null,
-		'fileFilter' => null,
-		'renderer' => '\Zet\FileUpload\Template\Renderer\Html5Renderer',
-		'translator' => null,
-		'autoTranslate' => false,
-		'messages' => [
-			'maxFiles' => 'Maximální počet souborů je {maxFiles}.',
-			'maxSize' => 'Maximální velikost souboru je {maxSize}.',
-			'fileTypes' => 'Povolené typy souborů jsou {fileTypes}.',
-
-			// PHP Errors
-			'fileSize' => 'Soubor je příliš veliký.',
-			'partialUpload' => 'Soubor byl nahrán pouze částěčně.',
-			'noFile' => 'Nebyl nahrán žádný soubor.',
-			'tmpFolder' => 'Chybí dočasná složka.',
-			'cannotWrite' => 'Nepodařilo se zapsat soubor na disk.',
-			'stopped' => 'Nahrávání souboru bylo přerušeno.',
-		],
-		'uploadSettings' => [],
-	];
-
-	/**
-	 * Konfigurace nastavená uživatelem.
-	 *
-	 * @var array<mixed>
-	 */
-	private $configuration = [];
-
-	public function loadConfiguration(): void
+	public function getConfigSchema(): Schema
 	{
-		$this->configuration = $this->getConfig($this->defaults);
+		return Expect::structure([
+			'maxFiles' => Expect::int(25),
+			'maxFileSize' => Expect::string()->nullable(),
+			'uploadModel' => Expect::string()->nullable(),
+			'fileFilter' => Expect::string()->nullable(),
+			'renderer' => Expect::string('\Zet\FileUpload\Template\Renderer\Html5Renderer'),
+			'translator' => Expect::string()->nullable(),
+			'autoTranslate' => Expect::bool(false),
+			'messages' => Expect::structure([
+				'maxFiles' => Expect::string('Maximální počet souborů je {maxFiles}.'),
+				'maxSize' => Expect::string('Maximální velikost souboru je {maxSize}.'),
+				'fileTypes' => Expect::string('Povolené typy souborů jsou {fileTypes}.'),
+
+				// PHP Errors
+				'fileSize' => Expect::string('Soubor je příliš veliký.'),
+				'partialUpload' => Expect::string('Soubor byl nahrán pouze částěčně.'),
+				'noFile' => Expect::string('Nebyl nahrán žádný soubor.'),
+				'tmpFolder' => Expect::string('Chybí dočasná složka.'),
+				'cannotWrite' => Expect::string('Nepodařilo se zapsat soubor na disk.'),
+				'stopped' => Expect::string('Nahrávání souboru bylo přerušeno.'),
+			]),
+			'uploadSettings' => Expect::array(),
+		]);
 	}
 
 	public function afterCompile(ClassType $class): void
@@ -60,7 +54,7 @@ final class FileUploadExtension extends CompilerExtension
 
 		$init->addBody('\Zet\FileUpload\FileUploadControl::register($this->getService(?), ?);', [
 			$this->getContainerBuilder()->getByType('\Nette\DI\Container'),
-		$this->configuration,
+		$this->getConfig(),
 		]);
 	}
 
