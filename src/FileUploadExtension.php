@@ -3,7 +3,6 @@
 namespace Zet\FileUpload;
 
 use Nette\DI\CompilerExtension;
-use Nette\DI\Container;
 use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
