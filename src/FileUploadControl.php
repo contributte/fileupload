@@ -160,7 +160,7 @@ class FileUploadControl extends UploadControl
 	public static function register(Container $systemContainer, $configuration): void
 	{
 		if(is_object($configuration)) {
-			$configuration = json_decode(json_encode($configuration), true);
+			$configuration = json_decode((string)json_encode($configuration), true);
 		}
 
 		$class = self::class;
@@ -329,7 +329,9 @@ class FileUploadControl extends UploadControl
 
 	public function setMaxFileSize(?string $maxFileSize): self
 	{
-		$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		if(isset($maxFileSize)) {
+			$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		}
 
 		return $this;
 	}

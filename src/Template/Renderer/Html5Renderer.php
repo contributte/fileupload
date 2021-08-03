@@ -16,12 +16,12 @@ class Html5Renderer extends BaseRenderer
 	{
 		parent::init();
 
-		$this->elements["globalProgressValue"] = null;
-		$this->elements["fileProgressValue"] = null;
+		$this->elements["globalProgressValue"] = '';
+		$this->elements["fileProgressValue"] = '';
 
-		/** @var Html $comtainer */
-		$comtainer = $this->elements["container"];
-		$comtainer->setName("table")->addAttributes([
+		/** @var Html $container */
+		$container = $this->elements["container"];
+		$container->setName("table")->addAttributes([
 			"style" => "width: 100%",
 			"border" => "0",
 		]);

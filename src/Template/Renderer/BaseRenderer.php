@@ -2,7 +2,8 @@
 
 namespace Zet\FileUpload\Template\Renderer;
 
-use Nette\Localization\ITranslator;
+use Nette\HtmlStringable;
+use Nette\Localization\Translator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
 use Zet\FileUpload\FileUploadControl;
@@ -41,20 +42,20 @@ abstract class BaseRenderer implements IUploadRenderer
 	 * <li><b>errorMessage</b>: Element pro zobrazení chybové zprávy.</li>
 	 * </ul>
 	 *
-	 * @var array<string, Html|null>
+	 * @var array<string, Html|string>
 	 */
 	protected $elements = [
-		"container" => null,
-		"input" => null,
-		"globalProgress" => null,
-		"globalProgressValue" => null,
-		"fileProgress" => null,
-		"fileProgressValue" => null,
-		"imagePreview" => null,
-		"filePreview" => null,
-		"filename" => null,
-		"delete" => null,
-		"errorMessage" => null,
+		"container" => '',
+		"input" => '',
+		"globalProgress" => '',
+		"globalProgressValue" => '',
+		"fileProgress" => '',
+		"fileProgressValue" => '',
+		"imagePreview" => '',
+		"filePreview" => '',
+		"filename" => '',
+		"delete" => '',
+		"errorMessage" => '',
 	];
 
 	/**
@@ -63,7 +64,7 @@ abstract class BaseRenderer implements IUploadRenderer
 	protected $fileUploadControl;
 
 	/**
-	 * @var ITranslator|NULL
+	 * @var Translator|NULL
 	 */
 	protected $translator;
 
@@ -71,11 +72,11 @@ abstract class BaseRenderer implements IUploadRenderer
 	 * BaseRenderer constructor.
 	 *
 	 * @param FileUploadControl $fileUploadControl
-	 * @param ITranslator|NULL  $translator
+	 * @param Translator|NULL  $translator
 	 */
 	public function __construct(
 		FileUploadControl $fileUploadControl,
-		ITranslator $translator = null
+		Translator $translator = null
 	)
 	{
 		$this->fileUploadControl = $fileUploadControl;
@@ -117,7 +118,7 @@ abstract class BaseRenderer implements IUploadRenderer
 	}
 
 	/**
-	 * @return array<string, Html|null>
+	 * @return array<string, Html|string>
 	 */
 	public function getElements()
 	{
