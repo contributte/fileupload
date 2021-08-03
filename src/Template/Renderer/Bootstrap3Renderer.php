@@ -16,8 +16,8 @@ class Bootstrap3Renderer extends BaseRenderer
 	{
 		parent::init();
 
-		$this->elements["globalProgressValue"] = null;
-		$this->elements["fileProgressValue"] = null;
+		$this->elements["globalProgressValue"] = '';
+		$this->elements["fileProgressValue"] = '';
 	}
 
 	/**

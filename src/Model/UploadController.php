@@ -2,6 +2,7 @@
 
 namespace Zet\FileUpload\Model;
 
+use Nette\Application\AbortException;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -115,6 +116,7 @@ class UploadController extends Control
 
 	/**
 	 * Zpracování uploadu souboru.
+	 * @throws AbortException
 	 */
 	public function handleUpload(): void
 	{
@@ -170,14 +172,15 @@ class UploadController extends Control
 
 	/**
 	 * Odstraní nahraný soubor.
+	 * @throws Throwable
 	 */
 	public function handleRemove(): void
 	{
 		$id = $this->request->getQuery('id');
 		$token = $this->request->getQuery('token');
-		$default = $this->request->getQuery('default', 0);
+		$default = $this->request->getQuery('default');
 
-		if ($default === 0) {
+		if ($default === null) {
 			$cache = $this->uploadControl->getCache();
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
@@ -201,6 +204,7 @@ class UploadController extends Control
 
 	/**
 	 * Přejmenuje nahraný soubor.
+	 * @throws Throwable
 	 */
 	public function handleRename(): void
 	{

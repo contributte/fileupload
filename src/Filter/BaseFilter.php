@@ -32,11 +32,11 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 */
 	public function checkType(FileUpload $file): bool
 	{
-		if (Arrays::searchKey($this->getMimeTypes(), $file->getContentType()) !== false) {
+		if (Arrays::getKeyOffset($this->getMimeTypes(), (string)$file->getContentType()) !== null) {
 			return true;
 		} else {
 			// Pokud se nepodaří ověřit mimetype, ověříme alespoň koncovku.
-			return array_search($this->getExtension($file->getName()), array_unique($this->getMimeTypes()), true) !== false;
+			return array_search($this->getExtension($file->getUntrustedName()), array_unique($this->getMimeTypes()), true) !== false;
 		}
 	}
 
