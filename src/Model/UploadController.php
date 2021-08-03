@@ -116,6 +116,7 @@ class UploadController extends Control
 
 	/**
 	 * Zpracování uploadu souboru.
+	 *
 	 * @throws AbortException
 	 */
 	public function handleUpload(): void
@@ -172,6 +173,7 @@ class UploadController extends Control
 
 	/**
 	 * Odstraní nahraný soubor.
+	 *
 	 * @throws Throwable
 	 */
 	public function handleRemove(): void
@@ -204,6 +206,7 @@ class UploadController extends Control
 
 	/**
 	 * Přejmenuje nahraný soubor.
+	 *
 	 * @throws Throwable
 	 */
 	public function handleRename(): void

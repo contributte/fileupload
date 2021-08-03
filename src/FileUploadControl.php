@@ -11,6 +11,7 @@ use Nette\Http\Request;
 use Nette\InvalidStateException;
 use Nette\Localization\Translator;
 use Nette\Utils\Html;
+use stdClass;
 use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\DefaultFile;
 use Zet\FileUpload\Model\IUploadModel;
@@ -155,12 +156,12 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @static
 	 * @param Container     $systemContainer
-	 * @param array<mixed>|\stdClass $configuration
+	 * @param array<mixed>|stdClass $configuration
 	 */
 	public static function register(Container $systemContainer, $configuration): void
 	{
-		if(is_object($configuration)) {
-			$configuration = json_decode((string)json_encode($configuration), true);
+		if (is_object($configuration)) {
+			$configuration = json_decode((string) json_encode($configuration), true);
 		}
 
 		$class = self::class;
@@ -329,7 +330,7 @@ class FileUploadControl extends UploadControl
 
 	public function setMaxFileSize(?string $maxFileSize): self
 	{
-		if(isset($maxFileSize)) {
+		if (isset($maxFileSize)) {
 			$this->maxFileSize = $this->parseIniSize($maxFileSize);
 		}
 
