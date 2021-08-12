@@ -6,10 +6,16 @@
 	<!-- Specific rules -->
 	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
 		<properties>
-			<property name="rootNamespaces" type="array" value="
-				src=>Zet\FileUpload,
-				tests/cases=>Tests\Cases,
-			"/>
+			<property name="extensions" type="array" value="php, phpt" />
+			<property name="rootNamespaces" type="array">
+				<element key="src" value="Zet\FileUpload" />
+				<element key="tests" value="Tests" />
+				<element key="tests/cases" value="Tests\Cases" />
+				<element key="tests/filters" value="Tests\Filters" />
+				<element key="tests/helpers" value="Tests\Helpers" />
+				<element key="tests/models" value="Tests\Models" />
+				<element key="tests/renderers" value="Tests\Renderers" />
+			</property>
 		</properties>
 
 		<exclude name="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden" />
