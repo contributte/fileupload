@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Models;
+namespace Tests\Fixtures\Model;
 
 use Nette\Http\FileUpload;
 use Nette\Utils\FileSystem;

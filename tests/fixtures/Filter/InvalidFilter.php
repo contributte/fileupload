@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Filters;
+namespace Tests\Fixtures\Filter;
 
 class InvalidFilter
 {

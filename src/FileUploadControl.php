@@ -12,6 +12,7 @@ use Nette\InvalidStateException;
 use Nette\Localization\Translator;
 use Nette\Utils\Html;
 use stdClass;
+use Zet\FileUpload\Exception\InvalidValueException;
 use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\DefaultFile;
 use Zet\FileUpload\Model\IUploadModel;
@@ -241,14 +242,14 @@ class FileUploadControl extends UploadControl
 		if ($this->maxFileSize > $postMaxSize) {
 			throw new InvalidValueException(
 				sprintf(
-					'Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `post_max_size` (%s).',
+					'The setting for the maximum file size is larger than allowed by the directive `post_max_size` (%s).',
 					$postMaxSizeString
 				)
 			);
 		} elseif ($this->maxFileSize > $iniMaxFileSize) {
 			throw new InvalidValueException(
 				sprintf(
-					'Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `upload_max_filesize` (%s).',
+					'The setting for the maximum file size is larger than allowed by the directive `upload_max_filesize` (%s).',
 					$iniMaxFileSizeString
 				)
 			);
@@ -307,7 +308,7 @@ class FileUploadControl extends UploadControl
 				return $model;
 			} else {
 				throw new InvalidStateException(
-					'Předaný model není instancí \\Zet\\FileUpload\\Model\\IUploadModel.'
+					'The passed model is not an instance of \\Zet\\FileUpload\\Model\\IUploadModel.'
 				);
 			}
 		}
