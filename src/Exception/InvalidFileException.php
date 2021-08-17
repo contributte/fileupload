@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload;
+namespace Zet\FileUpload\Exception;
 
 use Exception;
 

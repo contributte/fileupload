@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Renderers;
+namespace Tests\Fixtures\Renderer;
 
 use Nette\Utils\Html;
 

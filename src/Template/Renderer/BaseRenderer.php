@@ -2,7 +2,6 @@
 
 namespace Zet\FileUpload\Template\Renderer;
 
-use Nette\HtmlStringable;
 use Nette\Localization\Translator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
