@@ -73,8 +73,8 @@ final class FileUploadExtension extends CompilerExtension
 			'translator' => Expect::string()->nullable(),
 			'autoTranslate' => Expect::bool(false),
 			'messages' => Expect::structure([
-				'maxFiles' => Expect::string('Maximum number of files je {maxFiles}.'),
-				'maxSize' => Expect::string('Maximum file size je {maxSize}.'),
+				'maxFiles' => Expect::string('Maximum number of files is {maxFiles}.'),
+				'maxSize' => Expect::string('Maximum file size is {maxSize}.'),
 				'fileTypes' => Expect::string('Allowed file types are {fileTypes}.'),
 
 				// PHP Errors
