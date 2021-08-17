@@ -2,6 +2,7 @@
 
 namespace Zet\FileUpload\Model;
 
+use Nette\Application\AbortException;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -11,9 +12,9 @@ use Nette\InvalidStateException;
 use Nette\UnexpectedValueException;
 use Nette\Utils\Html;
 use Throwable;
+use Zet\FileUpload\Exception\InvalidFileException;
 use Zet\FileUpload\FileUploadControl;
 use Zet\FileUpload\Filter\IMimeTypeFilter;
-use Zet\FileUpload\InvalidFileException;
 use Zet\FileUpload\Template\JavascriptBuilder;
 use Zet\FileUpload\Template\Renderer\BaseRenderer;
 
@@ -43,7 +44,6 @@ class UploadController extends Control
 	 */
 	public function __construct(FileUploadControl $uploadControl)
 	{
-		parent::__construct();
 		$this->uploadControl = $uploadControl;
 	}
 
@@ -57,13 +57,13 @@ class UploadController extends Control
 		if ($this->filter === null) {
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$className = $this->uploadControl->getFileFilter();
-			if ($className !== '') {
+			if (!empty($className)) {
 				$filterClass = new $className();
 				if ($filterClass instanceof IMimeTypeFilter) {
 					$this->filter = $filterClass;
 				} else {
 					throw new UnexpectedValueException(
-						'Třída pro filtrování souborů neimplementuje rozhraní \\Zet\\FileUpload\\Filter\\IMimeTypeFilter.'
+						'The file filter class does not implement the interface \\Zet\\FileUpload\\Filter\\IMimeTypeFilter.'
 					);
 				}
 			}
@@ -85,7 +85,7 @@ class UploadController extends Control
 
 			if (!($this->renderer instanceof BaseRenderer)) {
 				throw new InvalidStateException(
-					'Renderer musí být instancí třídy `\\Zet\\FileUpload\\Template\\BaseRenderer`.'
+					'The renderer must be an instance of the class `\\Zet\\FileUpload\\Template\\BaseRenderer`.'
 				);
 			}
 		}
@@ -116,6 +116,8 @@ class UploadController extends Control
 
 	/**
 	 * Zpracování uploadu souboru.
+	 *
+	 * @throws AbortException
 	 */
 	public function handleUpload(): void
 	{
@@ -171,14 +173,16 @@ class UploadController extends Control
 
 	/**
 	 * Odstraní nahraný soubor.
+	 *
+	 * @throws Throwable
 	 */
 	public function handleRemove(): void
 	{
 		$id = $this->request->getQuery('id');
 		$token = $this->request->getQuery('token');
-		$default = $this->request->getQuery('default', 0);
+		$default = $this->request->getQuery('default');
 
-		if ($default === 0) {
+		if ($default === null) {
 			$cache = $this->uploadControl->getCache();
 			/** @noinspection PhpInternalEntityUsedInspection */
 			$cacheFiles = $cache->load($this->uploadControl->getTokenizedCacheName($token));
@@ -202,6 +206,8 @@ class UploadController extends Control
 
 	/**
 	 * Přejmenuje nahraný soubor.
+	 *
+	 * @throws Throwable
 	 */
 	public function handleRename(): void
 	{

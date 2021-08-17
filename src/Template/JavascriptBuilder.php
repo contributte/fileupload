@@ -133,7 +133,7 @@ class JavascriptBuilder
 
 		$components = [];
 		foreach ($elements as $type => $element) {
-			if ($element !== null) {
+			if ($element instanceof Html) {
 				$components[$type] = $element->getAttribute("data-upload-component");
 			} else {
 				$components[$type] = null;

@@ -3,13 +3,16 @@
 namespace Zet\FileUpload;
 
 use Nette;
+use Nette\Application\UI\Form;
 use Nette\Caching\Cache;
 use Nette\DI\Container;
 use Nette\Forms\Controls\UploadControl;
 use Nette\Http\Request;
 use Nette\InvalidStateException;
-use Nette\Localization\ITranslator;
+use Nette\Localization\Translator;
 use Nette\Utils\Html;
+use stdClass;
+use Zet\FileUpload\Exception\InvalidValueException;
 use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\DefaultFile;
 use Zet\FileUpload\Model\IUploadModel;
@@ -55,7 +58,7 @@ class FileUploadControl extends UploadControl
 	/** @var int */
 	private $maxFiles;
 
-	/** @var int */
+	/** @var int|null */
 	private $maxFileSize;
 
 	/** @var string */
@@ -64,13 +67,13 @@ class FileUploadControl extends UploadControl
 	/** @var UploadController */
 	private $controller;
 
-	/** @var string */
+	/** @var string|null */
 	private $uploadModel;
 
 	/**
 	 * Třída pro filtrování nahrávaných souborů.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $fileFilter;
 
@@ -141,6 +144,9 @@ class FileUploadControl extends UploadControl
 		}
 
 		$this->controller = new Model\UploadController($this);
+		$this->monitor(Form::class, function (Form $form): void {
+			$form->addComponent($this->controller, 'uploadController' . ucfirst($this->name));
+		});
 		$this->token = uniqid();
 	}
 
@@ -151,10 +157,14 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @static
 	 * @param Container     $systemContainer
-	 * @param array<mixed>  $configuration
+	 * @param array<mixed>|stdClass $configuration
 	 */
-	public static function register(Container $systemContainer, array $configuration = []): void
+	public static function register(Container $systemContainer, $configuration): void
 	{
+		if (is_object($configuration)) {
+			$configuration = json_decode((string) json_encode($configuration), true);
+		}
+
 		$class = self::class;
 		Nette\Forms\Container::extensionMethod('addFileUpload', function (
 			Nette\Forms\Container $container,
@@ -177,7 +187,7 @@ class FileUploadControl extends UploadControl
 			$component->setRenderer($configuration['renderer']);
 
 			if ($configuration['translator'] === null) {
-				$translator = $systemContainer->getByType(ITranslator::class, false);
+				$translator = $systemContainer->getByType(Translator::class, false);
 				$component->setTranslator($translator);
 			} else {
 				$component->setTranslator($configuration['translator']);
@@ -232,24 +242,18 @@ class FileUploadControl extends UploadControl
 		if ($this->maxFileSize > $postMaxSize) {
 			throw new InvalidValueException(
 				sprintf(
-					'Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `post_max_size` (%s).',
+					'The setting for the maximum file size is larger than allowed by the directive `post_max_size` (%s).',
 					$postMaxSizeString
 				)
 			);
 		} elseif ($this->maxFileSize > $iniMaxFileSize) {
 			throw new InvalidValueException(
 				sprintf(
-					'Nastavení pro maximální velikost souboru je větší, než dovoluje direktiva `upload_max_filesize` (%s).',
+					'The setting for the maximum file size is larger than allowed by the directive `upload_max_filesize` (%s).',
 					$iniMaxFileSizeString
 				)
 			);
 		}
-	}
-
-	protected function attached($form)
-	{
-		parent::attached($form);
-		$this->form->addComponent($this->controller, 'uploadController' . ucfirst($this->name));
 	}
 
 	// --------------------------------------------------------------------
@@ -304,7 +308,7 @@ class FileUploadControl extends UploadControl
 				return $model;
 			} else {
 				throw new InvalidStateException(
-					'Předaný model není instancí \\Zet\\FileUpload\\Model\\IUploadModel.'
+					'The passed model is not an instance of \\Zet\\FileUpload\\Model\\IUploadModel.'
 				);
 			}
 		}
@@ -320,14 +324,16 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @internal
 	 */
-	public function getMaxFileSize(): int
+	public function getMaxFileSize(): ?int
 	{
 		return $this->maxFileSize;
 	}
 
-	public function setMaxFileSize(string $maxFileSize): self
+	public function setMaxFileSize(?string $maxFileSize): self
 	{
-		$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		if (isset($maxFileSize)) {
+			$this->maxFileSize = $this->parseIniSize($maxFileSize);
+		}
 
 		return $this;
 	}
@@ -348,7 +354,7 @@ class FileUploadControl extends UploadControl
 	/**
 	 * @internal
 	 */
-	public function getFileFilter(): string
+	public function getFileFilter(): ?string
 	{
 		return $this->fileFilter;
 	}
@@ -356,7 +362,7 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Nastaví třídu pro filtrování nahrávaných souborů.
 	 */
-	public function setFileFilter(string $fileFilter): self
+	public function setFileFilter(?string $fileFilter): self
 	{
 		$this->fileFilter = $fileFilter;
 
