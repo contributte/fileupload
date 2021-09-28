@@ -8,17 +8,11 @@ use Nette\InvalidStateException;
 use Nette\UnexpectedValueException;
 use Tester\Assert;
 use Tester\TestCase;
-use Tests\Fixtures\Filter\InvalidFilter;
-use Tests\Fixtures\Filter\ValidFilter;
-use Tests\Fixtures\Model\InvalidUploadModel;
-use Tests\Fixtures\Model\ValidUploadModel;
-use Tests\Fixtures\Renderer\InvalidRenderer;
 use Tests\Toolkit\Container;
 use Tests\Toolkit\Helpers;
 use Zet\FileUpload\Exception\InvalidArgumentException;
 use Zet\FileUpload\Filter\IMimeTypeFilter;
 use Zet\FileUpload\Model\IUploadModel;
-use Zet\FileUpload\Template\Renderer\Bootstrap4Renderer;
 use Zet\FileUpload\Template\Renderer\IUploadRenderer;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -35,12 +29,12 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
 							fileFilter: Zet\FileUpload\Filter\ImageFilter
-						'));
+						NEON));
 				})
 				->build();
 		});
@@ -49,13 +43,13 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
 							fileFilter: Zet\FileUpload\Filter\ImageFilter
 							uiMode: full
-						'));
+						NEON));
 				})
 				->build();
 		}, InvalidConfigurationException::class, "Unexpected item 'fileUpload › uiMode'.");
@@ -64,10 +58,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: null
-					'));
+					NEON));
 				})
 				->build();
 		}, InvalidConfigurationException::class);
@@ -76,10 +70,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							messages: hello
-					'));
+					NEON));
 				})
 				->build();
 		}, InvalidConfigurationException::class, "The item 'fileUpload › messages' expects to be array, 'hello' given.");
@@ -92,12 +86,13 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler) use ($uploadModel): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
 							fileFilter: Zet\FileUpload\Filter\ImageFilter
-							uploadModel: ' . $uploadModel));
+							uploadModel: $uploadModel
+					NEON));
 				})
 				->build();
 		}, InvalidArgumentException::class, sprintf('The passed model %s does not exist.', $uploadModel));
@@ -106,9 +101,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							uploadModel: ' . InvalidUploadModel::class));
+							uploadModel: Tests\Fixtures\Model\InvalidUploadModel
+					NEON));
 				})
 				->build();
 		}, InvalidStateException::class, 'The passed model is not an instance of ' . IUploadModel::class);
@@ -117,9 +113,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							uploadModel: ' . ValidUploadModel::class));
+							uploadModel: Tests\Fixtures\Model\ValidUploadModel
+					NEON));
 				})
 				->build();
 		});
@@ -132,11 +129,12 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler) use ($fileFilter): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
-							fileFilter: ' . $fileFilter));
+							fileFilter: $fileFilter
+					NEON));
 				})
 				->build();
 		}, InvalidArgumentException::class, sprintf('The file filter class %s does not exist.', $fileFilter));
@@ -145,9 +143,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							fileFilter: ' . InvalidFilter::class));
+							fileFilter: Tests\Fixtures\Filter\InvalidFilter
+					NEON));
 				})
 				->build();
 		}, UnexpectedValueException::class, 'The file filter class does not implement the interface ' . IMimeTypeFilter::class);
@@ -156,9 +155,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							fileFilter: ' . ValidFilter::class));
+							fileFilter: Tests\Fixtures\Filter\ValidFilter
+					NEON));
 				})
 				->build();
 		});
@@ -171,11 +171,12 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler) use ($renderer): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
-							renderer: ' . $renderer));
+							renderer: $renderer
+					NEON));
 				})
 				->build();
 		}, InvalidArgumentException::class, sprintf('The form renderer class %s does not exist.', $renderer));
@@ -184,9 +185,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							renderer: ' . InvalidRenderer::class));
+							renderer: Tests\Fixtures\Renderer\InvalidRenderer
+					NEON));
 				})
 				->build();
 		}, InvalidStateException::class, 'The form renderer class does not implement the interface ' . IUploadRenderer::class);
@@ -195,9 +197,10 @@ final class FileUploadExtension extends TestCase
 			Container::of()
 				->withDefaults()
 				->withCompiler(function (Compiler $compiler): void {
-					$compiler->addConfig(Helpers::neon('
+					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							renderer: ' . Bootstrap4Renderer::class));
+							renderer: Zet\FileUpload\Template\Renderer\Bootstrap4Renderer
+					NEON));
 				})
 				->build();
 		});
