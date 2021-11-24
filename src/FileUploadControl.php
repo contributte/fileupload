@@ -67,7 +67,7 @@ class FileUploadControl extends UploadControl
 	/** @var UploadController */
 	private $controller;
 
-	/** @var string|null */
+	/** @var class-string<IUploadModel>|null */
 	private $uploadModel;
 
 	/**
@@ -314,6 +314,9 @@ class FileUploadControl extends UploadControl
 		}
 	}
 
+	/**
+	 * @param class-string<IUploadModel> $uploadModel
+	 */
 	public function setUploadModel(string $uploadModel): self
 	{
 		$this->uploadModel = $uploadModel;
