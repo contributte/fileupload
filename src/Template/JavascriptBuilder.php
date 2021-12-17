@@ -3,7 +3,6 @@
 namespace Zet\FileUpload\Template;
 
 use Nette\Bridges\ApplicationLatte\Template;
-use Nette\Caching\Cache;
 use Nette\Localization\ITranslator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
@@ -25,21 +24,6 @@ class JavascriptBuilder
 	 * @var Template
 	 */
 	private $template;
-
-	/**
-	 * @var Cache
-	 */
-	private $cache;
-
-	/**
-	 * @var string
-	 */
-	private $uploadUrl;
-
-	/**
-	 * @var string
-	 */
-	private $renameLink;
 
 	/**
 	 * @var BaseRenderer
@@ -64,7 +48,6 @@ class JavascriptBuilder
 	{
 		$this->renderer = $renderer;
 		$this->controller = $controller;
-		$this->cache = $controller->getUploadControl()->getCache();
 
 		$this->template = $controller->template;
 		$this->template->setFile(__DIR__ . "/js.latte");
