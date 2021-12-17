@@ -24,11 +24,11 @@
   "require-dev": {
     "ninjify/nunjuck": "^0.4",
     "ninjify/qa": "^0.12",
-    "phpstan/phpstan": "^0.12",
-    "phpstan/phpstan-deprecation-rules": "^0.12",
-    "phpstan/phpstan-nette": "^0.12",
-    "phpstan/phpstan-strict-rules": "^0.12",
-    "tracy/tracy": "~2.6.0"
+    "phpstan/phpstan": "^1.0",
+    "phpstan/phpstan-deprecation-rules": "^1.0",
+    "phpstan/phpstan-nette": "^1.0",
+    "phpstan/phpstan-strict-rules": "^1.0",
+    "tracy/tracy": "^2.6"
   },
   "autoload": {
     "classmap": [

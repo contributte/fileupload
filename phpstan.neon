@@ -4,6 +4,9 @@ parameters:
 		-
 			message: '#Construct empty\(\) is not allowed\. Use more strict comparison\.#'
 			path: src/Model/UploadController.php
+		-
+			message: '#Property Zet\\FileUpload\\Model\\UploadController::\$renderer \(Zet\\FileUpload\\Template\\Renderer\\BaseRenderer\) does not accept object\.#'
+			path: src/Model/UploadController.php
 
 includes:
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
