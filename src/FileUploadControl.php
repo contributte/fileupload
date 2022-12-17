@@ -353,10 +353,10 @@ class FileUploadControl extends \Nette\Forms\Controls\UploadControl
 
 
 	/**
-	 * @param int $maxFileSize
+	 * @param string $maxFileSize
 	 * @return $this
 	 */
-	public function setMaxFileSize(int $maxFileSize): self
+	public function setMaxFileSize(string $maxFileSize): self
 	{
 		$this->maxFileSize = $this->parseIniSize($maxFileSize);
 

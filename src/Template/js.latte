@@ -7,63 +7,63 @@
 		 * Adresa pro zpracování nahrávání souborů.
 		 * @type string
 		 */
-		var uploadUrl = {$uploadUrl|escapeJS|noescape};
+		var uploadUrl = {$uploadUrl|escapeJs|noescape};
 
 		/**
 		 * HTML ID elementu.
 		 * @type string
 		 */
-		var input = {$inputId|escapeJS|noescape};
+		var input = {$inputId|escapeJs|noescape};
 
 		/**
 		 * Jedná se o vývojovou verzi?
 		 * @type boolean
 		 */
-		var productionMode = {$productionMode|escapeJS|noescape};
+		var productionMode = {$productionMode|escapeJs|noescape};
 
 		/**
 		 * Identifikační token.
 		 * @type string
 		 */
-		var token = {$token|escapeJS|noescape};
+		var token = {$token|escapeJs|noescape};
 
 		/**
 		 * Maximální počet souborů.
 		 * @type number
 		 */
-		var maxFiles = {$maxFiles|escapeJS|noescape};
+		var maxFiles = {$maxFiles|escapeJs|noescape};
 
 		/**
 		 * Maximální velikosti souboru.
 		 * @type number
 		 */
-		var maxFileSize = {$maxFileSize|escapeJS|noescape};
+		var maxFileSize = {$maxFileSize|escapeJs|noescape};
 
 		/**
 		 * Velikost souboru vyjádřena stylem např. 3MB.
 		 * @type String
 		 */
-		var fileSizeString = {$fileSizeString|escapeJS|noescape};
+		var fileSizeString = {$fileSizeString|escapeJs|noescape};
 
 		/**
 		 * Pole vlastních parametrů.
 		 */
-		var params = {$params|escapeJS|noescape};
+		var params = {$params|escapeJs|noescape};
 
 		/**
 		 * Seznam nadefinovaných komponent.
 		 */
-		var components = {$components|escapeJS|noescape};
+		var components = {$components|escapeJs|noescape};
 
 		/**
 		 * Odkaz pro smazání souboru.
 		 */
-		var removeLink = {$removeLink|escapeJS|noescape};
+		var removeLink = {$removeLink|escapeJs|noescape};
 
 		/**
 		 * Seznam výchozích souborů.
 		 */
-		var defaultFiles = {$defaultFiles|escapeJS|noescape};
+		var defaultFiles = {$defaultFiles|escapeJs|noescape};
 
 		/**
 		 * Konfigurace controlleru.
@@ -79,7 +79,7 @@
 		/**
 		 * Zprávy pro chybová hlášení.
 		 */
-		var messages = {$messages|escapeJS|noescape};
+		var messages = {$messages|escapeJs|noescape};
 
 		/**
 		 * JS Renderer.
@@ -109,7 +109,7 @@
 			"url": uploadUrl,
 			"dataType": "json",
 			{foreach $settings as $name => $value}
-			{$name}: {$value|escapeJS|noescape},
+			{$name}: {$value|escapeJs|noescape},
 			{/foreach}
 
 			// Přidání nového souboru.
