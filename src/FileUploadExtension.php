@@ -9,10 +9,14 @@ use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\UnexpectedValueException;
+use Zet\FileUpload\Controller\IUploadController;
 use Zet\FileUpload\Exception\InvalidArgumentException;
 use Zet\FileUpload\Filter\IMimeTypeFilter;
 use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\IUploadModel;
+use Zet\FileUpload\Model\UploadController;
+use Zet\FileUpload\Template\IJavascriptBuilder;
+use Zet\FileUpload\Template\JavascriptBuilder;
 use Zet\FileUpload\Template\Renderer\Html5Renderer;
 use Zet\FileUpload\Template\Renderer\IUploadRenderer;
 
@@ -66,6 +70,30 @@ final class FileUploadExtension extends CompilerExtension
 				$interfaces = class_implements($v);
 				if (!is_array($interfaces) || !in_array(IUploadRenderer::class, $interfaces, true)) {
 					throw new InvalidStateException('The form renderer class does not implement the interface ' . IUploadRenderer::class);
+				}
+
+				return $v;
+			}),
+			'uploadController' => Expect::string(UploadController::class)->before(function ($v): string {
+				if (!class_exists($v)) {
+					throw new InvalidArgumentException(sprintf('The upload controller class %s does not exist.', $v));
+				}
+
+				$interfaces = class_implements($v);
+				if (!is_array($interfaces) || !in_array(IUploadController::class, $interfaces, true)) {
+					throw new InvalidStateException('The upload controller class does not implement the interface ' . IUploadController::class);
+				}
+
+				return $v;
+			}),
+			'jsBuilder' => Expect::string(JavascriptBuilder::class)->before(function ($v): string {
+				if (!class_exists($v)) {
+					throw new InvalidArgumentException(sprintf('The javascript builder class %s does not exist.', $v));
+				}
+
+				$interfaces = class_implements($v);
+				if (!is_array($interfaces) || !in_array(IJavascriptBuilder::class, $interfaces, true)) {
+					throw new InvalidStateException('The javascript builder class does not implement the interface ' . IJavascriptBuilder::class);
 				}
 
 				return $v;
