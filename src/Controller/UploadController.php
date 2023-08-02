@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Model;
+namespace Zet\FileUpload\Controller;
 
 use Nette\Application\AbortException;
 use Nette\Application\Responses\JsonResponse;
@@ -12,6 +12,7 @@ use Nette\InvalidStateException;
 use Nette\UnexpectedValueException;
 use Nette\Utils\Html;
 use Throwable;
+use Zet\FileUpload\Controller\IUploadController;
 use Zet\FileUpload\Exception\InvalidFileException;
 use Zet\FileUpload\FileUploadControl;
 use Zet\FileUpload\Filter\IMimeTypeFilter;
@@ -24,7 +25,7 @@ use Zet\FileUpload\Template\Renderer\BaseRenderer;
  * @property Template $template
  * @author  Zechy <email@zechy.cz>
  */
-class UploadController extends Control
+class UploadController extends Control implements IUploadController
 {
 
 	/** @var FileUploadControl */
