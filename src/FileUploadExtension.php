@@ -87,7 +87,7 @@ final class FileUploadExtension extends \Nette\DI\CompilerExtension
 	 */
 	public function afterCompile(\Nette\PhpGenerator\ClassType $class): void
 	{
-		$init = $class->methods['initialize'];
+		$init = $class->getMethods()['initialize'];
 
 		$init->addBody('\Zet\FileUpload\FileUploadControl::register($this->getService(?), ?);', [
 //		$this->getContainerBuilder()->getByType('\Nette\DI\Container'), $this->configuration,
