@@ -26,7 +26,7 @@ fileUpload:
 
 ### Copy files
 
-This component needs for its precise functionality some third party scripts and styles. Copy all required assets from aassets folder to www root of project.
+This component needs for its precise functionality some third party scripts and styles. Copy all required assets from the assets folder to the www root of the project.
 
 ### Loading CSS and JS in layout.latte
 
@@ -78,15 +78,15 @@ interface IUploadModel {
 }
 ```
 
-Interface has three primary method - save, rename and remove.
+The interface has three primary methods - save, rename and remove.
 
 The method `save` is called when uploading the file to the server, this method is expected to return any return value, which will then be returned when retrieving the field value when processing the form. If custom parameters for uploaded files have been set with the **FileUploadControl::setParams()** method, they are passed as fields to the **$params** parameter.
 
 The method `remove` is to remove a file after upload, its parameter is the value that was returned by the save function.
 
-The method `rename` to rename the uploaded file. Its first parameter is the value returned by the save function and the new file name. Rename should return the same value as save.
+The method `rename` is to rename the uploaded file. Its first parameter is the value returned by the save function and the new file name. Rename should return the same value as save.
 
-### Registering custom moder
+### Registering custom model
 
 ```
 fileUpload:
