@@ -15,7 +15,7 @@ use Zet\FileUpload\Template\Renderer\BaseRenderer;
  *
  * @author  Zechy <email@zechy.cz>
  */
-class JavascriptBuilder
+class JavascriptBuilder implements IJavascriptBuilder
 {
 
 	use SmartObject;
@@ -35,6 +35,8 @@ class JavascriptBuilder
 	 */
 	private $controller;
 
+	public $templateFile = __DIR__ . "/js.latte";
+
 	/**
 	 * JavascriptBuilder constructor.
 	 *
@@ -50,7 +52,14 @@ class JavascriptBuilder
 		$this->controller = $controller;
 
 		$this->template = $controller->template;
-		$this->template->setFile(__DIR__ . "/js.latte");
+		$this->setTemplateFile();
+	}
+
+	public function setTemplateFile(?string $filePath = null): JavascriptBuilder
+	{
+		$this->template->setFile($filePath ?: $this->templateFile);
+
+		return $this;
 	}
 
 	public function getJsTemplate(): string
@@ -58,7 +67,7 @@ class JavascriptBuilder
 		return $this->buildTemplate();
 	}
 
-	private function buildTemplate(): string
+	public function buildTemplate(): string
 	{
 		$this->setSettings();
 		$this->setRendererSettings();

@@ -12,11 +12,11 @@ use Nette\InvalidStateException;
 use Nette\Localization\Translator;
 use Nette\Utils\Html;
 use stdClass;
+use Zet\FileUpload\Controller\IUploadController;
 use Zet\FileUpload\Exception\InvalidValueException;
 use Zet\FileUpload\Model\BaseUploadModel;
 use Zet\FileUpload\Model\DefaultFile;
 use Zet\FileUpload\Model\IUploadModel;
-use Zet\FileUpload\Model\UploadController;
 
 /**
  * Class FileUploadControl
@@ -64,8 +64,8 @@ class FileUploadControl extends UploadControl
 	/** @var string */
 	private $fileSizeString;
 
-	/** @var UploadController */
-	private $controller;
+	/** @var class-string<IUploadController>|null */
+	private $uploadController;
 
 	/** @var class-string<IUploadModel>|null */
 	private $uploadModel;
@@ -143,10 +143,6 @@ class FileUploadControl extends UploadControl
 			$this->maxFileSize = $this->parseIniSize($maxFileSize);
 		}
 
-		$this->controller = new Model\UploadController($this);
-		$this->monitor(Form::class, function (Form $form): void {
-			$form->addComponent($this->controller, 'uploadController' . ucfirst($this->name));
-		});
 		$this->token = uniqid();
 	}
 
@@ -182,6 +178,7 @@ class FileUploadControl extends UploadControl
 			/** @var FileUploadControl $component */
 			$component = new $class($name, $maxFiles, $maxFileSize);
 			$component->setContainer($systemContainer);
+			$component->setUploadController($configuration['uploadController']);
 			$component->setUploadModel($configuration['uploadModel']);
 			$component->setFileFilter($configuration['fileFilter']);
 			$component->setRenderer($configuration['renderer']);
@@ -513,6 +510,25 @@ class FileUploadControl extends UploadControl
 		$this->uploadSettings[$name] = $value;
 
 		return $this;
+	}
+
+	/**
+	 * @param class-string<IUploadController> $uploadController
+	 */
+	public function setUploadController(string $uploadController): self
+	{
+		$this->uploadController = new $uploadController($this);
+
+		$this->monitor(Form::class, function (Form $form): void {
+			$form->addComponent($this->uploadController, 'uploadController' . ucfirst($this->name));
+		});
+
+		return $this;
+	}
+
+	public function getUploadController()
+	{
+		return $this->uploadController;
 	}
 
 	// --------------------------------------------------------------------
