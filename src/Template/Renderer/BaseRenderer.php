@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Zet\FileUpload\Template\Renderer;
+namespace Contributte\FileUpload\Template\Renderer;
 
 use Nette\Localization\Translator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
-use Zet\FileUpload\FileUploadControl;
+use Contributte\FileUpload\FileUploadControl;
 
 /**
  * Class BaseRenderer
@@ -75,7 +75,7 @@ abstract class BaseRenderer implements IUploadRenderer
 	 */
 	public function __construct(
 		FileUploadControl $fileUploadControl,
-		Translator $translator = null
+		?Translator $translator = null
 	)
 	{
 		$this->fileUploadControl = $fileUploadControl;

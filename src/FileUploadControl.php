@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload;
+namespace Contributte\FileUpload;
 
 use Nette;
 use Nette\Application\UI\Form;
@@ -12,11 +12,11 @@ use Nette\InvalidStateException;
 use Nette\Localization\Translator;
 use Nette\Utils\Html;
 use stdClass;
-use Zet\FileUpload\Exception\InvalidValueException;
-use Zet\FileUpload\Model\BaseUploadModel;
-use Zet\FileUpload\Model\DefaultFile;
-use Zet\FileUpload\Model\IUploadModel;
-use Zet\FileUpload\Model\UploadController;
+use Contributte\FileUpload\Exception\InvalidValueException;
+use Contributte\FileUpload\Model\BaseUploadModel;
+use Contributte\FileUpload\Model\DefaultFile;
+use Contributte\FileUpload\Model\IUploadModel;
+use Contributte\FileUpload\Model\UploadController;
 
 /**
  * Class FileUploadControl
@@ -32,22 +32,22 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Povolí nahrávat pouze obrázky png, jpeg, jpg, gif.
 	 */
-	public const FILTER_IMAGES = 'Zet\FileUpload\Filter\ImageFilter';
+	public const FILTER_IMAGES = 'Contributte\FileUpload\Filter\ImageFilter';
 
 	/**
 	 * Povolí nahrávat pouze dokumenty typu txt, doc, docx, xls, xlsx, ppt, pptx, pdf.
 	 */
-	public const FILTER_DOCUMENTS = 'Zet\FileUpload\Filter\DocumentFilter';
+	public const FILTER_DOCUMENTS = 'Contributte\FileUpload\Filter\DocumentFilter';
 
 	/**
 	 * Povolí nahrávat soubory zip, tar, rar, 7z.
 	 */
-	public const FILTER_ARCHIVE = 'Zet\FileUpload\Filter\ArchiveFilter';
+	public const FILTER_ARCHIVE = 'Contributte\FileUpload\Filter\ArchiveFilter';
 
 	/**
 	 * Povolí nahrávat pouze soubory mp3, ogg, aiff.
 	 */
-	public const FILTER_AUDIO = 'Zet\FileUpload\Filter\AudioFilter';
+	public const FILTER_AUDIO = 'Contributte\FileUpload\Filter\AudioFilter';
 
 	/** @var Container */
 	private $container;

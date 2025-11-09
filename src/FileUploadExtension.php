@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload;
+namespace Contributte\FileUpload;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\Container;
@@ -9,12 +9,12 @@ use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\UnexpectedValueException;
-use Zet\FileUpload\Exception\InvalidArgumentException;
-use Zet\FileUpload\Filter\IMimeTypeFilter;
-use Zet\FileUpload\Model\BaseUploadModel;
-use Zet\FileUpload\Model\IUploadModel;
-use Zet\FileUpload\Template\Renderer\Html5Renderer;
-use Zet\FileUpload\Template\Renderer\IUploadRenderer;
+use Contributte\FileUpload\Exception\InvalidArgumentException;
+use Contributte\FileUpload\Filter\IMimeTypeFilter;
+use Contributte\FileUpload\Model\BaseUploadModel;
+use Contributte\FileUpload\Model\IUploadModel;
+use Contributte\FileUpload\Template\Renderer\Html5Renderer;
+use Contributte\FileUpload\Template\Renderer\IUploadRenderer;
 
 /**
  * Class FileUploadExtension
@@ -91,9 +91,9 @@ final class FileUploadExtension extends CompilerExtension
 
 	public function afterCompile(ClassType $class): void
 	{
-		$init = $class->methods['initialize'];
+		$init = $class->getMethod('initialize');
 
-		$init->addBody('\Zet\FileUpload\FileUploadControl::register($this->getService(?), ?);', [
+		$init->addBody('\Contributte\FileUpload\FileUploadControl::register($this->getService(?), ?);', [
 			$this->getContainerBuilder()->getByType(Container::class),
 		$this->getConfig(),
 		]);

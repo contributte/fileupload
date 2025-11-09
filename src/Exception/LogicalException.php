@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Exception;
+namespace Contributte\FileUpload\Exception;
 
 use LogicException;
 

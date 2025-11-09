@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures\Filter;
 
-use Zet\FileUpload\Filter\BaseFilter;
+use Contributte\FileUpload\Filter\BaseFilter;
 
 class ValidFilter extends BaseFilter
 {

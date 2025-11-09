@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Model;
+namespace Contributte\FileUpload\Model;
 
 use Nette\Http\FileUpload;
 use Nette\SmartObject;

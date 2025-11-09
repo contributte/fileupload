@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Filter;
+namespace Contributte\FileUpload\Filter;
 
 use Nette\Http\FileUpload;
 use Nette\SmartObject;

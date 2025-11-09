@@ -10,7 +10,7 @@
 		<properties>
 			<property name="extensions" type="array" value="php, phpt"/>
 			<property name="rootNamespaces" type="array">
-				<element key="src" value="Zet\FileUpload"/>
+				<element key="src" value="Contributte\FileUpload"/>
 				<element key="tests" value="Tests"/>
 				<element key="tests/cases" value="Tests\Cases"/>
 				<element key="tests/fixtures" value="Tests\Fixtures"/>
