@@ -8,8 +8,6 @@ use Nette\Utils\Strings;
 
 /**
  * Class BaseUploadModel
- *
- * @author  Zechy <email@zechy.cz>
  */
 class BaseUploadModel implements IUploadModel
 {
@@ -19,11 +17,10 @@ class BaseUploadModel implements IUploadModel
 	/**
 	 * Uložení nahraného souboru.
 	 *
-	 * @param FileUpload   $file
 	 * @param array<mixed> $params Pole vlastních parametrů.
 	 * @return mixed Vlastní navrátová hodnota.
 	 */
-	public function save(FileUpload $file, array $params = [])
+	public function save(FileUpload $file, array $params = []): mixed
 	{
 		return $file->getSanitizedName();
 	}
@@ -33,7 +30,7 @@ class BaseUploadModel implements IUploadModel
 	 *
 	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove($uploaded): void
+	public function remove(mixed $uploaded): void
 	{
 		// By Pass...
 	}
@@ -45,7 +42,7 @@ class BaseUploadModel implements IUploadModel
 	 * @param string $newName Nové jméno souboru.
 	 * @return mixed Vlastní návratová hodnota.
 	 */
-	public function rename($upload, $newName)
+	public function rename(mixed $upload, string $newName): mixed
 	{
 		return Strings::webalize($newName);
 	}

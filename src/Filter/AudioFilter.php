@@ -4,8 +4,6 @@ namespace Contributte\FileUpload\Filter;
 
 /**
  * Class AudioFilter
- *
- * @author  Zechy <email@zechy.cz>
  */
 class AudioFilter extends BaseFilter
 {

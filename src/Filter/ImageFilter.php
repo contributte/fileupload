@@ -4,8 +4,6 @@ namespace Contributte\FileUpload\Filter;
 
 /**
  * Class ImageFilter
- *
- * @author  Zechy <email@zechy.cz>
  */
 class ImageFilter extends BaseFilter
 {

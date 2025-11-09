@@ -7,6 +7,9 @@ use Contributte\FileUpload\Filter\BaseFilter;
 class ValidFilter extends BaseFilter
 {
 
+	/**
+	 * @return array<string, string>
+	 */
 	protected function getMimeTypes(): array
 	{
 		return [

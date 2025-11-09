@@ -6,8 +6,6 @@ use Nette\Utils\Html;
 
 /**
  * Interface IUploadRenderer
- *
- * @author  Zechy <email@zechy.cz>
  */
 interface IUploadRenderer
 {
@@ -26,4 +24,5 @@ interface IUploadRenderer
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 */
 	public function buildFileError(): Html;
+
 }

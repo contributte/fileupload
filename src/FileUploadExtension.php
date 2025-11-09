@@ -2,6 +2,12 @@
 
 namespace Contributte\FileUpload;
 
+use Contributte\FileUpload\Exception\InvalidArgumentException;
+use Contributte\FileUpload\Filter\IMimeTypeFilter;
+use Contributte\FileUpload\Model\BaseUploadModel;
+use Contributte\FileUpload\Model\IUploadModel;
+use Contributte\FileUpload\Template\Renderer\Html5Renderer;
+use Contributte\FileUpload\Template\Renderer\IUploadRenderer;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Container;
 use Nette\InvalidStateException;
@@ -9,25 +15,15 @@ use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\UnexpectedValueException;
-use Contributte\FileUpload\Exception\InvalidArgumentException;
-use Contributte\FileUpload\Filter\IMimeTypeFilter;
-use Contributte\FileUpload\Model\BaseUploadModel;
-use Contributte\FileUpload\Model\IUploadModel;
-use Contributte\FileUpload\Template\Renderer\Html5Renderer;
-use Contributte\FileUpload\Template\Renderer\IUploadRenderer;
 
 /**
  * Class FileUploadExtension
- *
- * @author Zechy <email@zechy.cz>
  */
 final class FileUploadExtension extends CompilerExtension
 {
 
 	/**
 	 * Výchozí konfigurační hodnoty.
-	 *
-	 * @return Schema
 	 */
 	public function getConfigSchema(): Schema
 	{

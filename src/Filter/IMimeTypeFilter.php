@@ -7,8 +7,6 @@ use Nette\Http\FileUpload;
 /**
  * Interface IMimeTypeFilters
  * Rozhraní pro kontrolu Mime typu souboru.
- *
- * @author  Zechy <email@zechy.cz>
  */
 interface IMimeTypeFilter
 {
@@ -19,13 +17,11 @@ interface IMimeTypeFilter
 	 * @param FileUpload $file Nahraný soubor k ověření.
 	 * @return bool Má soubor správný mimetype?
 	 */
-	public function checkType(FileUpload $file);
+	public function checkType(FileUpload $file): bool;
 
 	/**
 	 * Vrátí seznam povolených typů souborů.
-	 *
-	 * @return string
 	 */
-	public function getAllowedTypes();
+	public function getAllowedTypes(): string;
 
 }

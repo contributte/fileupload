@@ -7,8 +7,6 @@ use Nette\SmartObject;
 /**
  * Class DefaultFile
  * Kontejner pro zadávání výchozího souboru pro uploader.
- *
- * @author  Zechy <email@zechy.cz>
  */
 class DefaultFile
 {
@@ -20,28 +18,22 @@ class DefaultFile
 	 *
 	 * @var array<mixed>
 	 */
-	public $onDelete = [];
+	public array $onDelete = [];
 
 	/**
 	 * Odkaz na náhled obrázku.
-	 *
-	 * @var string
 	 */
-	private $preview;
+	private string $preview;
 
 	/**
 	 * Název souboru.
-	 *
-	 * @var string
 	 */
-	private $filename;
+	private string $filename;
 
 	/**
 	 * Identifikátor souboru sloužící pro jeho smazání.
-	 *
-	 * @var mixed
 	 */
-	private $identifier;
+	private mixed $identifier;
 
 	/**
 	 * @return array<mixed>
@@ -75,18 +67,12 @@ class DefaultFile
 		$this->filename = $filename;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getIdentifier()
+	public function getIdentifier(): mixed
 	{
 		return $this->identifier;
 	}
 
-	/**
-	 * @param mixed $identifier
-	 */
-	public function setIdentifier($identifier): void
+	public function setIdentifier(mixed $identifier): void
 	{
 		$this->identifier = $identifier;
 	}
