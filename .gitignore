@@ -1,11 +1,10 @@
 # IDE
-.idea
-
+/.idea
 
 # Composer
 /vendor
 /composer.lock
 
 # Tests
-/temp
 /coverage.xml
+/coverage.html
