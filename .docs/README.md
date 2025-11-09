@@ -8,7 +8,7 @@ jQuery-FileUpload is component which extends UploadControl in Nette form using [
 
 ```
 extensions:
-    fileUpload: Zet\FileUpload\FileUploadExtension
+    fileUpload: Contributte\FileUpload\FileUploadExtension
 ```
 
 ### Configuration of DI extension options
@@ -17,7 +17,7 @@ extensions:
 fileUpload:
 	maxFiles: 10
 	maxFileSize: 2M
-	fileFilter: Zet\FileUpload\Filter\ImageFilter
+	fileFilter: Contributte\FileUpload\Filter\ImageFilter
 	uploadModel: App\Model\MyUploadModel
 	uiMode: # full nebo minimal
 ```
@@ -31,8 +31,8 @@ This component needs for its precise functionality some third party scripts and 
 ### Loading CSS and JS in layout.latte
 
 ```
-{\Zet\FileUpload\FileUploadControl::getHead($basePath)}
-{\Zet\FileUpload\FileUploadControl::getScripts($basePath)}
+{\Contributte\FileUpload\FileUploadControl::getHead($basePath)}
+{\Contributte\FileUpload\FileUploadControl::getScripts($basePath)}
 ``` 
 
 ## Upload model
@@ -41,15 +41,15 @@ Component can use custom processing file upload through `UploadModel` which does
 
 ### Interface
 
-Custom `UploadModel` must implement interface **\Zet\FileUpload\Model\IUploadModel**.
+Custom `UploadModel` must implement interface **\Contributte\FileUpload\Model\IUploadModel**.
 
 ```php
-namespace Zet\FileUpload\Model;
+namespace Contributte\FileUpload\Model;
 
 /**
  * Interface IUploadController
  * @author Zechy <email@zechy.cz>
- * @package Zet\FileUpload\Model
+ * @package Contributte\FileUpload\Model
  */
 interface IUploadModel {
 
@@ -97,7 +97,7 @@ fileUpload:
 
 Uploaded files can be filtered using their mimetype or suffix, so it is possible to limit the upload of files to images only. There are filter classes for this purpose.
 
-All filters are instances of the abstract class **\Zet\FileUpload\Filter\BaseFilter**, which implements the basic methodology for determining the correctness of a file using a mimetype, or according to the file extension. This basic filter implements the **\Zet\FileUpload\Filter\IMimeTypeFilter** interface.
+All filters are instances of the abstract class **\Contributte\FileUpload\Filter\BaseFilter**, which implements the basic methodology for determining the correctness of a file using a mimetype, or according to the file extension. This basic filter implements the **\Contributte\FileUpload\Filter\IMimeTypeFilter** interface.
 
 ## Basic filters
 
@@ -110,13 +110,13 @@ FileUploadControl::FILTER_AUDIO; // Allows uploading of files mp3, ogg, aiff onl
 FileUploadControl::setFileFilter("Constant or custom class"); // Sets the class to determine if the file can be uploaded
 ```
 
-The setFileFilter method accepts as a parameter a string in which the class name is written, eg **Zet\FileUpload\Filter\ImageFilter**.
+The setFileFilter method accepts as a parameter a string in which the class name is written, eg **Contributte\FileUpload\Filter\ImageFilter**.
 
 ## Custom filter
 
 ### Using BaseFilter
 
-To use the basic methodology for determining the correctness of a file type, you can create your own class, which will be a child of **\Zet\FileUpload\Filter\BaseFilter**.
+To use the basic methodology for determining the correctness of a file type, you can create your own class, which will be a child of **\Contributte\FileUpload\Filter\BaseFilter**.
 
 The class created in this way must have its own implementation of the `getMimeTypes()` method, which returns an array of file mimetypes and their extensions, e.g.:
 
@@ -138,14 +138,14 @@ protected function getMimeTypes() {
 
 ### Own filtering methodology
 
-If you want to create your own way of determining the file type, you can create your own class, but it must implement the **\Zet\FileUpload\Filter\IMimeTypeFilter** interface.
+If you want to create your own way of determining the file type, you can create your own class, but it must implement the **\Contributte\FileUpload\Filter\IMimeTypeFilter** interface.
 
 ```php
 /**
  * Interface IMimeTypeFilters
  * Interface for checking the mimetype of file
  * @author Zechy <email@zechy.cz>
- * @package Zet\FileUpload\Filter
+ * @package Contributte\FileUpload\Filter
  */
 interface IMimeTypeFilter {
 
@@ -213,7 +213,7 @@ Uploaded files can be obtained by processing the form from the field **$values**
 FileUploadControl::setMaxFiles(25); // Setter for maximum of files.
 FileUploadControl::setMaxFileSize("2M"); // Setter for maximum of file size.
 FileUploadControl::setUploadModel('\Model\File\UploadModel'); // Setter for custom upload model.
-FileUploadControl::setFileFilter('\Zet\FileUpload\Filter\ImageFilter'); // Setter for restrictions on uploading files to specified types. You can string a custom class or use the FileUploadControl constants.
+FileUploadControl::setFileFilter('\Contributte\FileUpload\Filter\ImageFilter'); // Setter for restrictions on uploading files to specified types. You can string a custom class or use the FileUploadControl constants.
 FileUploadControl::setUiTemplate(FileUploadControl::UI_FULL, __DIR__ . "/path/to/my/template.latte");
 FileUploadControl::setParams(["productId" => 10]); // Setter for custom values for the uploaded file
 ```
@@ -305,7 +305,7 @@ Progress bars can be HTML5 tags &lt;progress&gt; or &lt;div&gt;.
 
 #### BaseRenderer
 
-The custom renderer must inherit from the **\Zet\FileUpload\Template\Renderer\BaseRenderer** class. This class has the attribute **$elements** in which are stored the Html Prototypes of all components in the field on indexes.
+The custom renderer must inherit from the **\Contributte\FileUpload\Template\Renderer\BaseRenderer** class. This class has the attribute **$elements** in which are stored the Html Prototypes of all components in the field on indexes.
 
 BaseRenderer contains three abstract methods that need to be implemented.
 
@@ -314,7 +314,7 @@ BaseRenderer contains three abstract methods that need to be implemented.
  * Class BaseRenderer
  *
  * @author  Zechy <email@zechy.cz>
- * @package Zet\FileUpload\Template\Renderer
+ * @package Contributte\FileUpload\Template\Renderer
  */
 abstract class BaseRenderer extends Object implements IUploadRenderer {
 
@@ -351,7 +351,7 @@ Since version 2.0.0-beta2, default files can be entered into the uploader. When 
 
 ### DefaultFile
 
-Use the container **\Zet\FileUpload\Model\DefaultFile** to add a default file. 
+Use the container **\Contributte\FileUpload\Model\DefaultFile** to add a default file. 
 
 ```php
 class DefaultFile extends Object {

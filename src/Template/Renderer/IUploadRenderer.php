@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Template\Renderer;
+namespace Contributte\FileUpload\Template\Renderer;
 
 use Nette\Utils\Html;
 

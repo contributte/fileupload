@@ -4,7 +4,7 @@ namespace Tests\Fixtures\Model;
 
 use Nette\Http\FileUpload;
 use Nette\Utils\FileSystem;
-use Zet\FileUpload\Model\BaseUploadModel;
+use Contributte\FileUpload\Model\BaseUploadModel;
 
 class ValidUploadModel extends BaseUploadModel
 {

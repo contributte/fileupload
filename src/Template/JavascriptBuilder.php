@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
-namespace Zet\FileUpload\Template;
+namespace Contributte\FileUpload\Template;
 
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
 use Tracy\Debugger;
-use Zet\FileUpload\Model\UploadController;
-use Zet\FileUpload\Template\Renderer\BaseRenderer;
+use Contributte\FileUpload\Model\UploadController;
+use Contributte\FileUpload\Template\Renderer\BaseRenderer;
 
 /**
  * Class JavascriptBuilder

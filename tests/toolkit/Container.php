@@ -5,7 +5,7 @@ namespace Tests\Toolkit;
 use Nette\DI\Compiler;
 use Nette\DI\Container as NetteContainer;
 use Nette\DI\ContainerLoader;
-use Zet\FileUpload\FileUploadExtension;
+use Contributte\FileUpload\FileUploadExtension;
 
 final class Container
 {

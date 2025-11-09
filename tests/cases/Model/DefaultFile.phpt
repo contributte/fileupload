@@ -2,7 +2,7 @@
 
 use Ninjify\Nunjuck\Toolkit;
 use Tester\Assert;
-use Zet\FileUpload\Model\DefaultFile;
+use Contributte\FileUpload\Model\DefaultFile;
 
 require_once __DIR__ . '/../../bootstrap.php';
 

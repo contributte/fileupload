@@ -10,10 +10,10 @@ use Tester\Assert;
 use Tester\TestCase;
 use Tests\Toolkit\Container;
 use Tests\Toolkit\Helpers;
-use Zet\FileUpload\Exception\InvalidArgumentException;
-use Zet\FileUpload\Filter\IMimeTypeFilter;
-use Zet\FileUpload\Model\IUploadModel;
-use Zet\FileUpload\Template\Renderer\IUploadRenderer;
+use Contributte\FileUpload\Exception\InvalidArgumentException;
+use Contributte\FileUpload\Filter\IMimeTypeFilter;
+use Contributte\FileUpload\Model\IUploadModel;
+use Contributte\FileUpload\Template\Renderer\IUploadRenderer;
 
 require_once __DIR__ . '/../bootstrap.php';
 
