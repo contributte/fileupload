@@ -1,5 +1,20 @@
+includes:
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+
 parameters:
-	level: max
+	level: 8
+	phpVersion: 70200
+
+	paths:
+		- src
+
+	scanDirectories:
+		- vendor/nette
+		- vendor/tracy
+
 	ignoreErrors:
 		-
 			message: '#Construct empty\(\) is not allowed\. Use more strict comparison\.#'
@@ -7,10 +22,6 @@ parameters:
 		-
 			message: '#Property Contributte\\FileUpload\\Model\\UploadController::\$renderer \(Contributte\\FileUpload\\Template\\Renderer\\BaseRenderer\) does not accept object\.#'
 			path: src/Model/UploadController.php
-
-includes:
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-	- vendor/phpstan/phpstan-nette/extension.neon
-	- vendor/phpstan/phpstan-nette/rules.neon
-	- vendor/phpstan/phpstan-strict-rules/rules.neon
+		-
+			identifier: class.notFound
 
