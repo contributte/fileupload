@@ -6,7 +6,7 @@ includes:
 
 parameters:
 	level: 8
-	phpVersion: 70200
+	phpVersion: 80200
 
 	paths:
 		- src
@@ -20,8 +20,6 @@ parameters:
 			message: '#Construct empty\(\) is not allowed\. Use more strict comparison\.#'
 			path: src/Model/UploadController.php
 		-
-			message: '#Property Contributte\\FileUpload\\Model\\UploadController::\$renderer \(Contributte\\FileUpload\\Template\\Renderer\\BaseRenderer\) does not accept object\.#'
+			identifier: assign.propertyType
 			path: src/Model/UploadController.php
-		-
-			identifier: class.notFound
 

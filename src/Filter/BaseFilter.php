@@ -8,21 +8,11 @@ use Nette\Utils\Arrays;
 
 /**
  * Class BaseFilter
- *
- * @author  Zechy <email@zechy.cz>
  */
 abstract class BaseFilter implements IMimeTypeFilter
 {
 
 	use SmartObject;
-
-	/**
-	 * Vrátí seznam povolených typů souborů s jejich typickou koncovkou.
-	 *
-	 * @example array("text/plain" => "txt")
-	 * @return string[]
-	 */
-	abstract protected function getMimeTypes(): array;
 
 	/**
 	 * Ověří mimetype předaného souboru.
@@ -32,12 +22,10 @@ abstract class BaseFilter implements IMimeTypeFilter
 	 */
 	public function checkType(FileUpload $file): bool
 	{
-		if (Arrays::getKeyOffset($this->getMimeTypes(), (string) $file->getContentType()) !== null) {
-			return true;
-		} else {
+		return Arrays::getKeyOffset($this->getMimeTypes(), (string) $file->getContentType()) !== null
 			// Pokud se nepodaří ověřit mimetype, ověříme alespoň koncovku.
-			return array_search($this->getExtension($file->getUntrustedName()), array_unique($this->getMimeTypes()), true) !== false;
-		}
+			? true
+			: array_search($this->getExtension($file->getUntrustedName()), array_unique($this->getMimeTypes()), true) !== false;
 	}
 
 	/**
@@ -47,6 +35,14 @@ abstract class BaseFilter implements IMimeTypeFilter
 	{
 		return implode(', ', array_unique($this->getMimeTypes()));
 	}
+
+	/**
+	 * Vrátí seznam povolených typů souborů s jejich typickou koncovkou.
+	 *
+	 * @example array("text/plain" => "txt")
+	 * @return string[]
+	 */
+	abstract protected function getMimeTypes(): array;
 
 	/**
 	 * Vrátí koncovku souboru.

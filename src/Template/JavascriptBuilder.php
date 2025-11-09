@@ -2,45 +2,28 @@
 
 namespace Contributte\FileUpload\Template;
 
+use Contributte\FileUpload\Model\UploadController;
+use Contributte\FileUpload\Template\Renderer\BaseRenderer;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
 use Tracy\Debugger;
-use Contributte\FileUpload\Model\UploadController;
-use Contributte\FileUpload\Template\Renderer\BaseRenderer;
 
 /**
  * Class JavascriptBuilder
- *
- * @author  Zechy <email@zechy.cz>
  */
 class JavascriptBuilder
 {
 
 	use SmartObject;
 
-	/**
-	 * @var Template
-	 */
-	private $template;
+	private Template $template;
 
-	/**
-	 * @var BaseRenderer
-	 */
-	private $renderer;
+	private BaseRenderer $renderer;
 
-	/**
-	 * @var UploadController
-	 */
-	private $controller;
+	private UploadController $controller;
 
-	/**
-	 * JavascriptBuilder constructor.
-	 *
-	 * @param BaseRenderer     $renderer
-	 * @param UploadController $controller
-	 */
 	public function __construct(
 		BaseRenderer $renderer,
 		UploadController $controller
@@ -50,7 +33,7 @@ class JavascriptBuilder
 		$this->controller = $controller;
 
 		$this->template = $controller->template;
-		$this->template->setFile(__DIR__ . "/js.latte");
+		$this->template->setFile(__DIR__ . '/js.latte');
 	}
 
 	public function getJsTemplate(): string
@@ -72,12 +55,12 @@ class JavascriptBuilder
 	 */
 	private function setSettings(): void
 	{
-		$this->template->uploadUrl = $this->controller->link("upload");
-		$this->template->renameLink = $this->controller->link("rename");
-		$this->template->removeLink = $this->controller->link("//remove");
+		$this->template->uploadUrl = $this->controller->link('upload');
+		$this->template->renameLink = $this->controller->link('rename');
+		$this->template->removeLink = $this->controller->link('//remove');
 		/** @var Html $input */
-		$input = $this->renderer->getElements()["input"];
-		$this->template->inputId = $input->attrs["id"];
+		$input = $this->renderer->getElements()['input'];
+		$this->template->inputId = $input->attrs['id'];
 
 		$this->needTranslate();
 		$this->template->messages = $this->controller->getUploadControl()->getMessages();
@@ -116,11 +99,7 @@ class JavascriptBuilder
 
 		$components = [];
 		foreach ($elements as $type => $element) {
-			if ($element instanceof Html) {
-				$components[$type] = $element->getAttribute("data-upload-component");
-			} else {
-				$components[$type] = null;
-			}
+			$components[$type] = $element instanceof Html ? $element->getAttribute('data-upload-component') : null;
 		}
 
 		$this->template->components = $components;
@@ -133,8 +112,10 @@ class JavascriptBuilder
 			foreach ($upload->getMessages() as $key => $value) {
 				/** @var ITranslator $translator */
 				$translator = $upload->getTranslator();
-				$upload->setMessage($key, $translator->translate($value));
+				$translated = $translator->translate($value);
+				$upload->setMessage($key, is_string($translated) ? $translated : (string) $translated);
 			}
 		}
 	}
+
 }

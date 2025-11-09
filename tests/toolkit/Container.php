@@ -2,19 +2,18 @@
 
 namespace Tests\Toolkit;
 
+use Contributte\FileUpload\FileUploadExtension;
 use Nette\DI\Compiler;
 use Nette\DI\Container as NetteContainer;
 use Nette\DI\ContainerLoader;
-use Contributte\FileUpload\FileUploadExtension;
 
 final class Container
 {
 
-	/** @var string */
-	private $key;
+	private string $key;
 
 	/** @var callable[] */
-	private $onCompile = [];
+	private array $onCompile = [];
 
 	public function __construct(string $key)
 	{

@@ -6,8 +6,6 @@ use Nette\Http\FileUpload;
 
 /**
  * Interface IUploadController
- *
- * @author  Zechy <email@zechy.cz>
  */
 interface IUploadModel
 {
@@ -15,11 +13,10 @@ interface IUploadModel
 	/**
 	 * Uložení nahraného souboru.
 	 *
-	 * @param FileUpload   $file
 	 * @param array<mixed> $params Pole vlastních parametrů.
 	 * @return mixed               Vlastní navrátová hodnota.
 	 */
-	public function save(FileUpload $file, array $params = []);
+	public function save(FileUpload $file, array $params = []): mixed;
 
 	/**
 	 * Zpracování přejmenování souboru.
@@ -28,13 +25,13 @@ interface IUploadModel
 	 * @param string $newName Nové jméno souboru.
 	 * @return mixed Vlastní návratová hodnota.
 	 */
-	public function rename($upload, $newName);
+	public function rename(mixed $upload, string $newName): mixed;
 
 	/**
 	 * Zpracování požadavku o smazání souboru.
 	 *
 	 * @param mixed $uploaded Hodnota navrácená funkcí save.
 	 */
-	public function remove($uploaded): void;
+	public function remove(mixed $uploaded): void;
 
 }

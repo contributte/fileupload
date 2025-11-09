@@ -1,29 +1,19 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Contributte\FileUpload\Template\Renderer;
 
+use Contributte\FileUpload\FileUploadControl;
 use Nette\Localization\Translator;
 use Nette\SmartObject;
 use Nette\Utils\Html;
-use Contributte\FileUpload\FileUploadControl;
 
 /**
  * Class BaseRenderer
- *
- * @author  Zechy <email@zechy.cz>
- * @package Zet\FileUpload\Template\Renderer
  */
 abstract class BaseRenderer implements IUploadRenderer
 {
 
 	use SmartObject;
-
-	/**
-	 * ID template ve tvaru: HtmlId-ElementType
-	 *
-	 * @var string
-	 */
-	private $idTemplate = "%s-%s";
 
 	/**
 	 * Seznam všech základních komponent uploaderu:
@@ -43,34 +33,31 @@ abstract class BaseRenderer implements IUploadRenderer
 	 *
 	 * @var array<string, Html|string>
 	 */
-	protected $elements = [
-		"container" => '',
-		"input" => '',
-		"globalProgress" => '',
-		"globalProgressValue" => '',
-		"fileProgress" => '',
-		"fileProgressValue" => '',
-		"imagePreview" => '',
-		"filePreview" => '',
-		"filename" => '',
-		"delete" => '',
-		"errorMessage" => '',
+	protected array $elements = [
+		'container' => '',
+		'input' => '',
+		'globalProgress' => '',
+		'globalProgressValue' => '',
+		'fileProgress' => '',
+		'fileProgressValue' => '',
+		'imagePreview' => '',
+		'filePreview' => '',
+		'filename' => '',
+		'delete' => '',
+		'errorMessage' => '',
 	];
 
-	/**
-	 * @var FileUploadControl
-	 */
-	protected $fileUploadControl;
+	protected FileUploadControl $fileUploadControl;
+
+	/** @var Translator|NULL */
+	protected ?Translator $translator = null;
 
 	/**
-	 * @var Translator|NULL
+	 * ID template ve tvaru: HtmlId-ElementType
 	 */
-	protected $translator;
+	private string $idTemplate = '%s-%s';
 
 	/**
-	 * BaseRenderer constructor.
-	 *
-	 * @param FileUploadControl $fileUploadControl
 	 * @param Translator|NULL  $translator
 	 */
 	public function __construct(
@@ -82,46 +69,6 @@ abstract class BaseRenderer implements IUploadRenderer
 
 		$this->init();
 		$this->translator = $translator;
-	}
-
-	/**
-	 * Inicializace elementů.
-	 */
-	public function init(): void
-	{
-		$htmlId = $this->fileUploadControl->getHtmlId();
-
-		foreach ($this->elements as $type => $value) {
-			if ($type == "input") {
-				$element = Html::el("input type='file' multiple='multiple'")->addAttributes([
-					"id" => $htmlId,
-					"name" => $this->fileUploadControl->getHtmlName(),
-					"data-upload-component" => $htmlId,
-				]);
-			} elseif ($type == "delete") {
-				$element = Html::el("button type='button'")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
-				]);
-			} elseif ($type == "imagePreview") {
-				$element = Html::el("img")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
-				]);
-			} else {
-				$element = Html::el("div")->addAttributes([
-					"data-upload-component" => sprintf($this->idTemplate, $htmlId, $type),
-				]);
-			}
-
-			$this->elements[$type] = $element;
-		}
-	}
-
-	/**
-	 * @return array<string, Html|string>
-	 */
-	public function getElements()
-	{
-		return $this->elements;
 	}
 
 	/**
@@ -138,4 +85,45 @@ abstract class BaseRenderer implements IUploadRenderer
 	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
 	 */
 	abstract public function buildFileError(): Html;
+
+	/**
+	 * Inicializace elementů.
+	 */
+	public function init(): void
+	{
+		$htmlId = $this->fileUploadControl->getHtmlId();
+
+		foreach ($this->elements as $type => $value) {
+			if ($type === 'input') {
+				$element = Html::el("input type='file' multiple='multiple'")->addAttributes([
+					'id' => $htmlId,
+					'name' => $this->fileUploadControl->getHtmlName(),
+					'data-upload-component' => $htmlId,
+				]);
+			} elseif ($type === 'delete') {
+				$element = Html::el("button type='button'")->addAttributes([
+					'data-upload-component' => sprintf($this->idTemplate, $htmlId, $type),
+				]);
+			} elseif ($type === 'imagePreview') {
+				$element = Html::el('img')->addAttributes([
+					'data-upload-component' => sprintf($this->idTemplate, $htmlId, $type),
+				]);
+			} else {
+				$element = Html::el('div')->addAttributes([
+					'data-upload-component' => sprintf($this->idTemplate, $htmlId, $type),
+				]);
+			}
+
+			$this->elements[$type] = $element;
+		}
+	}
+
+	/**
+	 * @return array<string, Html|string>
+	 */
+	public function getElements(): array
+	{
+		return $this->elements;
+	}
+
 }

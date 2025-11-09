@@ -2,26 +2,25 @@
 
 namespace Contributte\FileUpload;
 
-use Nette;
-use Nette\Application\UI\Form;
-use Nette\Caching\Cache;
-use Nette\DI\Container;
-use Nette\Forms\Controls\UploadControl;
-use Nette\Http\Request;
-use Nette\InvalidStateException;
-use Nette\Localization\Translator;
-use Nette\Utils\Html;
-use stdClass;
 use Contributte\FileUpload\Exception\InvalidValueException;
 use Contributte\FileUpload\Model\BaseUploadModel;
 use Contributte\FileUpload\Model\DefaultFile;
 use Contributte\FileUpload\Model\IUploadModel;
 use Contributte\FileUpload\Model\UploadController;
+use Nette;
+use Nette\Application\UI\Form;
+use Nette\Caching\Cache;
+use Nette\DI\Container;
+use Nette\Forms\Controls\UploadControl;
+use Nette\Http\FileUpload;
+use Nette\Http\Request;
+use Nette\InvalidStateException;
+use Nette\Localization\Translator;
+use Nette\Utils\Html;
+use stdClass;
 
 /**
  * Class FileUploadControl
- *
- * @author Zechy <email@zechy.cz>
  */
 class FileUploadControl extends UploadControl
 {
@@ -49,49 +48,39 @@ class FileUploadControl extends UploadControl
 	 */
 	public const FILTER_AUDIO = 'Contributte\FileUpload\Filter\AudioFilter';
 
-	/** @var Container */
-	private $container;
+	private Container $container;
 
-	/** @var Cache */
-	private $cache;
+	private Cache $cache;
 
-	/** @var int */
-	private $maxFiles;
+	private int $maxFiles;
 
-	/** @var int|null */
-	private $maxFileSize;
+	private ?int $maxFileSize = null;
 
-	/** @var string */
-	private $fileSizeString;
+	private string $fileSizeString;
 
-	/** @var UploadController */
-	private $controller;
+	private UploadController $controller;
 
 	/** @var class-string<IUploadModel>|null */
 	private $uploadModel;
 
 	/**
 	 * Třída pro filtrování nahrávaných souborů.
-	 *
-	 * @var string|null
 	 */
-	private $fileFilter;
+	private ?string $fileFilter = null;
 
 	/**
 	 * Pole vlastních definovaných parametrů.
 	 *
 	 * @var array<mixed>
 	 */
-	private $params = [];
+	private array $params = [];
 
-	/** @var string */
-	private $renderer;
+	private string $renderer;
 
-	/** @var string */
-	private $token;
+	private string $token;
 
 	/** @var DefaultFile[] */
-	private $defaultFiles = [];
+	private array $defaultFiles = [];
 
 	/**
 	 * Seznam chybových hlášek.
@@ -110,21 +99,19 @@ class FileUploadControl extends UploadControl
 	 *
 	 * @var string[]
 	 */
-	private $messages = [];
+	private array $messages = [];
 
 	/**
 	 * Automaticky překládat všechny chybové zprávy?
-	 *
-	 * @var bool
 	 */
-	private $autoTranslate = false;
+	private bool $autoTranslate = false;
 
 	/**
 	 * Pole vlastních hodnot pro konfiguraci uploaderu.
 	 *
 	 * @var array<mixed>
 	 */
-	private $uploadSettings = [];
+	private array $uploadSettings = [];
 
 	/**
 	 * @param string $name        Název inputu.
@@ -134,6 +121,7 @@ class FileUploadControl extends UploadControl
 	public function __construct(string $name, int $maxFiles, ?string $maxFileSize = null)
 	{
 		parent::__construct($name);
+
 		$this->maxFiles = $maxFiles;
 		if ($maxFileSize === null) {
 			$this->fileSizeString = ini_get('upload_max_filesize') . 'B';
@@ -155,11 +143,18 @@ class FileUploadControl extends UploadControl
 	// --------------------------------------------------------------------
 
 	/**
+	 * Delete cache
+	 */
+	public function __destruct()
+	{
+		$this->cache->remove($this->getTokenizedCacheName($this->token));
+	}
+
+	/**
 	 * @static
-	 * @param Container     $systemContainer
 	 * @param array<mixed>|stdClass $configuration
 	 */
-	public static function register(Container $systemContainer, $configuration): void
+	public static function register(Container $systemContainer, array|stdClass $configuration): void
 	{
 		if (is_object($configuration)) {
 			$configuration = json_decode((string) json_encode($configuration), true);
@@ -176,8 +171,8 @@ class FileUploadControl extends UploadControl
 			$systemContainer,
 			$configuration
 		): self {
-			$maxFiles = $maxFiles ?? $configuration['maxFiles'];
-			$maxFileSize = $maxFileSize ?? $configuration['maxFileSize'];
+			$maxFiles ??= $configuration['maxFiles'];
+			$maxFileSize ??= $configuration['maxFileSize'];
 
 			/** @var FileUploadControl $component */
 			$component = new $class($name, $maxFiles, $maxFileSize);
@@ -228,37 +223,6 @@ class FileUploadControl extends UploadControl
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/js/jquery.fileupload-video.js"></script>';
 		echo '<script type="text/javascript" src="' . $basePath . '/fileupload/controller.js"></script>';
 	}
-
-	/**
-	 * Ověření nastavených direktiv, zda nepřekročují nastavení serveru.
-	 *
-	 * @throws InvalidValueException
-	 */
-	private function checkSettings(): void
-	{
-		$postMaxSize = $this->parseIniSize($postMaxSizeString = (string) ini_get('post_max_size'));
-		$iniMaxFileSize = $this->parseIniSize($iniMaxFileSizeString = (string) ini_get('upload_max_filesize'));
-
-		if ($this->maxFileSize > $postMaxSize) {
-			throw new InvalidValueException(
-				sprintf(
-					'The setting for the maximum file size is larger than allowed by the directive `post_max_size` (%s).',
-					$postMaxSizeString
-				)
-			);
-		} elseif ($this->maxFileSize > $iniMaxFileSize) {
-			throw new InvalidValueException(
-				sprintf(
-					'The setting for the maximum file size is larger than allowed by the directive `upload_max_filesize` (%s).',
-					$iniMaxFileSizeString
-				)
-			);
-		}
-	}
-
-	// --------------------------------------------------------------------
-	// Setters \ Getters
-	// --------------------------------------------------------------------
 
 	/**
 	 * @internal
@@ -504,11 +468,7 @@ class FileUploadControl extends UploadControl
 		return $this;
 	}
 
-	/**
-	 * @param string $name
-	 * @param mixed  $value
-	 */
-	public function addUploadSettings(string $name, $value): self
+	public function addUploadSettings(string $name, mixed $value): self
 	{
 		$this->uploadSettings[$name] = $value;
 
@@ -556,20 +516,43 @@ class FileUploadControl extends UploadControl
 	/**
 	 * Vrátí nacachované hodnoty z controlleru.
 	 *
-	 * @return mixed|NULL
+	 * @return array<FileUpload>|NULL
 	 */
-	public function getValue()
+	public function getValue(): ?array
 	{
-		return $this->cache->load($this->getTokenizedCacheName($this->token));
+		$value = $this->cache->load($this->getTokenizedCacheName($this->token));
+
+		return is_array($value) ? $value : null;
 	}
 
 	/**
-	 * Delete cache
+	 * Ověření nastavených direktiv, zda nepřekročují nastavení serveru.
+	 *
+	 * @throws InvalidValueException
 	 */
-	public function __destruct()
+	private function checkSettings(): void
 	{
-		$this->cache->remove($this->getTokenizedCacheName($this->token));
-	}
+		$postMaxSize = $this->parseIniSize($postMaxSizeString = (string) ini_get('post_max_size'));
+		$iniMaxFileSize = $this->parseIniSize($iniMaxFileSizeString = (string) ini_get('upload_max_filesize'));
+
+		if ($this->maxFileSize > $postMaxSize) {
+			throw new InvalidValueException(
+				sprintf(
+					'The setting for the maximum file size is larger than allowed by the directive `post_max_size` (%s).',
+					$postMaxSizeString
+				)
+			);
+		} elseif ($this->maxFileSize > $iniMaxFileSize) {
+			throw new InvalidValueException(
+				sprintf(
+					'The setting for the maximum file size is larger than allowed by the directive `upload_max_filesize` (%s).',
+					$iniMaxFileSizeString
+				)
+			);
+		}
+	}// --------------------------------------------------------------------
+// Setters \ Getters
+// --------------------------------------------------------------------
 
 	/**
 	 * Parses ini size

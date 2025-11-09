@@ -9,6 +9,8 @@
 			<property name="rootNamespaces" type="array">
 				<element key="src" value="Contributte\FileUpload"/>
 				<element key="tests" value="Tests"/>
+				<element key="tests/fixtures" value="Tests\Fixtures"/>
+				<element key="tests/toolkit" value="Tests\Toolkit"/>
 			</property>
 		</properties>
 	</rule>

@@ -2,6 +2,11 @@
 
 namespace Contributte\FileUpload\Model;
 
+use Contributte\FileUpload\Exception\InvalidFileException;
+use Contributte\FileUpload\FileUploadControl;
+use Contributte\FileUpload\Filter\IMimeTypeFilter;
+use Contributte\FileUpload\Template\JavascriptBuilder;
+use Contributte\FileUpload\Template\Renderer\BaseRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Application\UI\Control;
@@ -12,36 +17,23 @@ use Nette\InvalidStateException;
 use Nette\UnexpectedValueException;
 use Nette\Utils\Html;
 use Throwable;
-use Contributte\FileUpload\Exception\InvalidFileException;
-use Contributte\FileUpload\FileUploadControl;
-use Contributte\FileUpload\Filter\IMimeTypeFilter;
-use Contributte\FileUpload\Template\JavascriptBuilder;
-use Contributte\FileUpload\Template\Renderer\BaseRenderer;
 
 /**
  * Class UploadController
  *
  * @property Template $template
- * @author  Zechy <email@zechy.cz>
  */
 class UploadController extends Control
 {
 
-	/** @var FileUploadControl */
-	private $uploadControl;
+	private FileUploadControl $uploadControl;
 
-	/** @var Request */
-	private $request;
+	private Request $request;
 
-	/** @var IMimeTypeFilter */
-	private $filter;
+	private ?IMimeTypeFilter $filter = null;
 
-	/** @var BaseRenderer */
-	private $renderer;
+	private ?BaseRenderer $renderer = null;
 
-	/**
-	 * @param FileUploadControl $uploadControl
-	 */
 	public function __construct(FileUploadControl $uploadControl)
 	{
 		$this->uploadControl = $uploadControl;

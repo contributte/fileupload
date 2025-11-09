@@ -5,6 +5,9 @@ namespace Tests\Fixtures\Filter;
 class InvalidFilter
 {
 
+	/**
+	 * @return array<string, string>
+	 */
 	protected function getMimeTypes(): array
 	{
 		return [
