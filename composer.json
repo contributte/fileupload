@@ -22,8 +22,8 @@
     "nette/utils": "^3.2"
   },
   "require-dev": {
-    "ninjify/nunjuck": "^0.4",
-    "ninjify/qa": "^0.12",
+    "contributte/qa": "^0.3",
+    "nette/tester": "^2.5",
     "phpstan/phpstan": "^1.0",
     "phpstan/phpstan-deprecation-rules": "^1.0",
     "phpstan/phpstan-nette": "^1.0",
