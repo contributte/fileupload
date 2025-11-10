@@ -23,17 +23,17 @@ class DefaultFile
 	/**
 	 * Odkaz na náhled obrázku.
 	 */
-	private string $preview;
+	private ?string $preview = null;
 
 	/**
 	 * Název souboru.
 	 */
-	private string $filename;
+	private ?string $filename = null;
 
 	/**
 	 * Identifikátor souboru sloužící pro jeho smazání.
 	 */
-	private mixed $identifier;
+	private mixed $identifier = null;
 
 	/**
 	 * @return array<mixed>
@@ -47,22 +47,22 @@ class DefaultFile
 		];
 	}
 
-	public function getPreview(): string
+	public function getPreview(): ?string
 	{
 		return $this->preview;
 	}
 
-	public function setPreview(string $preview): void
+	public function setPreview(?string $preview): void
 	{
 		$this->preview = $preview;
 	}
 
-	public function getFilename(): string
+	public function getFilename(): ?string
 	{
 		return $this->filename;
 	}
 
-	public function setFilename(string $filename): void
+	public function setFilename(?string $filename): void
 	{
 		$this->filename = $filename;
 	}
