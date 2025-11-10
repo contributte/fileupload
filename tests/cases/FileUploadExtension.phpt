@@ -33,7 +33,7 @@ final class FileUploadExtension extends TestCase
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
-							fileFilter: Zet\FileUpload\Filter\ImageFilter
+							fileFilter: Contributte\FileUpload\Filter\ImageFilter
 						NEON));
 				})
 				->build();
@@ -47,7 +47,7 @@ final class FileUploadExtension extends TestCase
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
-							fileFilter: Zet\FileUpload\Filter\ImageFilter
+							fileFilter: Contributte\FileUpload\Filter\ImageFilter
 							uiMode: full
 						NEON));
 				})
@@ -90,7 +90,7 @@ final class FileUploadExtension extends TestCase
 						fileUpload:
 							maxFiles: 10
 							maxFileSize: 2M
-							fileFilter: Zet\FileUpload\Filter\ImageFilter
+							fileFilter: Contributte\FileUpload\Filter\ImageFilter
 							uploadModel: $uploadModel
 					NEON));
 				})
@@ -187,7 +187,7 @@ final class FileUploadExtension extends TestCase
 				->withCompiler(function (Compiler $compiler): void {
 					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							renderer: Tests\Fixtures\Renderer\InvalidRenderer
+							renderer: Tests\Fixtures\Template\Renderer\InvalidRenderer
 					NEON));
 				})
 				->build();
@@ -199,7 +199,7 @@ final class FileUploadExtension extends TestCase
 				->withCompiler(function (Compiler $compiler): void {
 					$compiler->addConfig(Helpers::neon(<<<NEON
 						fileUpload:
-							renderer: Zet\FileUpload\Template\Renderer\Bootstrap4Renderer
+							renderer: Contributte\FileUpload\Template\Renderer\Bootstrap4Renderer
 					NEON));
 				})
 				->build();

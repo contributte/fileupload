@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-use Ninjify\Nunjuck\Toolkit;
+use Contributte\Tester\Toolkit;
 use Tester\Assert;
 use Contributte\FileUpload\Model\DefaultFile;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-Toolkit::test(function () {
+Toolkit::test(function (): void {
 	$file = new DefaultFile();
 	$file->setFilename('foo.bar');
 

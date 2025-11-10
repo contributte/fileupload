@@ -14,9 +14,11 @@ class ValidUploadModel extends BaseUploadModel
 		FileSystem::delete($uploaded[0] . '/' . $uploaded[1]);
 	}
 
-	public function rename(mixed $upload, string $newName): void
+	public function rename(mixed $upload, string $newName): mixed
 	{
 		FileSystem::rename($upload[0] . '/' . $upload[1], $upload[0] . '/' . $newName);
+
+		return null;
 	}
 
 	/**
