@@ -18,7 +18,7 @@
 Website 🚀 <a href="https://contributte.org">contributte.org</a> | Contact 👨🏻‍💻 <a href="https://f3l1x.io">f3l1x.io</a> | Twitter 🐦 <a href="https://twitter.com/contributte">@contributte</a>
 </p>
 
-Nette UploadControl rozšířené o blueimp jQuery FileUpload.
+Nette UploadControl extended with blueimp jQuery File Upload.
 
 ## Versions
 
@@ -52,7 +52,7 @@ fileUpload:
 	maxFileSize: 2M
 	fileFilter: Contributte\FileUpload\Filter\ImageFilter
 	uploadModel: App\Model\MyUploadModel
-	uiMode: # full nebo minimal
+	uiMode: # full or minimal
 ```
 
 ## CSS and JS
@@ -97,8 +97,8 @@ interface IUploadModel {
 	/**
 	 * Processing renaming file
 	 * @param $upload value of returned by method save
-	 * @param $newName Nové jméno souboru.
-	 * @return mixed Vlastní návratová hodnota.
+	 * @param $newName New file name.
+	 * @return mixed Custom return value.
 	 */
 	public function rename($upload, $newName);
 
@@ -225,7 +225,7 @@ FileUploadControl::setUIMode(FileUploadControl::UI_MINIMAL);
 
 ### Custom parameters
 
-As of version 1.2.1, an array of custom parameters can be passed to the FileUploader, using the method **FileUplaodControl::setParams()**.
+As of version 1.2.1, an array of custom parameters can be passed to the file uploader using the method **FileUploadControl::setParams()**.
 
 ```php
 FileUploadControl::setParams([
@@ -261,7 +261,9 @@ On the controller side, any exceptions can be thrown from the UploadModel. Excep
 
 If an error is returned from the server while uploading a file, its name will be replaced in the file list by an error message. If the application is not in run mode, the information with the error message from the exception is written as an error to the console.
 
-## Upgrading from 1.2 tp 2.0
+## Upgrade notes from 1.2 to 2.0
+
+These notes are kept for projects upgrading from older 1.x releases.
 
 ### Registration
 
@@ -278,7 +280,7 @@ Replacing uiMode, it takes the name of the class that will render the FileUpload
 
 #### translator
 
-Name of class (not required) which implements translator. If the is no one, upúloader tries to load **\Nette\Localization\ITranslator**.interface.
+Name of class (not required) which implements translator. If none is configured, the uploader tries to load the **\Nette\Localization\ITranslator** interface.
 
 #### autoTranslate
 
@@ -305,10 +307,10 @@ List of custom configuration values for the uploader. This item is used to custo
 
 ### Default renderers
 
-Fileuploader comes with three predefined renderers:
-* [Html5Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Html5Renderer.php)
-* [Bootstrap3Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Bootstrap3Renderer.php)
-* [Bootstrap4Renderer](https://github.com/JZechy/jQuery-FileUpload/blob/master/src/Template/Renderer/Bootstrap4Renderer.php)
+File uploader comes with three predefined renderers:
+* [Html5Renderer](src/Template/Renderer/Html5Renderer.php)
+* [Bootstrap3Renderer](src/Template/Renderer/Bootstrap3Renderer.php)
+* [Bootstrap4Renderer](src/Template/Renderer/Bootstrap4Renderer.php)
 
 By default, Html5Renderer is selected.
 
@@ -352,21 +354,21 @@ BaseRenderer contains three abstract methods that need to be implemented.
 abstract class BaseRenderer extends Object implements IUploadRenderer {
 
 	/**
-	 * Sestavení výchozí šablony uploaderu.
+	 * Build the default uploader template.
 	 *
 	 * @return \Nette\Utils\Html
 	 */
 	abstract public function buildDefaultTemplate();
 
 	/**
-	 * Sestavení šablony pro vkládání nových souborů.
+	 * Build the template for adding new files.
 	 *
 	 * @return \Nette\Utils\Html
 	 */
 	abstract public function buildFileContainerTemplate();
 
 	/**
-	 * Sestavení šablony pro soubor, u kterého vznikla chyba.
+	 * Build the template for a file with an upload error.
 	 *
 	 * @return \Nette\Utils\Html
 	 */
@@ -374,7 +376,7 @@ abstract class BaseRenderer extends Object implements IUploadRenderer {
 }
 ```
 
-The **buildDefaultTemplate()** method builds the base renderer template, which is what is visible when the page is loaded. Each additional file added then uses a template that is built using **buuildFileContainerTemplate()**. If an error occurs while uploading the file, the template from the **buildFileError()** method is used.
+The **buildDefaultTemplate()** method builds the base renderer template, which is what is visible when the page is loaded. Each additional file added then uses a template that is built using **buildFileContainerTemplate()**. If an error occurs while uploading the file, the template from the **buildFileError()** method is used.
 
 If it is not necessary to use a component in the template, it is possible to overwrite its HTML prototype with the value null, then no attempt will be made to fill / use it during rendering.
 
@@ -390,7 +392,7 @@ Use the container **\Contributte\FileUpload\Model\DefaultFile** to add a default
 class DefaultFile extends Object {
 
 	/**
-	 * Callback pro smazání výchozího souboru s parametry (mixed $identifier).
+	 * Callback for deleting the default file with parameters (mixed $identifier).
 	 *
 	 * @var array
 	 */
@@ -404,14 +406,14 @@ class DefaultFile extends Object {
 	private $preview;
 
 	/**
-	 * Název souboru.
+	 * File name.
 	 *
 	 * @var string
 	 */
 	private $filename;
 
 	/**
-	 * Identifikátor souboru sloužící pro jeho smazání.
+	 * File identifier used for deletion.
 	 *
 	 * @var mixed
 	 */
