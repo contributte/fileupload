@@ -21,6 +21,10 @@ class AudioFilter extends BaseFilter
 			'audio/x-mpeg-3' => 'mp3',
 			'audio/ogg' => 'ogg',
 			'audio/x-aiff' => 'aiff',
+			'audio/wav' => 'wav',
+			'audio/x-wav' => 'wav',
+			'audio/wave' => 'wav',
+			'audio/vnd.wave' => 'wav',
 		];
 	}
 
